@@ -14,10 +14,10 @@ export function SiteHeader() {
           </div>
         </Link>
         <nav className="hidden items-center gap-7 text-sm text-muted-foreground md:flex">
-          <a href="#cases" className="transition hover:text-foreground">Кейсы</a>
-          <a href="#demo" className="transition hover:text-foreground">Демо</a>
-          <a href="#about" className="transition hover:text-foreground">О Марии</a>
-          <a href="#process" className="transition hover:text-foreground">Этапы</a>
+          <a href="/#cases" className="transition hover:text-foreground">Кейсы</a>
+          <a href="/#demo" className="transition hover:text-foreground">Демо</a>
+          <a href="/#about" className="transition hover:text-foreground">О Марии</a>
+          <Link to="/blog" className="transition hover:text-foreground" activeProps={{ className: "text-foreground" }}>Блог</Link>
         </nav>
         <a
           href="#lead"
