@@ -43,7 +43,7 @@
   --radius: 0.75rem;
 
   /* Dark expert palette — глубокий уголь + электрик-сайн */
-  --background: oklch(0.16 0.005 270);          /* #0E0F12 */
+  --background: oklch(0.14 0.02 260);           /* deep navy-black base */
   --foreground: oklch(0.96 0.005 90);           /* off-white #F5F4EF */
   --surface: oklch(0.19 0.006 270);             /* приподнятая поверхность */
   --surface-elevated: oklch(0.22 0.007 270);    /* карточки */
@@ -78,7 +78,7 @@
 
 .dark {
   /* Используем те же значения — лендинг по умолчанию в тёмной теме */
-  --background: oklch(0.16 0.005 270);
+  --background: oklch(0.14 0.02 260);
   --foreground: oklch(0.96 0.005 90);
 }
 
@@ -98,6 +98,13 @@
     font-feature-settings: "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 15% 0%, oklch(0.32 0.14 265 / 0.35), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 90% 10%, oklch(0.30 0.16 285 / 0.28), transparent 65%),
+      radial-gradient(ellipse 90% 60% at 50% 100%, oklch(0.28 0.12 255 / 0.30), transparent 70%),
+      linear-gradient(180deg, oklch(0.13 0.025 265) 0%, oklch(0.10 0.02 260) 50%, oklch(0.12 0.03 270) 100%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
   }
 
   h1, h2, h3, h4, h5, h6 {
