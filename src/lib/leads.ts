@@ -1,5 +1,6 @@
+import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import type { Variant } from "./site";
 
 export const leadSchema = z.object({
@@ -18,12 +19,23 @@ export const leadSchema = z.object({
 
 export type LeadInput = z.infer<typeof leadSchema>;
 
-export async function submitLead(input: LeadInput, source: Variant) {
-  const parsed = leadSchema.parse(input);
-  const { error } = await supabase.from("leads").insert({
-    name: parsed.name,
-    phone: parsed.phone,
-    source,
+const submitLeadSchema = z.object({
+  input: leadSchema,
+  source: z.custom<Variant>((value) => value === "main" || value === "msb" || value === "b2b"),
+});
+
+export const submitLead = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => submitLeadSchema.parse(data))
+  .handler(async ({ data }) => {
+    const { error } = await supabaseAdmin.from("leads").insert({
+      name: data.input.name,
+      phone: data.input.phone,
+      source: data.source,
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return { ok: true as const };
   });
-  if (error) throw new Error(error.message);
-}
