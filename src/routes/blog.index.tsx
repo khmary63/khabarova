@@ -78,7 +78,7 @@ function BlogIndex() {
             >
               Все
             </Link>
-            {tags.map((t) => (
+            {tags.map((t: string) => (
               <Link
                 key={t}
                 to="/blog"
@@ -101,7 +101,7 @@ function BlogIndex() {
           </div>
         ) : (
           <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {posts.map((p) => (
+            {posts.map((p: typeof posts[number]) => (
               <li key={p.id}>
                 <Link
                   to="/blog/$slug"
@@ -122,7 +122,7 @@ function BlogIndex() {
                   )}
                   <div className="flex flex-1 flex-col gap-3 p-5">
                     <div className="flex flex-wrap gap-1.5">
-                      {p.tags.slice(0, 3).map((t) => (
+                      {p.tags.slice(0, 3).map((t: string) => (
                         <span
                           key={t}
                           className="rounded-full bg-primary/10 px-2 py-0.5 text-[11px] text-primary"
