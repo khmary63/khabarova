@@ -89,6 +89,7 @@ async function callTool(name: string, args: Record<string, unknown>): Promise<un
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       // Fallback: всё равно сохраняем заявку, чтобы Мария связалась вручную
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       await supabaseAdmin.from("bookings").insert({
         name: clientName, phone, datetime, status: "failed",
         source: "ai_chat", ai_summary: summary ?? null, error_message: msg.slice(0, 1000),
