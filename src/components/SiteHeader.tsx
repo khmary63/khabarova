@@ -1,15 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { Sparkles } from "lucide-react";
 import { SITE } from "@/lib/site";
+import logo from "@/assets/logo.png";
 
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md">
       <div className="container-page flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <span className="grid h-8 w-8 place-items-center rounded-md border border-border bg-surface">
-            <Sparkles className="h-4 w-4 text-primary" strokeWidth={1.5} />
-          </span>
+          <img src={logo} alt={SITE.brand} className="h-9 w-9 rounded-md object-contain" />
           <div className="leading-tight">
             <div className="font-display text-sm font-semibold tracking-tight">{SITE.brand}</div>
             <div className="text-[11px] text-muted-foreground">{SITE.expert} · {SITE.city}</div>
