@@ -38,7 +38,7 @@ export function Hero({ config, onOpenChat }: { config: VariantConfig; onOpenChat
             {config.h1}
           </h1>
 
-          <p className="mt-6 max-w-xl text-base text-white/80 md:text-lg [text-shadow:_0_1px_12px_rgb(10_13_20_/_0.5)]">
+          <p className="mt-6 max-w-xl text-base text-white/80 [text-shadow:_0_1px_12px_rgb(10_13_20_/_0.5)] md:text-4xl">
             {config.subhead}
           </p>
 
