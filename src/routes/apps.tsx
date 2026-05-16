@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SITE } from "@/lib/site";
+import { ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/apps")({
   head: () => ({
@@ -43,14 +44,14 @@ const apps: AppItem[] = [
     status: "live",
   },
   {
-    title: "Скоро: ИИ-ассистент для записи",
+    title: "ИИ-ассистент для записи",
     description:
       "Виджет, который общается с клиентами в WhatsApp/Telegram и сам записывает их в YCLIENTS без оператора.",
     tag: "SaaS · ИИ",
     status: "soon",
   },
   {
-    title: "Скоро: Генератор офферов",
+    title: "Генератор офферов",
     description:
       "Внутренний инструмент: за минуту делает структурированный оффер и продающий лендинг под нишу клиента.",
     tag: "Внутренний tool",
@@ -63,6 +64,7 @@ type Service = {
   description: string;
   price: string;
   bullets: string[];
+  featured?: boolean;
 };
 
 const services: Service[] = [
@@ -79,7 +81,7 @@ const services: Service[] = [
     ],
   },
   {
-    title: "ИИ-фичи в существующий продукт",
+    title: "ИИ-фичи в продукт",
     description:
       "Встраиваю ИИ-чат, генерацию контента, классификацию, голосового помощника в ваш сайт или приложение.",
     price: "от 35 000 ₽",
@@ -89,6 +91,7 @@ const services: Service[] = [
       "Интеграция с вашей CRM",
       "Метрики и логи",
     ],
+    featured: true,
   },
   {
     title: "Обучение вайбкодингу",
@@ -106,78 +109,138 @@ const services: Service[] = [
 
 function AppsPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="relative min-h-screen overflow-hidden bg-background">
+      {/* Ambient glows */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-[10%] -left-[10%] h-[40%] w-[40%] rounded-full bg-primary/10 blur-[120px]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute bottom-[10%] -right-[10%] h-[40%] w-[30%] rounded-full bg-indigo-500/10 blur-[100px]"
+      />
+
       <SiteHeader />
 
-      <main className="container-page py-16">
-        <header className="mx-auto max-w-3xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1 text-xs text-muted-foreground">
+      <main className="container-page relative space-y-32 py-20 md:py-24">
+        {/* Hero */}
+        <header className="mx-auto max-w-3xl space-y-7 text-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-primary">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary/70 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+            </span>
             Вайбкодинг · Приложения и услуги
           </div>
-          <h1 className="mt-4 font-display text-4xl font-semibold tracking-tight md:text-5xl">
-            Приложения, которые я собираю на вайбкодинге
+
+          <h1 className="font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-foreground md:text-6xl">
+            Приложения, которые я собираю на{" "}
+            <span className="bg-gradient-to-r from-primary to-indigo-400 bg-clip-text text-transparent">
+              вайбкодинге
+            </span>
           </h1>
-          <p className="mt-4 text-base text-muted-foreground md:text-lg">
+
+          <p className="text-base leading-relaxed text-muted-foreground md:text-lg">
             Здесь — мои продукты и услуги по быстрой разработке с ИИ. Собираю
             MVP, ИИ-фичи и внутренние инструменты для бизнеса.
           </p>
         </header>
 
-        <section className="mt-14">
-          <h2 className="font-display text-2xl font-semibold tracking-tight">Мои приложения</h2>
-          <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {apps.map((app) => (
-              <article
-                key={app.title}
-                className="flex flex-col rounded-2xl border border-border bg-surface/40 p-6 transition hover:border-primary/40"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs uppercase tracking-widest text-muted-foreground">
-                    {app.tag}
-                  </span>
-                  <span
-                    className={
-                      app.status === "live"
-                        ? "rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-medium text-primary"
-                        : "rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground"
-                    }
-                  >
-                    {app.status === "live" ? "В работе" : "Скоро"}
-                  </span>
-                </div>
-                <h3 className="mt-3 font-display text-lg font-semibold">{app.title}</h3>
-                <p className="mt-2 flex-1 text-sm text-muted-foreground">{app.description}</p>
-                {app.href && (
-                  <Link
-                    to={app.href}
-                    className="mt-4 inline-flex w-fit items-center gap-1 text-sm font-medium text-primary hover:underline"
-                  >
-                    Открыть →
-                  </Link>
-                )}
-              </article>
-            ))}
+        {/* Apps */}
+        <section className="space-y-10">
+          <h2 className="font-display text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+            Мои приложения
+          </h2>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {apps.map((app) => {
+              const isLive = app.status === "live";
+              return (
+                <article
+                  key={app.title}
+                  className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 transition-all duration-500 hover:border-primary/50"
+                >
+                  <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-primary/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                  <div className={`relative space-y-4 ${isLive ? "" : "opacity-70"}`}>
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                        {app.tag}
+                      </span>
+                      <span
+                        className={
+                          isLive
+                            ? "rounded-full bg-primary/20 px-2.5 py-1 text-[10px] font-bold text-primary"
+                            : "rounded-full bg-white/5 px-2.5 py-1 text-[10px] font-bold text-muted-foreground"
+                        }
+                      >
+                        {isLive ? "В работе" : "Скоро"}
+                      </span>
+                    </div>
+                    <h3 className="font-display text-xl font-bold text-foreground transition-colors group-hover:text-primary">
+                      {app.title}
+                    </h3>
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {app.description}
+                    </p>
+                    {app.href && (
+                      <Link
+                        to={app.href}
+                        className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-primary/80"
+                      >
+                        Открыть
+                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </Link>
+                    )}
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </section>
 
-        <section className="mt-20">
-          <h2 className="font-display text-2xl font-semibold tracking-tight">Услуги вайбкодинга</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Беру в работу проекты, где важна скорость и качество исполнения.
-          </p>
-          <div className="mt-6 grid gap-5 md:grid-cols-3">
+        {/* Services */}
+        <section className="space-y-10">
+          <div className="space-y-2">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+              Услуги вайбкодинга
+            </h2>
+            <p className="text-muted-foreground">
+              Беру в работу проекты, где важна скорость и качество исполнения.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {services.map((s) => (
               <article
                 key={s.title}
-                className="flex flex-col rounded-2xl border border-border bg-surface/40 p-6"
+                className={
+                  s.featured
+                    ? "space-y-6 rounded-3xl border border-primary/20 bg-gradient-to-b from-primary/10 to-transparent p-8 ring-1 ring-primary/20"
+                    : "space-y-6 rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-transparent p-8"
+                }
               >
-                <h3 className="font-display text-lg font-semibold">{s.title}</h3>
-                <div className="mt-1 text-sm text-primary">{s.price}</div>
-                <p className="mt-3 text-sm text-muted-foreground">{s.description}</p>
-                <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+                <div className="space-y-2">
+                  <h3 className="font-display text-lg font-bold text-foreground">
+                    {s.title}
+                  </h3>
+                  <div className="text-sm font-bold tracking-tight text-primary">
+                    {s.price}
+                  </div>
+                </div>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {s.description}
+                </p>
+                <ul className="space-y-3">
                   {s.bullets.map((b) => (
-                    <li key={b} className="flex items-start gap-2">
-                      <span className="mt-1 h-1.5 w-1.5 flex-none rounded-full bg-primary" />
+                    <li
+                      key={b}
+                      className="flex items-center gap-3 text-sm text-muted-foreground"
+                    >
+                      <span
+                        className={`h-1.5 w-1.5 flex-none rounded-full ${
+                          s.featured ? "bg-primary" : "bg-primary/50"
+                        }`}
+                      />
                       <span>{b}</span>
                     </li>
                   ))}
@@ -187,31 +250,35 @@ function AppsPage() {
           </div>
         </section>
 
-        <section className="mt-20 rounded-2xl border border-border bg-surface/40 p-8 text-center md:p-12">
-          <h2 className="font-display text-2xl font-semibold tracking-tight md:text-3xl">
-            Нужно собрать продукт быстро?
-          </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-            Напишите задачу — отвечу за пару часов и предложу формат: готовое
-            приложение, услуга под ключ или менторство.
-          </p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <a
-              href={SITE.whatsapp}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90"
-            >
-              Написать в WhatsApp
-            </a>
-            <a
-              href={SITE.telegram}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-full border border-border px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-surface"
-            >
-              Telegram
-            </a>
+        {/* CTA */}
+        <section className="group relative">
+          <div className="pointer-events-none absolute inset-0 rounded-[2.5rem] bg-primary/20 opacity-0 blur-[80px] transition-opacity duration-700 group-hover:opacity-100" />
+          <div className="relative space-y-8 rounded-[2.5rem] border border-white/10 bg-gradient-to-br from-white/10 to-white/[0.02] p-10 text-center md:p-14">
+            <h2 className="font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+              Нужно собрать продукт быстро?
+            </h2>
+            <p className="mx-auto max-w-xl leading-relaxed text-muted-foreground">
+              Напишите задачу — отвечу за пару часов и предложу формат: готовое
+              приложение, услуга под ключ или менторство.
+            </p>
+            <div className="flex flex-col items-center justify-center gap-4 pt-2 sm:flex-row">
+              <a
+                href={SITE.whatsapp}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full rounded-2xl bg-primary px-8 py-4 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-105 hover:bg-primary/90 active:scale-95 sm:w-auto"
+              >
+                Написать в WhatsApp
+              </a>
+              <a
+                href={SITE.telegram}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full rounded-2xl border border-white/10 bg-white/5 px-8 py-4 text-sm font-bold text-foreground transition-all hover:bg-white/10 sm:w-auto"
+              >
+                Telegram
+              </a>
+            </div>
           </div>
         </section>
       </main>
