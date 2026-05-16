@@ -1,8 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { getUpcomingSlots } from "./yclients.server";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { createBookRecord, resolveServiceAndStaff } from "./yclients.server";
 
 const SYSTEM_PROMPT = `Ты — Нейропродавец Марии Хабаровой (НейроМаркет, Самара). Ты — настоящий ИИ-сотрудник в действии: посетитель сайта прямо сейчас видит, как ты работаешь.
 
@@ -67,6 +64,7 @@ type AnyMsg = z.infer<typeof messageSchema> & { tool_calls?: Array<{ id: string;
 async function callTool(name: string, args: Record<string, unknown>): Promise<unknown> {
   if (name === "get_available_slots") {
     try {
+      const { getUpcomingSlots } = await import("./yclients.server");
       const slots = await getUpcomingSlots(6);
       return { ok: true, slots };
     } catch (e) {
@@ -77,6 +75,10 @@ async function callTool(name: string, args: Record<string, unknown>): Promise<un
     const { name: clientName, phone, datetime, summary } = args as { name?: string; phone?: string; datetime?: string; summary?: string };
     if (!clientName || !phone || !datetime) return { ok: false, error: "Не хватает имени, телефона или времени" };
     try {
+      const [{ resolveServiceAndStaff, createBookRecord }, { supabaseAdmin }] = await Promise.all([
+        import("./yclients.server"),
+        import("@/integrations/supabase/client.server"),
+      ]);
       const { service, staff } = await resolveServiceAndStaff();
       const rec = await createBookRecord({ phone, fullname: clientName, comment: summary, serviceId: service.id, staffId: staff.id, datetime });
       await supabaseAdmin.from("bookings").insert({
