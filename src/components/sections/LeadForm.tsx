@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowRight, Loader2, Check } from "lucide-react";
 import { toast } from "sonner";
-import { leadSchema, submitLead } from "@/lib/leads";
+import { leadSchema } from "@/lib/leads";
+import { submitLead } from "@/lib/leads.functions";
 import type { Variant } from "@/lib/site";
 
 export function LeadForm({ source }: { source: Variant }) {
