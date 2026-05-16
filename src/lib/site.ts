@@ -3,9 +3,14 @@ export const SITE = {
   brand: "НейроМаркет",
   expert: "Мария Хабарова",
   city: "Самара",
+  phone: "+7 917 111-40-30",
+  phoneHref: "tel:+79171114030",
+  email: "neyromarket@yandex.ru",
+  emailHref: "mailto:neyromarket@yandex.ru",
   vk: "https://vk.com/neyromarket",
-  telegram: "https://t.me/neyromarket",
-  whatsapp: "https://wa.me/79000000000",
+  telegram: "https://t.me/neOptimization",
+  max: "https://max.ru/id631212609521_biz",
+  whatsapp: "https://wa.me/79171114030",
 };
 
 export type Variant = "main" | "msb" | "b2b";
