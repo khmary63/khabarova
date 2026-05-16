@@ -2,9 +2,11 @@ import { ArrowUpRight } from "lucide-react";
 import { SITE } from "@/lib/site";
 
 const LINKS = [
-  { label: "ВКонтакте", href: SITE.vk, sub: "@neyromarket — основная площадка" },
-  { label: "Telegram", href: SITE.telegram, sub: "Канал Марии — кейсы и разборы" },
-  { label: "WhatsApp", href: SITE.whatsapp, sub: "Написать напрямую" },
+  { label: SITE.phone, href: SITE.phoneHref, sub: "Звонок или WhatsApp — отвечаем в течение дня" },
+  { label: "Telegram-канал", href: SITE.telegram, sub: "Канал Марии — кейсы и разборы" },
+  { label: "ВКонтакте", href: SITE.vk, sub: "Основная площадка НейроМаркет" },
+  { label: "Max", href: SITE.max, sub: "Бизнес-канал в Max" },
+  { label: SITE.email, href: SITE.emailHref, sub: "Email для подробных запросов" },
 ];
 
 export function FinalCta() {
