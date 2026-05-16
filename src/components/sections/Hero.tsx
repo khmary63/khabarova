@@ -1,8 +1,8 @@
-import { ArrowRight, ChevronDown, Check } from "lucide-react";
+import { ArrowRight, ChevronDown, Check, Sparkles } from "lucide-react";
 import mariaHero from "@/assets/maria-hero.jpg";
 import { SITE, type VariantConfig } from "@/lib/site";
 
-export function Hero({ config }: { config: VariantConfig }) {
+export function Hero({ config, onOpenChat }: { config: VariantConfig; onOpenChat: () => void }) {
   return (
     <section className="relative overflow-hidden border-b border-border">
       {/* фоновое сияние */}
@@ -34,22 +34,26 @@ export function Hero({ config }: { config: VariantConfig }) {
             ))}
           </ul>
 
-          <div className="mt-8 flex flex-wrap items-center gap-4">
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={onOpenChat}
+              className="group inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition hover:brightness-110"
+            >
+              <Sparkles className="h-4 w-4" strokeWidth={2} />
+              Поговорить с моим ИИ-продавцом
+            </button>
             <a
               href="#lead"
-              className="group inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:brightness-110"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-5 py-3 text-sm font-medium transition hover:border-primary/40 hover:bg-primary/10"
             >
-              Получить бесплатный ИИ-аудит
-              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" strokeWidth={2} />
-            </a>
-            <a
-              href="#demo"
-              className="inline-flex items-center gap-1 text-sm text-muted-foreground transition hover:text-foreground"
-            >
-              Посмотреть, как это работает
-              <ChevronDown className="h-4 w-4" strokeWidth={1.5} />
+              Оставить заявку
+              <ArrowRight className="h-4 w-4" strokeWidth={2} />
             </a>
           </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            Этот ИИ-продавец сам запишет вас на аудит в YClients — за 30 секунд.
+          </p>
 
           <div className="mt-10 flex items-center gap-4 text-xs text-muted-foreground">
             <span>Самара</span>

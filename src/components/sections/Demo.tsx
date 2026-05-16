@@ -12,7 +12,7 @@ const SCRIPT: Msg[] = [
   { from: "ai", text: "Готово ✓ Записала на завтра, 14:00. За час до приезда замерщик напишет. Хорошего вечера!", delay: 1400 },
 ];
 
-export function Demo() {
+export function Demo({ onOpenChat }: { onOpenChat: () => void }) {
   const [visible, setVisible] = useState<number>(0);
   const [count, setCount] = useState(12480);
   const ref = useRef<HTMLDivElement | null>(null);
@@ -86,12 +86,16 @@ export function Demo() {
             </div>
           </div>
 
-          <a
-            href="#lead"
-            className="mt-8 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-5 py-2.5 text-sm font-medium transition hover:bg-primary/20"
+          <button
+            type="button"
+            onClick={onOpenChat}
+            className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:brightness-110"
           >
-            Хочу такой же на свой бизнес
-          </a>
+            Попробовать вживую — справа откроется чат
+          </button>
+          <p className="mt-2 text-[11px] text-muted-foreground">
+            Этот же ИИ работает на сайте прямо сейчас и сам записывает в YClients.
+          </p>
         </div>
 
         <div className="rounded-2xl border border-border bg-surface p-3 shadow-2xl shadow-primary/10 md:p-5">
