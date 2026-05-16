@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      bookings: {
+        Row: {
+          ai_summary: string | null
+          created_at: string
+          datetime: string
+          error_message: string | null
+          id: string
+          name: string
+          phone: string
+          source: string
+          status: string
+          yclients_record_id: number | null
+        }
+        Insert: {
+          ai_summary?: string | null
+          created_at?: string
+          datetime: string
+          error_message?: string | null
+          id?: string
+          name: string
+          phone: string
+          source?: string
+          status?: string
+          yclients_record_id?: number | null
+        }
+        Update: {
+          ai_summary?: string | null
+          created_at?: string
+          datetime?: string
+          error_message?: string | null
+          id?: string
+          name?: string
+          phone?: string
+          source?: string
+          status?: string
+          yclients_record_id?: number | null
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           created_at: string
