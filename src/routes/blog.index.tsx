@@ -32,7 +32,7 @@ export const Route = createFileRoute("/blog/")({
               "@context": "https://schema.org",
               "@type": "Blog",
               name: "Блог НейроМаркет",
-              blogPost: loaderData.posts.slice(0, 20).map((p) => ({
+              blogPost: loaderData.posts.slice(0, 20).map((p: { title: string; slug: string; published_at: string | null }) => ({
                 "@type": "BlogPosting",
                 headline: p.title,
                 url: `/blog/${p.slug}`,
