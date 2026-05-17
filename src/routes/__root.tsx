@@ -112,7 +112,10 @@ function RootShell({ children }: { children: React.ReactNode }) {
       <body>
         {children}
         {/* Eureka chat widget */}
-        <eureka-chat-widget api-key="3fee383b-00bc-483a-a056-84a73212d830" lang="ru" />
+        {(() => {
+          const EurekaWidget = "eureka-chat-widget" as unknown as React.ElementType;
+          return <EurekaWidget api-key="3fee383b-00bc-483a-a056-84a73212d830" lang="ru" />;
+        })()}
         <script
           type="module"
           crossOrigin=""
