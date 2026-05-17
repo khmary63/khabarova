@@ -8,7 +8,7 @@ export function SiteFooter() {
         <div>
           <div className="font-display text-lg font-semibold tracking-tight">{SITE.brand}</div>
           <p className="mt-2 text-sm text-muted-foreground">
-            Внедряем ИИ-сотрудников в продажи. Работаем с бизнесами {SITE.city} и всей России.
+            Внедряем ИИ-сотрудников в продажи. Работаем с бизнесами Самары и всей России.
           </p>
         </div>
         <div>
