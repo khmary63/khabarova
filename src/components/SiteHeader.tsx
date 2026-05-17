@@ -15,9 +15,18 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md">
       <div className="border-b border-border/40 bg-surface/40">
-        <div className="container-page flex h-8 items-center justify-end gap-2 text-[11px] text-muted-foreground">
-          <span className="h-1.5 w-1.5 rounded-full bg-success" aria-hidden />
-          <span>Менеджер на связи: пн–пт, 9:00–18:00 МСК</span>
+        <div className="container-page flex h-9 items-center justify-between gap-3 text-[11px] text-muted-foreground">
+          <a
+            href={SITE.phoneHref}
+            className="inline-flex items-center gap-1.5 font-medium text-foreground transition hover:text-primary"
+          >
+            <Phone className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
+            {SITE.phone}
+          </a>
+          <div className="inline-flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-success" aria-hidden />
+            <span>Менеджер на связи: пн–пт, 9:00–18:00 МСК</span>
+          </div>
         </div>
       </div>
       <div className="container-page flex h-16 items-center justify-between">
