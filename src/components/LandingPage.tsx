@@ -7,6 +7,7 @@ import { Demo } from "@/components/sections/Demo";
 import { About } from "@/components/sections/About";
 import { Process } from "@/components/sections/Process";
 import { Objections } from "@/components/sections/Objections";
+import { Guarantees } from "@/components/sections/Guarantees";
 import { LeadForm } from "@/components/sections/LeadForm";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -27,6 +28,7 @@ export function LandingPage({ config }: { config: VariantConfig }) {
         <Demo onOpenChat={() => setChatOpen(true)} />
         <About />
         <Process />
+        <Guarantees />
         <Objections />
         <LeadForm source={config.source} />
         <FinalCta />
