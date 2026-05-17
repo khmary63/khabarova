@@ -77,8 +77,7 @@
 }
 
 .dark {
-  /* Используем те же значения — лендинг по умолчанию в тёмной теме */
-  --background: oklch(0.16 0.005 270);
+  --background: oklch(0.18 0.04 255);
   --foreground: oklch(0.96 0.005 90);
 }
 
@@ -98,6 +97,14 @@
     font-feature-settings: "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 15% 0%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 90% 10%, color-mix(in oklab, oklch(0.75 0.22 290) 18%, transparent), transparent 65%),
+      radial-gradient(ellipse 90% 55% at 50% 100%, color-mix(in oklab, var(--primary) 18%, transparent), transparent 70%),
+      radial-gradient(ellipse 60% 40% at 100% 60%, color-mix(in oklab, oklch(0.7 0.2 200) 16%, transparent), transparent 65%),
+      linear-gradient(180deg, oklch(0.16 0.05 258) 0%, oklch(0.2 0.05 252) 50%, oklch(0.17 0.05 258) 100%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
   }
 
   h1, h2, h3, h4, h5, h6 {
