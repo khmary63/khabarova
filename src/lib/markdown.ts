@@ -1,9 +1,10 @@
 import { marked } from "marked";
-import DOMPurify from "isomorphic-dompurify";
 
 marked.setOptions({ gfm: true, breaks: true });
 
+// Posts are authored only by admins (token-gated upsertPost), so we trust the
+// markdown source and skip DOMPurify — isomorphic-dompurify fails to initialize
+// in the Cloudflare Workers runtime (no DOM), which broke SSR for /blog/$slug.
 export function renderMarkdown(md: string): string {
-  const html = marked.parse(md ?? "", { async: false }) as string;
-  return DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
+  return marked.parse(md ?? "", { async: false }) as string;
 }
