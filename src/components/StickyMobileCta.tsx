@@ -5,6 +5,7 @@ export function StickyMobileCta({ onOpenChat }: { onOpenChat?: () => void }) {
         <button
           type="button"
           onClick={onOpenChat}
+          data-track="sticky_mobile_chat"
           className="block w-full rounded-full bg-primary py-3 text-center text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/30"
         >
           Поговорить с ИИ-продавцом
@@ -12,6 +13,7 @@ export function StickyMobileCta({ onOpenChat }: { onOpenChat?: () => void }) {
       ) : (
         <a
           href="#lead"
+          data-track="sticky_mobile_lead"
           className="block w-full rounded-full bg-primary py-3 text-center text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/30"
         >
           Получить бесплатный ИИ-аудит
