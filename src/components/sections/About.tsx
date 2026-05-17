@@ -27,7 +27,8 @@ export function About() {
         <div>
           <div className="text-xs uppercase tracking-widest text-muted-foreground">О Марии</div>
           <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight md:text-4xl">
-            «Помогаю владельцам бизнеса перестать терять заявки — с помощью ИИ-сотрудников и понятной методологии»
+            «Помогаю владельцам бизнеса перестать терять заявки —<br />
+            с помощью ИИ-сотрудников и понятной методологии»
           </h2>
           <div className="mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground space-y-4">
             <p>
