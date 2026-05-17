@@ -37,7 +37,7 @@ type AdminPost = {
   updated_at: string;
 };
 
-type EditPost = AdminPost & { content: string; cover_image_url: string | null };
+type EditPost = AdminPost & { content: string; contentHtml: string; cover_image_url: string | null };
 
 const TOKEN_KEY = "blog-admin-token";
 
