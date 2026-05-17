@@ -219,6 +219,36 @@ function AdminPage() {
                 </button>
               </div>
             </div>
+
+            <section className="mb-8 rounded-2xl border border-border bg-surface p-5">
+              <h2 className="font-display text-base font-semibold">Видимость страниц на сайте</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Снимите галочку, чтобы скрыть страницу из меню и закрыть к ней доступ.
+              </p>
+              <div className="mt-4 space-y-2">
+                <label className="flex items-center gap-3 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={visibility.apps}
+                    onChange={(e) => toggleVisibility("apps", e.target.checked)}
+                  />
+                  <span>
+                    Показывать страницу <span className="font-medium">«Приложения»</span> (/apps)
+                  </span>
+                </label>
+                <label className="flex items-center gap-3 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={visibility.blog}
+                    onChange={(e) => toggleVisibility("blog", e.target.checked)}
+                  />
+                  <span>
+                    Показывать страницу <span className="font-medium">«Блог»</span> (/blog)
+                  </span>
+                </label>
+              </div>
+            </section>
+
             <ul className="divide-y divide-border rounded-2xl border border-border bg-surface">
               {posts.map((p) => (
                 <li key={p.id} className="flex items-center justify-between gap-4 p-4">
