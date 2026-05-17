@@ -65,6 +65,17 @@ export function Cases({ config }: { config: VariantConfig }) {
             </article>
           ))}
         </div>
+
+        <div className="mt-6 text-xs text-muted-foreground">
+          <a
+            href="https://teletype.in/@neyro_market/ylinybDHrCV"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary underline underline-offset-2 hover:text-primary/80"
+          >
+            Еще больше кейсов →
+          </a>
+        </div>
       </div>
     </section>
   );
