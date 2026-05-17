@@ -50,7 +50,7 @@ export function Cases({ config }: { config: VariantConfig }) {
                 </div>
                 <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
                   <div className="text-[11px] uppercase tracking-widest text-primary">После</div>
-                  <p className="mt-2 text-sm leading-relaxed">{c.after}</p>
+                  <p className="mt-2 whitespace-pre-line text-sm leading-relaxed">{c.after}</p>
                 </div>
               </div>
 
