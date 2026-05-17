@@ -23,6 +23,16 @@ export function LeadForm({ source }: { source: Variant }) {
       await submitLead(parsed.data, source);
       setDone(true);
       toast.success("Заявка отправлена. Мария свяжется в ближайшие 30 минут.");
+      // Yandex.Metrika goal
+      try {
+        (window as unknown as { ym?: (id: number, action: string, goal: string) => void }).ym?.(
+          107882480,
+          "reachGoal",
+          "lead_submit",
+        );
+      } catch {
+        // ignore
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Не удалось отправить заявку");
     } finally {
