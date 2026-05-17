@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Hero } from "@/components/sections/Hero";
 import { Pains } from "@/components/sections/Pains";
 import { Services } from "@/components/sections/Services";
@@ -12,20 +11,19 @@ import { LeadForm } from "@/components/sections/LeadForm";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { AiChat, AiChatLauncher } from "@/components/AiChat";
+import { openEurekaChat } from "@/lib/eureka";
 import type { VariantConfig } from "@/lib/site";
 
 export function LandingPage({ config }: { config: VariantConfig }) {
-  const [chatOpen, setChatOpen] = useState(false);
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main>
-        <Hero config={config} onOpenChat={() => setChatOpen(true)} />
+        <Hero config={config} onOpenChat={openEurekaChat} />
         <Pains config={config} />
         <Services />
         <Cases config={config} />
-        <Demo onOpenChat={() => setChatOpen(true)} />
+        <Demo onOpenChat={openEurekaChat} />
         <About />
         <Process />
         <Guarantees />
@@ -34,8 +32,6 @@ export function LandingPage({ config }: { config: VariantConfig }) {
         <FinalCta />
       </main>
       <SiteFooter />
-      {!chatOpen && <AiChatLauncher onOpen={() => setChatOpen(true)} />}
-      <AiChat open={chatOpen} onOpenChange={setChatOpen} />
       <div className="h-20 md:hidden" aria-hidden />
     </div>
   );
