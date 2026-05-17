@@ -42,43 +42,42 @@
 :root {
   --radius: 0.75rem;
 
-  /* Dark expert palette — глубокий уголь + электрик-сайн */
-  --background: oklch(0.16 0.005 270);          /* #0E0F12 */
-  --foreground: oklch(0.96 0.005 90);           /* off-white #F5F4EF */
-  --surface: oklch(0.19 0.006 270);             /* приподнятая поверхность */
-  --surface-elevated: oklch(0.22 0.007 270);    /* карточки */
+  /* Dark navy palette — глубокий тёмно-синий с электрик-сайн */
+  --background: oklch(0.18 0.04 255);           /* тёмно-синий */
+  --foreground: oklch(0.96 0.005 90);
+  --surface: oklch(0.22 0.05 255);
+  --surface-elevated: oklch(0.26 0.06 255);
 
-  --card: oklch(0.19 0.006 270);
+  --card: oklch(0.22 0.05 255);
   --card-foreground: oklch(0.96 0.005 90);
-  --popover: oklch(0.19 0.006 270);
+  --popover: oklch(0.22 0.05 255);
   --popover-foreground: oklch(0.96 0.005 90);
 
-  --primary: oklch(0.66 0.21 255);              /* электрик-сайн ~ #3B82F6 */
-  --primary-foreground: oklch(0.16 0.005 270);
+  --primary: oklch(0.7 0.2 245);                /* электрик-сайн */
+  --primary-foreground: oklch(0.16 0.04 255);
 
-  --secondary: oklch(0.26 0.008 270);
+  --secondary: oklch(0.28 0.05 255);
   --secondary-foreground: oklch(0.96 0.005 90);
 
-  --muted: oklch(0.22 0.007 270);
-  --muted-foreground: oklch(0.66 0.015 270);
+  --muted: oklch(0.25 0.05 255);
+  --muted-foreground: oklch(0.72 0.03 250);
 
-  --accent: oklch(0.66 0.21 255);
-  --accent-foreground: oklch(0.16 0.005 270);
+  --accent: oklch(0.7 0.2 245);
+  --accent-foreground: oklch(0.16 0.04 255);
 
   --destructive: oklch(0.62 0.21 25);
   --destructive-foreground: oklch(0.98 0 0);
 
-  --border: oklch(0.26 0.008 270);              /* #1F2125 */
-  --border-strong: oklch(0.32 0.01 270);
-  --input: oklch(0.22 0.007 270);
-  --ring: oklch(0.66 0.21 255);
+  --border: oklch(0.3 0.05 255);
+  --border-strong: oklch(0.36 0.06 255);
+  --input: oklch(0.25 0.05 255);
+  --ring: oklch(0.7 0.2 245);
 
   --success: oklch(0.72 0.18 155);
 }
 
 .dark {
-  /* Используем те же значения — лендинг по умолчанию в тёмной теме */
-  --background: oklch(0.16 0.005 270);
+  --background: oklch(0.18 0.04 255);
   --foreground: oklch(0.96 0.005 90);
 }
 
@@ -98,6 +97,14 @@
     font-feature-settings: "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 15% 0%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 90% 10%, color-mix(in oklab, oklch(0.75 0.22 290) 18%, transparent), transparent 65%),
+      radial-gradient(ellipse 90% 55% at 50% 100%, color-mix(in oklab, var(--primary) 18%, transparent), transparent 70%),
+      radial-gradient(ellipse 60% 40% at 100% 60%, color-mix(in oklab, oklch(0.7 0.2 200) 16%, transparent), transparent 65%),
+      linear-gradient(180deg, oklch(0.16 0.05 258) 0%, oklch(0.2 0.05 252) 50%, oklch(0.17 0.05 258) 100%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
   }
 
   h1, h2, h3, h4, h5, h6 {
