@@ -508,19 +508,40 @@ function AdminPage() {
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
-                checked={editing.published ?? true}
+                checked={editing.published ?? false}
                 onChange={(e) => setEditing({ ...editing, published: e.target.checked })}
               />
               Опубликовать (иначе сохранится как черновик)
             </label>
 
+            <div className="rounded-2xl border border-border bg-surface p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="text-sm font-semibold">SEO-оптимизация</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {seoOptimized
+                      ? "✓ Текст оптимизирован. Можно публиковать."
+                      : "Нажмите, чтобы ИИ переписал заголовок, описание, теги и текст для поисковых систем. Без этого публикация заблокирована."}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSeoOptimize}
+                  disabled={seoLoading}
+                  className="shrink-0 rounded-full bg-foreground px-4 py-2 text-xs font-medium text-background disabled:opacity-50"
+                >
+                  {seoLoading ? "Оптимизация…" : seoOptimized ? "Оптимизировать ещё раз" : "SEO-оптимизация"}
+                </button>
+              </div>
+            </div>
+
             <div className="flex gap-2 pt-2">
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || (editing.published && !seoOptimized)}
                 className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
               >
-                {loading ? "Сохранение…" : "Сохранить"}
+                {loading ? "Сохранение…" : editing.published ? "Опубликовать" : "Сохранить черновик"}
               </button>
               <button
                 type="button"
