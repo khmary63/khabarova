@@ -11,6 +11,7 @@ import { LeadForm } from "@/components/sections/LeadForm";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { EurekaChatLauncher } from "@/components/EurekaChatLauncher";
 import { openEurekaChat } from "@/lib/eureka";
 import type { VariantConfig } from "@/lib/site";
 
@@ -32,6 +33,7 @@ export function LandingPage({ config }: { config: VariantConfig }) {
         <FinalCta />
       </main>
       <SiteFooter />
+      <EurekaChatLauncher />
       <div className="h-20 md:hidden" aria-hidden />
     </div>
   );
