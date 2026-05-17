@@ -3,6 +3,7 @@ import { LandingPage } from "@/components/LandingPage";
 import { VARIANTS } from "@/lib/site";
 
 const cfg = VARIANTS.msb;
+const URL = "https://neyromarket.com/msb";
 
 export const Route = createFileRoute("/msb")({
   head: () => ({
@@ -12,7 +13,9 @@ export const Route = createFileRoute("/msb")({
       { property: "og:title", content: cfg.meta.title },
       { property: "og:description", content: cfg.meta.description },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: URL },
     ],
+    links: [{ rel: "canonical", href: URL }],
   }),
   component: () => <LandingPage config={cfg} />,
 });
