@@ -1,8 +1,17 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLoaderData } from "@tanstack/react-router";
 import { SITE } from "@/lib/site";
 import logo from "@/assets/logo.png";
 
 export function SiteHeader() {
+  const rootData = useLoaderData({ from: "__root__" }) as
+    | { apps?: boolean; blog?: boolean }
+    | undefined;
+  const settings = {
+    apps: rootData?.apps ?? true,
+    blog: rootData?.blog ?? true,
+  };
+
+
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md">
       <div className="container-page flex h-16 items-center justify-between">
@@ -17,8 +26,12 @@ export function SiteHeader() {
           <a href="/#cases" className="transition hover:text-foreground">Кейсы</a>
           <a href="/#demo" className="transition hover:text-foreground">Демо</a>
           <a href="/#about" className="transition hover:text-foreground">О Марии</a>
-          <Link to="/apps" className="transition hover:text-foreground" activeProps={{ className: "text-foreground" }}>Приложения</Link>
-          <Link to="/blog" className="transition hover:text-foreground" activeProps={{ className: "text-foreground" }}>Блог</Link>
+          {settings.apps && (
+            <Link to="/apps" className="transition hover:text-foreground" activeProps={{ className: "text-foreground" }}>Приложения</Link>
+          )}
+          {settings.blog && (
+            <Link to="/blog" className="transition hover:text-foreground" activeProps={{ className: "text-foreground" }}>Блог</Link>
+          )}
         </nav>
         <a
           href="#lead"

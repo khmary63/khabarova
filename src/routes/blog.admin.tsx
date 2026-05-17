@@ -9,6 +9,7 @@ import {
   upsertPost,
   adminDeletePost,
 } from "@/lib/blog.functions";
+import { getSiteSettings, updateSiteSetting } from "@/lib/site-settings.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/blog/admin")({
@@ -42,11 +43,17 @@ function AdminPage() {
   const [posts, setPosts] = useState<AdminPost[]>([]);
   const [editing, setEditing] = useState<Partial<EditPost> | null>(null);
   const [loading, setLoading] = useState(false);
+  const [visibility, setVisibility] = useState<{ apps: boolean; blog: boolean }>({
+    apps: true,
+    blog: true,
+  });
 
   const listFn = useServerFn(adminListPosts);
   const getFn = useServerFn(adminGetPost);
   const saveFn = useServerFn(upsertPost);
   const delFn = useServerFn(adminDeletePost);
+  const settingsFn = useServerFn(getSiteSettings);
+  const updateSettingFn = useServerFn(updateSiteSetting);
 
   useEffect(() => {
     const saved = typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : "";
@@ -70,6 +77,24 @@ function AdminPage() {
     localStorage.setItem(TOKEN_KEY, t);
     setAuthed(true);
     setPosts(res.posts as AdminPost[]);
+    try {
+      const s = await settingsFn();
+      setVisibility({ apps: s.apps, blog: s.blog });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function toggleVisibility(key: "apps" | "blog", enabled: boolean) {
+    const prev = visibility;
+    setVisibility({ ...prev, [key]: enabled });
+    const res = await updateSettingFn({ data: { token, key, enabled } });
+    if (!res.ok) {
+      setVisibility(prev);
+      toast.error(res.error || "Не удалось сохранить");
+      return;
+    }
+    toast.success(enabled ? "Страница показывается" : "Страница скрыта");
   }
 
   async function refresh() {
@@ -194,6 +219,36 @@ function AdminPage() {
                 </button>
               </div>
             </div>
+
+            <section className="mb-8 rounded-2xl border border-border bg-surface p-5">
+              <h2 className="font-display text-base font-semibold">Видимость страниц на сайте</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Снимите галочку, чтобы скрыть страницу из меню и закрыть к ней доступ.
+              </p>
+              <div className="mt-4 space-y-2">
+                <label className="flex items-center gap-3 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={visibility.apps}
+                    onChange={(e) => toggleVisibility("apps", e.target.checked)}
+                  />
+                  <span>
+                    Показывать страницу <span className="font-medium">«Приложения»</span> (/apps)
+                  </span>
+                </label>
+                <label className="flex items-center gap-3 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={visibility.blog}
+                    onChange={(e) => toggleVisibility("blog", e.target.checked)}
+                  />
+                  <span>
+                    Показывать страницу <span className="font-medium">«Блог»</span> (/blog)
+                  </span>
+                </label>
+              </div>
+            </section>
+
             <ul className="divide-y divide-border rounded-2xl border border-border bg-surface">
               {posts.map((p) => (
                 <li key={p.id} className="flex items-center justify-between gap-4 p-4">
