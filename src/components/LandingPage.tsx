@@ -33,7 +33,11 @@ export function LandingPage({ config }: { config: VariantConfig }) {
         <FinalCta />
       </main>
       <SiteFooter />
+      <EurekaChatLauncher />
       <div className="h-20 md:hidden" aria-hidden />
+    </div>
+  );
+}
     </div>
   );
 }
