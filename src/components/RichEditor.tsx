@@ -92,7 +92,7 @@ export function RichEditor({ valueHtml, onChangeHtml, onUploadImage }: Props) {
 function Toolbar({ editor, onPickImage }: { editor: Editor; onPickImage: () => void }) {
   const btn =
     "inline-flex h-8 w-8 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground";
-  const active = "bg-muted text-foreground";
+  const activeCls = "bg-muted text-foreground";
 
   return (
     <div className="flex flex-wrap items-center gap-1 rounded-t-lg border border-border bg-surface px-2 py-1.5">
