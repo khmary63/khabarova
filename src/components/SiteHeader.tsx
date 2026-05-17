@@ -36,7 +36,7 @@ export function SiteHeader() {
           <img
             src={logo}
             alt={`${SITE.brand} — ${SITE.expert}`}
-            className="h-14 w-auto object-contain brightness-125 contrast-110 drop-shadow-[0_0_12px_rgba(201,168,76,0.45)] md:h-16"
+            className="h-14 w-auto brightness-125 contrast-110 drop-shadow-[0_0_12px_rgba(201,168,76,0.45)] md:h-16 object-fill text-xl"
           />
         </Link>
         <nav className="hidden items-center gap-7 text-sm text-muted-foreground md:flex">
