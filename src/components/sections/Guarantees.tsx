@@ -9,7 +9,7 @@ const METRICS = [
 const GUARANTEES = [
   { icon: ShieldCheck, title: "Качество и сроки", desc: "Выполняем работу качественно и в согласованный срок — фиксируем в договоре." },
   { icon: Wrench, title: "Современные инструменты", desc: "Используем актуальный стек ИИ-моделей и интеграций под задачи вашего бизнеса." },
-  { icon: Clock, title: "Ответ в течение 2 часов", desc: "Оперативно реагируем по любому вопросу проекта — не дольше 2 часов в рабочее время." },
+  { icon: Clock, title: "Ответ в течение 2 часов", desc: "Оперативно реагируем по любому вопросу проекта — \nне дольше 2 часов в рабочее время." },
   { icon: FileBarChart, title: "Прозрачная отчётность", desc: "Реальные цифры по диалогам, заявкам и конверсии. Без приукрашиваний." },
   { icon: UserRound, title: "Личный менеджер", desc: "Единая точка коммуникации на всём проекте — без переключений между специалистами." },
   { icon: Eye, title: "Понятный язык", desc: "Объясняем работу системы без технического жаргона. Вы понимаете, за что платите." },
@@ -55,7 +55,7 @@ export function Guarantees() {
                 <g.icon className="h-5 w-5" strokeWidth={1.75} />
               </div>
               <h3 className="mt-4 font-display text-base font-semibold leading-snug">{g.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{g.desc}</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground whitespace-pre-line">{g.desc}</p>
             </div>
           ))}
         </div>
