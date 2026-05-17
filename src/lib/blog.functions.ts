@@ -160,3 +160,48 @@ export const adminDeletePost = createServerFn({ method: "POST" })
     if (error) return { ok: false as const, error: error.message };
     return { ok: true as const };
   });
+
+const uploadSchema = z.object({
+  token: z.string().min(1),
+  filename: z.string().trim().min(1).max(200),
+  contentType: z.string().trim().min(1).max(100),
+  // base64-encoded file content (without data: prefix)
+  base64: z.string().min(1).max(15_000_000),
+});
+
+export const uploadBlogImage = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => uploadSchema.parse(d))
+  .handler(async ({ data }) => {
+    const expected = process.env.BLOG_ADMIN_TOKEN;
+    if (!expected || data.token !== expected) {
+      return { ok: false as const, error: "Неверный пароль" };
+    }
+    if (!data.contentType.startsWith("image/")) {
+      return { ok: false as const, error: "Можно загружать только изображения" };
+    }
+    // Decode base64
+    let bytes: Uint8Array;
+    try {
+      const bin = atob(data.base64);
+      bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    } catch {
+      return { ok: false as const, error: "Не удалось прочитать файл" };
+    }
+    // Limit ~10MB after decoding
+    if (bytes.byteLength > 10 * 1024 * 1024) {
+      return { ok: false as const, error: "Файл больше 10 МБ" };
+    }
+    const ext = (data.filename.split(".").pop() || "bin").toLowerCase().slice(0, 8);
+    const safeExt = /^[a-z0-9]+$/.test(ext) ? ext : "bin";
+    const path = `${new Date().getFullYear()}/${crypto.randomUUID()}.${safeExt}`;
+    const { error: upErr } = await supabaseAdmin.storage
+      .from("blog-images")
+      .upload(path, bytes, { contentType: data.contentType, upsert: false });
+    if (upErr) {
+      console.error("[uploadBlogImage]", upErr);
+      return { ok: false as const, error: upErr.message };
+    }
+    const { data: pub } = supabaseAdmin.storage.from("blog-images").getPublicUrl(path);
+    return { ok: true as const, url: pub.publicUrl };
+  });
