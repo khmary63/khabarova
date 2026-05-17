@@ -1,10 +1,16 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SITE } from "@/lib/site";
 import { ArrowRight } from "lucide-react";
+import { getSiteSettings } from "@/lib/site-settings.functions";
 
 export const Route = createFileRoute("/apps")({
+  loader: async () => {
+    const s = await getSiteSettings();
+    if (!s.apps) throw notFound();
+    return null;
+  },
   head: () => ({
     meta: [
       { title: "Приложения и услуги вайбкодинга — НейроМаркет" },
