@@ -64,7 +64,7 @@ export function Demo({ onOpenChat }: { onOpenChat: () => void }) {
         <div>
           <div className="text-xs uppercase tracking-widest text-muted-foreground">Как это работает</div>
           <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight md:text-4xl">
-            Демо ИИ-продавца — в реальном времени
+            Демо ИИ-продавца —<br />в реальном времени
           </h2>
           <p className="mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
             Так выглядит диалог клиента с ИИ-сотрудником в WhatsApp или на сайте.
