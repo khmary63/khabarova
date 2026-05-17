@@ -28,6 +28,7 @@ export function FinalCta() {
               </p>
               <a
                 href="#lead"
+                data-track="final_lead_audit"
                 className="mt-7 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:brightness-110"
               >
                 Получить бесплатный ИИ-аудит
@@ -38,6 +39,7 @@ export function FinalCta() {
                 <a
                   key={l.label}
                   href={l.href}
+                  data-track={l.track}
                   className="group flex items-center justify-between rounded-xl border border-border bg-background p-4 transition hover:border-primary/40"
                 >
                   <div>
