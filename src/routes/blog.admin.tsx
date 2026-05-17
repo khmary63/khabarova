@@ -43,11 +43,17 @@ function AdminPage() {
   const [posts, setPosts] = useState<AdminPost[]>([]);
   const [editing, setEditing] = useState<Partial<EditPost> | null>(null);
   const [loading, setLoading] = useState(false);
+  const [visibility, setVisibility] = useState<{ apps: boolean; blog: boolean }>({
+    apps: true,
+    blog: true,
+  });
 
   const listFn = useServerFn(adminListPosts);
   const getFn = useServerFn(adminGetPost);
   const saveFn = useServerFn(upsertPost);
   const delFn = useServerFn(adminDeletePost);
+  const settingsFn = useServerFn(getSiteSettings);
+  const updateSettingFn = useServerFn(updateSiteSetting);
 
   useEffect(() => {
     const saved = typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : "";
@@ -71,6 +77,24 @@ function AdminPage() {
     localStorage.setItem(TOKEN_KEY, t);
     setAuthed(true);
     setPosts(res.posts as AdminPost[]);
+    try {
+      const s = await settingsFn();
+      setVisibility({ apps: s.apps, blog: s.blog });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function toggleVisibility(key: "apps" | "blog", enabled: boolean) {
+    const prev = visibility;
+    setVisibility({ ...prev, [key]: enabled });
+    const res = await updateSettingFn({ data: { token, key, enabled } });
+    if (!res.ok) {
+      setVisibility(prev);
+      toast.error(res.error || "Не удалось сохранить");
+      return;
+    }
+    toast.success(enabled ? "Страница показывается" : "Страница скрыта");
   }
 
   async function refresh() {
