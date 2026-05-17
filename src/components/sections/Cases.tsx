@@ -46,7 +46,7 @@ export function Cases({ config }: { config: VariantConfig }) {
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="rounded-xl border border-border bg-background/40 p-4">
                   <div className="text-[11px] uppercase tracking-widest text-destructive/80">До</div>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{c.before}</p>
+                  <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">{c.before}</p>
                 </div>
                 <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
                   <div className="text-[11px] uppercase tracking-widest text-primary">После</div>
