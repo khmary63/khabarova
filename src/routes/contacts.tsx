@@ -9,7 +9,7 @@ export const Route = createFileRoute("/contacts")({
       {
         name: "description",
         content:
-          "Контакты, реквизиты ИП и документы проекта «НейроМаркет | ИИ для бизнеса». Работаем по договору и NDA.",
+          "Контакты, реквизиты ИП и документы проекта «НейроМаркет | ИИ для бизнеса».",
       },
       { property: "og:title", content: "Контакты — НейроМаркет" },
       {
@@ -31,7 +31,7 @@ function ContactsPage() {
           Связаться с нами
         </h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          Регион оказания услуг: Россия и страны СНГ. Работаем по договору и NDA.
+          Регион оказания услуг: Россия и страны СНГ.
         </p>
 
         <section className="mt-10 rounded-2xl border border-border bg-surface p-6">
@@ -57,7 +57,7 @@ function ContactsPage() {
               Регион оказания услуг: Россия и страны СНГ
             </li>
             <li className="text-muted-foreground">
-              Работаем по договору и NDA
+              Работаем по договору
             </li>
           </ul>
         </section>
