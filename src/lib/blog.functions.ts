@@ -205,3 +205,95 @@ export const uploadBlogImage = createServerFn({ method: "POST" })
     const { data: pub } = supabaseAdmin.storage.from("blog-images").getPublicUrl(path);
     return { ok: true as const, url: pub.publicUrl };
   });
+
+const seoSchema = z.object({
+  token: z.string().min(1),
+  title: z.string().trim().max(300).default(""),
+  excerpt: z.string().trim().max(1000).default(""),
+  content: z.string().min(1).max(100000),
+  tags: z.array(z.string().trim().min(1).max(50)).max(20).default([]),
+});
+
+export const optimizeForSeo = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => seoSchema.parse(d))
+  .handler(async ({ data }) => {
+    const expected = process.env.BLOG_ADMIN_TOKEN;
+    if (!expected || data.token !== expected) {
+      return { ok: false as const, error: "Неверный пароль" };
+    }
+    const apiKey = process.env.LOVABLE_API_KEY;
+    if (!apiKey) {
+      return { ok: false as const, error: "LOVABLE_API_KEY не настроен" };
+    }
+    const prompt = `Ты SEO-редактор. Оптимизируй статью блога для поисковых систем (Google и Яндекс) на русском языке.
+
+Задачи:
+1. Перепиши заголовок: ёмкий, до 60 символов, с ключевым словом в начале.
+2. Сделай meta description (excerpt): 140–160 символов, с призывом и ключевыми словами.
+3. Подбери 5–8 релевантных тегов (короткие, в нижнем регистре, на русском).
+4. Перепиши текст статьи в Markdown:
+   - сохрани смысл и факты автора;
+   - добавь логичные H2/H3 подзаголовки с ключевыми фразами;
+   - короткие абзацы (2–4 предложения), маркированные списки где уместно;
+   - естественное вхождение ключевых слов, без переспама;
+   - в конце короткий вывод;
+   - НЕ выдумывай факты, цифры, цитаты, имена.
+
+Исходные данные:
+Заголовок: ${data.title || "(нет)"}
+Excerpt: ${data.excerpt || "(нет)"}
+Теги: ${data.tags.join(", ") || "(нет)"}
+
+Текст (Markdown):
+${data.content}
+
+Верни СТРОГО валидный JSON без markdown-обёртки, по схеме:
+{"title": string, "excerpt": string, "tags": string[], "content": string}`;
+
+    try {
+      const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-pro",
+          messages: [
+            { role: "system", content: "Ты опытный SEO-редактор. Возвращаешь только валидный JSON." },
+            { role: "user", content: prompt },
+          ],
+          response_format: { type: "json_object" },
+        }),
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        console.error("[optimizeForSeo] gateway error", res.status, txt);
+        if (res.status === 429) return { ok: false as const, error: "Слишком много запросов, попробуйте позже" };
+        if (res.status === 402) return { ok: false as const, error: "Закончились кредиты Lovable AI" };
+        return { ok: false as const, error: `Ошибка AI (${res.status})` };
+      }
+      const json = await res.json();
+      const raw: string = json?.choices?.[0]?.message?.content ?? "";
+      const cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
+      let parsed: { title?: string; excerpt?: string; tags?: string[]; content?: string };
+      try {
+        parsed = JSON.parse(cleaned);
+      } catch (e) {
+        console.error("[optimizeForSeo] JSON parse failed", e, cleaned.slice(0, 500));
+        return { ok: false as const, error: "AI вернул неверный формат" };
+      }
+      return {
+        ok: true as const,
+        title: (parsed.title || "").toString().slice(0, 200).trim(),
+        excerpt: (parsed.excerpt || "").toString().slice(0, 500).trim(),
+        tags: Array.isArray(parsed.tags)
+          ? parsed.tags.filter((t) => typeof t === "string").map((t) => t.trim()).filter(Boolean).slice(0, 12)
+          : [],
+        content: (parsed.content || "").toString().slice(0, 100000),
+      };
+    } catch (e) {
+      console.error("[optimizeForSeo]", e);
+      return { ok: false as const, error: "Сетевая ошибка" };
+    }
+  });
