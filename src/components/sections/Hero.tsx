@@ -35,6 +35,26 @@ export function Hero({ config, onOpenChat }: { config: VariantConfig; onOpenChat
             ))}
           </ul>
 
+          {config.source === "main" && (
+            <div className="mt-7 rounded-xl border border-border bg-surface/60 p-5">
+              <p className="text-sm font-semibold text-foreground">Для кого подходит:</p>
+              <div className="mt-3 flex flex-col gap-3 sm:flex-row">
+                <Link
+                  to="/msb"
+                  className="flex-1 rounded-lg border border-border bg-background px-4 py-3 text-center text-sm font-medium transition hover:border-primary/50 hover:bg-primary/5"
+                >
+                  Я малый бизнес
+                </Link>
+                <Link
+                  to="/b2b"
+                  className="flex-1 rounded-lg border border-border bg-background px-4 py-3 text-center text-sm font-medium transition hover:border-primary/50 hover:bg-primary/5"
+                >
+                  Я отдел продаж B2B
+                </Link>
+              </div>
+            </div>
+          )}
+
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <button
               type="button"
