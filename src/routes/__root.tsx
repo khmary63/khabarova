@@ -105,6 +105,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
       { rel: "icon", type: "image/png", href: "/favicon.png" },
       { rel: "apple-touch-icon", href: "/favicon.png" },
+      // Preconnect to third-party origins for analytics/chat widgets — speeds up first request
+      { rel: "preconnect", href: "https://mc.yandex.ru", crossOrigin: "anonymous" },
+      { rel: "preconnect", href: "https://mytopf.com", crossOrigin: "anonymous" },
+      { rel: "preconnect", href: "https://eureca-ai.web.app", crossOrigin: "anonymous" },
+      { rel: "dns-prefetch", href: "https://mc.yandex.ru" },
+      { rel: "dns-prefetch", href: "https://mytopf.com" },
     ],
   }),
   shellComponent: RootShell,
