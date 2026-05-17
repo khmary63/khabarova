@@ -98,6 +98,30 @@ function ContactsPage() {
                 WhatsApp
               </a>
             </dd>
+
+            <dt className="text-muted-foreground">Telegram</dt>
+            <dd>
+              <a
+                href={SITE.telegram}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-primary"
+              >
+                Telegram-канал
+              </a>
+            </dd>
+
+            <dt className="text-muted-foreground">Max</dt>
+            <dd>
+              <a
+                href={SITE.max}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-primary"
+              >
+                Бизнес-канал в Max
+              </a>
+            </dd>
           </dl>
         </section>
 
