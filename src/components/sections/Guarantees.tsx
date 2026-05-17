@@ -55,7 +55,7 @@ export function Guarantees() {
                 <g.icon className="h-5 w-5" strokeWidth={1.75} />
               </div>
               <h3 className="mt-4 font-display text-base font-semibold leading-snug">{g.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{g.desc}</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground whitespace-pre-line">{g.desc}</p>
             </div>
           ))}
         </div>
