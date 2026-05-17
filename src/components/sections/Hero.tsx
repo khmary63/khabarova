@@ -43,7 +43,7 @@ export function Hero({ config, onOpenChat }: { config: VariantConfig; onOpenChat
                   to="/msb"
                   className="flex-1 rounded-lg border border-border bg-background px-4 py-3 text-center text-sm font-medium transition hover:border-primary/50 hover:bg-primary/5"
                 >
-                  Я малый/средний бизнес
+                  Я малый бизнес
                 </Link>
                 <Link
                   to="/b2b"
