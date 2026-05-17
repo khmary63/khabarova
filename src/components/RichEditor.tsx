@@ -164,7 +164,7 @@ function Toolbar({ editor, onPickImage }: { editor: Editor; onPickImage: () => v
     label: string;
   }) {
     return (
-      <button type="button" title={label} onClick={onClick} className={`${btn} ${active ? active : ""}`.trim()}>
+      <button type="button" title={label} onClick={onClick} className={`${btn} ${active ? activeCls : ""}`.trim()}>
         {children}
       </button>
     );
