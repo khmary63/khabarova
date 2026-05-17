@@ -30,8 +30,8 @@ export function Guarantees() {
           <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight md:text-4xl">
             Что мы гарантируем — и что это значит на практике
           </h2>
-          <p className="mt-4 text-base text-muted-foreground">
-            Системный подход вместо шаблонов: ИИ-решение, заточенное под ваш бизнес,
+          <p className="mt-4 text-base text-muted-foreground whitespace-pre-line">
+            Системный подход вместо шаблонов: ИИ-решение, заточенное под ваш бизнес,{"\n"}
             с прозрачной отчётностью и реальными цифрами.
           </p>
         </div>
