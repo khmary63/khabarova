@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as MsbRouteImport } from './routes/msb'
 import { Route as B2bRouteImport } from './routes/b2b'
 import { Route as AppsRouteImport } from './routes/apps'
@@ -21,6 +22,11 @@ import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MsbRoute = MsbRouteImport.update({
@@ -64,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/apps': typeof AppsRoute
   '/b2b': typeof B2bRoute
   '/msb': typeof MsbRoute
+  '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/admin': typeof BlogAdminRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/apps': typeof AppsRoute
   '/b2b': typeof B2bRoute
   '/msb': typeof MsbRoute
+  '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/admin': typeof BlogAdminRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/apps': typeof AppsRoute
   '/b2b': typeof B2bRoute
   '/msb': typeof MsbRoute
+  '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/admin': typeof BlogAdminRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/apps'
     | '/b2b'
     | '/msb'
+    | '/privacy'
     | '/sitemap.xml'
     | '/blog/$slug'
     | '/blog/admin'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/apps'
     | '/b2b'
     | '/msb'
+    | '/privacy'
     | '/sitemap.xml'
     | '/blog/$slug'
     | '/blog/admin'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/apps'
     | '/b2b'
     | '/msb'
+    | '/privacy'
     | '/sitemap.xml'
     | '/blog/$slug'
     | '/blog/admin'
@@ -128,6 +140,7 @@ export interface RootRouteChildren {
   AppsRoute: typeof AppsRoute
   B2bRoute: typeof B2bRoute
   MsbRoute: typeof MsbRoute
+  PrivacyRoute: typeof PrivacyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   BlogSlugRoute: typeof BlogSlugRoute
   BlogAdminRoute: typeof BlogAdminRoute
@@ -141,6 +154,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/msb': {
@@ -200,6 +220,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppsRoute: AppsRoute,
   B2bRoute: B2bRoute,
   MsbRoute: MsbRoute,
+  PrivacyRoute: PrivacyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   BlogSlugRoute: BlogSlugRoute,
   BlogAdminRoute: BlogAdminRoute,
@@ -208,3 +229,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

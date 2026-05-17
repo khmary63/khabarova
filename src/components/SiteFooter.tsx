@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { SITE } from "@/lib/site";
 
 export function SiteFooter() {
@@ -31,7 +32,11 @@ export function SiteFooter() {
       <div className="border-t border-border">
         <div className="container-page flex flex-col items-start justify-between gap-2 py-5 text-xs text-muted-foreground md:flex-row md:items-center">
           <div>© {new Date().getFullYear()} {SITE.brand}. {SITE.expert}.</div>
-          <div>Политика конфиденциальности</div>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link to="/privacy" className="hover:text-primary">Политика конфиденциальности</Link>
+            <span>·</span>
+            <a href="/privacy-policy.pdf" target="_blank" rel="noreferrer" className="hover:text-primary">Скачать PDF</a>
+          </div>
         </div>
       </div>
     </footer>
