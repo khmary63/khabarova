@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { getSiteSettings } from "@/lib/site-settings.functions";
 
-const BASE_URL = "";
+const BASE_URL = "https://neyromarket.com";
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
@@ -14,6 +14,8 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/", changefreq: "weekly", priority: "1.0" },
           { path: "/msb", changefreq: "monthly", priority: "0.8" },
           { path: "/b2b", changefreq: "monthly", priority: "0.8" },
+          { path: "/contacts", changefreq: "monthly", priority: "0.6" },
+          { path: "/privacy", changefreq: "yearly", priority: "0.3" },
         ];
         if (settings.apps) {
           entries.push({ path: "/apps", changefreq: "monthly", priority: "0.7" });

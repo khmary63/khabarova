@@ -16,6 +16,31 @@ export const Route = createFileRoute("/contacts")({
         property: "og:description",
         content: "Контакты, реквизиты и документы проекта «НейроМаркет».",
       },
+      { property: "og:url", content: "https://neyromarket.com/contacts" },
+    ],
+    links: [{ rel: "canonical", href: "https://neyromarket.com/contacts" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          name: SITE.brand,
+          legalName: "ИП Хабарова Мария Павловна",
+          url: "https://neyromarket.com",
+          email: SITE.email,
+          telephone: SITE.phone,
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "ул. Ташкентская, 173",
+            addressLocality: SITE.city,
+            postalCode: "443125",
+            addressCountry: "RU",
+          },
+          founder: { "@type": "Person", name: SITE.expert },
+          sameAs: [SITE.vk, SITE.telegram],
+        }),
+      },
     ],
   }),
 });

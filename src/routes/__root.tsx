@@ -82,14 +82,23 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "НейроМаркет — ИИ-сотрудники в продажи | Мария Хабарова" },
+      {
+        name: "description",
+        content:
+          "НейроМаркет — внедрение ИИ-сотрудников в отделы продаж. Эксперт Мария Хабарова. Первый результат за 7 дней.",
+      },
+      { name: "author", content: "Мария Хабарова" },
+      { property: "og:site_name", content: "НейроМаркет" },
+      { property: "og:title", content: "НейроМаркет — ИИ-сотрудники в продажи" },
+      {
+        property: "og:description",
+        content:
+          "Внедряем ИИ-сотрудников в отделы продаж. Кейсы, методология, бесплатный ИИ-аудит за 15 минут.",
+      },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { property: "og:locale", content: "ru_RU" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

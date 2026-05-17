@@ -10,7 +10,14 @@ export const Route = createFileRoute("/privacy")({
         content:
           "Политика конфиденциальности и согласие на обработку персональных данных проекта «НейроМаркет | ИИ для бизнеса».",
       },
+      { property: "og:title", content: "Политика конфиденциальности — НейроМаркет" },
+      {
+        property: "og:description",
+        content: "Политика конфиденциальности проекта «НейроМаркет».",
+      },
+      { property: "og:url", content: "https://neyromarket.com/privacy" },
     ],
+    links: [{ rel: "canonical", href: "https://neyromarket.com/privacy" }],
   }),
 });
 
