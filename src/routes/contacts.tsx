@@ -54,10 +54,7 @@ function ContactsPage() {
               </a>
             </li>
             <li className="text-muted-foreground">
-              Регион оказания услуг: Россия и страны СНГ
-            </li>
-            <li className="text-muted-foreground">
-              Работаем по договору
+              Работаем по договору и NDA
             </li>
           </ul>
         </section>
