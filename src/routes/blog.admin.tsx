@@ -12,6 +12,7 @@ import {
   upsertPost,
   adminDeletePost,
   uploadBlogImage,
+  optimizeForSeo,
 } from "@/lib/blog.functions";
 import { getSiteSettings, updateSiteSetting } from "@/lib/site-settings.functions";
 import { toast } from "sonner";
@@ -57,8 +58,11 @@ function AdminPage() {
   const saveFn = useServerFn(upsertPost);
   const delFn = useServerFn(adminDeletePost);
   const uploadFn = useServerFn(uploadBlogImage);
+  const seoFn = useServerFn(optimizeForSeo);
   const settingsFn = useServerFn(getSiteSettings);
   const updateSettingFn = useServerFn(updateSiteSetting);
+  const [seoLoading, setSeoLoading] = useState(false);
+  const [seoOptimized, setSeoOptimized] = useState(false);
 
   const turndown = useMemo(() => {
     const td = new TurndownService({ headingStyle: "atx", bulletListMarker: "-", codeBlockStyle: "fenced" });
@@ -135,8 +139,9 @@ function AdminPage() {
   }
 
   async function openEditor(id?: string) {
+    setSeoOptimized(false);
     if (!id) {
-      setEditing({ title: "", excerpt: "", content: "", contentHtml: "", tags: [], published: true });
+      setEditing({ title: "", excerpt: "", content: "", contentHtml: "", tags: [], published: false });
       return;
     }
     const res = await getFn({ data: { token, id } });
@@ -147,11 +152,59 @@ function AdminPage() {
     const post = res.post as Omit<EditPost, "contentHtml">;
     const html = marked.parse(post.content || "", { async: false }) as string;
     setEditing({ ...post, contentHtml: html });
+    setSeoOptimized(post.published); // уже опубликована — считаем оптимизированной
+  }
+
+  async function handleSeoOptimize() {
+    if (!editing) return;
+    const html = editing.contentHtml || "";
+    const markdown = html.trim() ? turndown.turndown(html) : "";
+    if (!markdown.trim()) {
+      toast.error("Сначала напишите текст статьи");
+      return;
+    }
+    if (!editing.title?.trim()) {
+      toast.error("Сначала укажите заголовок");
+      return;
+    }
+    setSeoLoading(true);
+    const res = await seoFn({
+      data: {
+        token,
+        title: editing.title || "",
+        excerpt: editing.excerpt || "",
+        content: markdown,
+        tags: editing.tags || [],
+      },
+    });
+    setSeoLoading(false);
+    if (!res.ok) {
+      toast.error(res.error || "Не удалось оптимизировать");
+      return;
+    }
+    const newHtml = marked.parse(res.content || markdown, { async: false }) as string;
+    setEditing((prev) =>
+      prev
+        ? {
+            ...prev,
+            title: res.title || prev.title,
+            excerpt: res.excerpt || prev.excerpt,
+            tags: res.tags && res.tags.length ? res.tags : prev.tags,
+            contentHtml: newHtml,
+          }
+        : prev,
+    );
+    setSeoOptimized(true);
+    toast.success("SEO-оптимизация готова. Проверьте и публикуйте.");
   }
 
   async function handleSave(e: FormEvent) {
     e.preventDefault();
     if (!editing) return;
+    if (editing.published && !seoOptimized) {
+      toast.error("Перед публикацией нажмите «SEO-оптимизация»");
+      return;
+    }
     const html = editing.contentHtml || "";
     const markdown = html.trim() ? turndown.turndown(html) : "";
     if (!markdown.trim()) {
@@ -455,19 +508,40 @@ function AdminPage() {
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
-                checked={editing.published ?? true}
+                checked={editing.published ?? false}
                 onChange={(e) => setEditing({ ...editing, published: e.target.checked })}
               />
               Опубликовать (иначе сохранится как черновик)
             </label>
 
+            <div className="rounded-2xl border border-border bg-surface p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="text-sm font-semibold">SEO-оптимизация</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {seoOptimized
+                      ? "✓ Текст оптимизирован. Можно публиковать."
+                      : "Нажмите, чтобы ИИ переписал заголовок, описание, теги и текст для поисковых систем. Без этого публикация заблокирована."}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSeoOptimize}
+                  disabled={seoLoading}
+                  className="shrink-0 rounded-full bg-foreground px-4 py-2 text-xs font-medium text-background disabled:opacity-50"
+                >
+                  {seoLoading ? "Оптимизация…" : seoOptimized ? "Оптимизировать ещё раз" : "SEO-оптимизация"}
+                </button>
+              </div>
+            </div>
+
             <div className="flex gap-2 pt-2">
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || (editing.published && !seoOptimized)}
                 className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
               >
-                {loading ? "Сохранение…" : "Сохранить"}
+                {loading ? "Сохранение…" : editing.published ? "Опубликовать" : "Сохранить черновик"}
               </button>
               <button
                 type="button"
