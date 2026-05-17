@@ -32,12 +32,11 @@ export function SiteHeader() {
         </div>
       </div>
       <div className="container-page flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center" aria-label={`${SITE.brand} — ${SITE.expert}, ${SITE.city}`}>
-          <img
-            src={logo}
-            alt={`${SITE.brand} — ${SITE.expert}`}
-            className="h-14 w-auto brightness-125 contrast-110 drop-shadow-[0_0_12px_rgba(201,168,76,0.45)] md:h-16 object-fill text-xl"
-          />
+        <Link to="/" className="flex items-center">
+          <div className="leading-tight">
+            <div className="font-display text-sm font-semibold tracking-tight">{SITE.brand}</div>
+            <div className="text-[11px] text-muted-foreground">{SITE.expert} · {SITE.city}</div>
+          </div>
         </Link>
         <nav className="hidden items-center gap-7 text-sm text-muted-foreground md:flex">
           <a href="/#cases" className="transition hover:text-foreground">Кейсы</a>
