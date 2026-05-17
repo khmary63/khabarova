@@ -1,7 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { listPosts } from "@/lib/blog.functions";
+import { getSiteSettings } from "@/lib/site-settings.functions";
 import { z } from "zod";
 
 const searchSchema = z.object({ tag: z.string().trim().max(50).optional() });
@@ -9,7 +10,11 @@ const searchSchema = z.object({ tag: z.string().trim().max(50).optional() });
 export const Route = createFileRoute("/blog/")({
   validateSearch: searchSchema,
   loaderDeps: ({ search }) => ({ tag: search.tag }),
-  loader: ({ deps }) => listPosts({ data: { tag: deps.tag } }),
+  loader: async ({ deps }) => {
+    const s = await getSiteSettings();
+    if (!s.blog) throw notFound();
+    return listPosts({ data: { tag: deps.tag } });
+  },
   head: ({ loaderData }) => ({
     meta: [
       { title: "Блог НейроМаркет — ИИ-продавцы, кейсы, автоматизация" },

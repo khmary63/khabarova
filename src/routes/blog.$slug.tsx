@@ -2,10 +2,13 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { getPostBySlug } from "@/lib/blog.functions";
+import { getSiteSettings } from "@/lib/site-settings.functions";
 import { renderMarkdown } from "@/lib/markdown";
 
 export const Route = createFileRoute("/blog/$slug")({
   loader: async ({ params }) => {
+    const s = await getSiteSettings();
+    if (!s.blog) throw notFound();
     const { post } = await getPostBySlug({ data: { slug: params.slug } });
     if (!post) throw notFound();
     return { post, html: renderMarkdown(post.content) };
