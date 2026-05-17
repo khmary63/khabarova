@@ -58,8 +58,11 @@ function AdminPage() {
   const saveFn = useServerFn(upsertPost);
   const delFn = useServerFn(adminDeletePost);
   const uploadFn = useServerFn(uploadBlogImage);
+  const seoFn = useServerFn(optimizeForSeo);
   const settingsFn = useServerFn(getSiteSettings);
   const updateSettingFn = useServerFn(updateSiteSetting);
+  const [seoLoading, setSeoLoading] = useState(false);
+  const [seoOptimized, setSeoOptimized] = useState(false);
 
   const turndown = useMemo(() => {
     const td = new TurndownService({ headingStyle: "atx", bulletListMarker: "-", codeBlockStyle: "fenced" });
