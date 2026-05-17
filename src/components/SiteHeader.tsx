@@ -32,6 +32,7 @@ export function SiteHeader() {
           {settings.blog && (
             <Link to="/blog" className="transition hover:text-foreground" activeProps={{ className: "text-foreground" }}>Блог</Link>
           )}
+          <Link to="/contacts" className="transition hover:text-foreground" activeProps={{ className: "text-foreground" }}>Контакты</Link>
         </nav>
         <a
           href="#lead"

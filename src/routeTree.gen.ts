@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as MsbRouteImport } from './routes/msb'
+import { Route as ContactsRouteImport } from './routes/contacts'
 import { Route as B2bRouteImport } from './routes/b2b'
 import { Route as AppsRouteImport } from './routes/apps'
 import { Route as IndexRouteImport } from './routes/index'
@@ -32,6 +33,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const MsbRoute = MsbRouteImport.update({
   id: '/msb',
   path: '/msb',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactsRoute = ContactsRouteImport.update({
+  id: '/contacts',
+  path: '/contacts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const B2bRoute = B2bRouteImport.update({
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/apps': typeof AppsRoute
   '/b2b': typeof B2bRoute
+  '/contacts': typeof ContactsRoute
   '/msb': typeof MsbRoute
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/apps': typeof AppsRoute
   '/b2b': typeof B2bRoute
+  '/contacts': typeof ContactsRoute
   '/msb': typeof MsbRoute
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/apps': typeof AppsRoute
   '/b2b': typeof B2bRoute
+  '/contacts': typeof ContactsRoute
   '/msb': typeof MsbRoute
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/'
     | '/apps'
     | '/b2b'
+    | '/contacts'
     | '/msb'
     | '/privacy'
     | '/sitemap.xml'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/'
     | '/apps'
     | '/b2b'
+    | '/contacts'
     | '/msb'
     | '/privacy'
     | '/sitemap.xml'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/'
     | '/apps'
     | '/b2b'
+    | '/contacts'
     | '/msb'
     | '/privacy'
     | '/sitemap.xml'
@@ -139,6 +151,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppsRoute: typeof AppsRoute
   B2bRoute: typeof B2bRoute
+  ContactsRoute: typeof ContactsRoute
   MsbRoute: typeof MsbRoute
   PrivacyRoute: typeof PrivacyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/msb'
       fullPath: '/msb'
       preLoaderRoute: typeof MsbRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contacts': {
+      id: '/contacts'
+      path: '/contacts'
+      fullPath: '/contacts'
+      preLoaderRoute: typeof ContactsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/b2b': {
@@ -219,6 +239,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppsRoute: AppsRoute,
   B2bRoute: B2bRoute,
+  ContactsRoute: ContactsRoute,
   MsbRoute: MsbRoute,
   PrivacyRoute: PrivacyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
