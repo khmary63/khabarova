@@ -19,6 +19,7 @@ export function SiteHeader() {
         <div className="container-page flex h-9 items-center justify-between gap-3 text-[11px] text-muted-foreground">
           <a
             href={SITE.phoneHref}
+            data-track="header_phone"
             className="inline-flex items-center gap-1.5 font-medium text-foreground transition hover:text-primary"
           >
             <Phone className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
@@ -52,6 +53,7 @@ export function SiteHeader() {
         </nav>
         <a
           href="#lead"
+          data-track="header_lead_audit"
           className="hidden rounded-full border border-primary/40 bg-primary/10 px-4 py-2 text-sm font-medium text-foreground transition hover:bg-primary/20 md:inline-flex"
         >
           Бесплатный ИИ-аудит

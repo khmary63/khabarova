@@ -2,11 +2,11 @@ import { ArrowUpRight } from "lucide-react";
 import { SITE } from "@/lib/site";
 
 const LINKS = [
-  { label: SITE.phone, href: SITE.phoneHref, sub: "Звонок или WhatsApp — отвечаем в течение дня" },
-  { label: "Telegram-канал", href: SITE.telegram, sub: "Канал Марии — кейсы и разборы" },
-  { label: "ВКонтакте", href: SITE.vk, sub: "Основная площадка НейроМаркет" },
-  { label: "Max", href: SITE.max, sub: "Бизнес-канал в Max" },
-  { label: SITE.email, href: SITE.emailHref, sub: "Email для подробных запросов" },
+  { label: SITE.phone, href: SITE.phoneHref, sub: "Звонок или WhatsApp — отвечаем в течение дня", track: "final_phone" },
+  { label: "Telegram-канал", href: SITE.telegram, sub: "Канал Марии — кейсы и разборы", track: "final_telegram" },
+  { label: "ВКонтакте", href: SITE.vk, sub: "Основная площадка НейроМаркет", track: "final_vk" },
+  { label: "Max", href: SITE.max, sub: "Бизнес-канал в Max", track: "final_max" },
+  { label: SITE.email, href: SITE.emailHref, sub: "Email для подробных запросов", track: "final_email" },
 ];
 
 export function FinalCta() {
@@ -28,6 +28,7 @@ export function FinalCta() {
               </p>
               <a
                 href="#lead"
+                data-track="final_lead_audit"
                 className="mt-7 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:brightness-110"
               >
                 Получить бесплатный ИИ-аудит
@@ -38,6 +39,7 @@ export function FinalCta() {
                 <a
                   key={l.label}
                   href={l.href}
+                  data-track={l.track}
                   className="group flex items-center justify-between rounded-xl border border-border bg-background p-4 transition hover:border-primary/40"
                 >
                   <div>

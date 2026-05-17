@@ -17,6 +17,7 @@ import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
 import { Toaster } from "sonner";
+import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 
 function NotFoundComponent() {
   return (
@@ -122,6 +123,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
+      <AnalyticsTracker />
       <Toaster theme="dark" position="top-center" richColors />
     </QueryClientProvider>
   );

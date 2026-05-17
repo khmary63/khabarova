@@ -53,6 +53,33 @@ export type Database = {
         }
         Relationships: []
       }
+      click_events: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          path: string
+          session_id: string | null
+          target: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+          path: string
+          session_id?: string | null
+          target?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          path?: string
+          session_id?: string | null
+          target?: string | null
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           created_at: string
@@ -74,6 +101,33 @@ export type Database = {
           name?: string
           phone?: string
           source?: string
+        }
+        Relationships: []
+      }
+      page_views: {
+        Row: {
+          created_at: string
+          id: string
+          path: string
+          referrer: string | null
+          session_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          path: string
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          path?: string
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
         }
         Relationships: []
       }

@@ -38,6 +38,7 @@ export function Hero({ config, onOpenChat }: { config: VariantConfig; onOpenChat
             <button
               type="button"
               onClick={onOpenChat}
+              data-track="hero_open_chat"
               className="group inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition hover:brightness-110"
             >
               <Sparkles className="h-4 w-4" strokeWidth={2} />
@@ -45,6 +46,7 @@ export function Hero({ config, onOpenChat }: { config: VariantConfig; onOpenChat
             </button>
             <a
               href="#lead"
+              data-track="hero_lead_form"
               className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-5 py-3 text-sm font-medium transition hover:border-primary/40 hover:bg-primary/10"
             >
               Оставить заявку
