@@ -48,6 +48,7 @@ export const CASES = [
     term: "2 недели запуск",
     metric: "×2.3",
     metricLabel: "квалифицированных лидов",
+    link: "",
   },
   {
     niche: "B2B услуги (логистика)",
