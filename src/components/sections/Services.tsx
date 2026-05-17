@@ -42,7 +42,7 @@ export function Services() {
             </h2>
           </div>
           <p className="max-w-sm text-sm text-muted-foreground">
-            Никакого SMM или «комплексного маркетинга». Только ИИ в продажах — это наша экспертиза.
+            {/* Текст удален по запросу */}
           </p>
         </div>
 
