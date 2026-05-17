@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ArrowRight, Loader2, Check } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { leadSchema, submitLead } from "@/lib/leads";
 import type { Variant } from "@/lib/site";
