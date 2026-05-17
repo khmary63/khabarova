@@ -32,7 +32,7 @@ export function Process() {
         <div className="max-w-2xl">
           <div className="text-xs uppercase tracking-widest text-muted-foreground">Этапы работы</div>
           <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight md:text-4xl">
-            От бесплатного аудита до работающего ИИ-сотрудника за 14 дней
+            От бесплатного аудита до работающего ИИ-сотрудника за 14&nbsp;дней
           </h2>
         </div>
 
