@@ -1,18 +1,16 @@
-import { Link, useRouteContext, useLoaderData } from "@tanstack/react-router";
+import { Link, useLoaderData } from "@tanstack/react-router";
 import { SITE } from "@/lib/site";
 import logo from "@/assets/logo.png";
 
 export function SiteHeader() {
-  // Read site settings injected by the root loader. Falls back to true if missing.
-  let settings: { apps: boolean; blog: boolean } = { apps: true, blog: true };
-  try {
-    const data = useLoaderData({ from: "__root__" }) as { apps?: boolean; blog?: boolean } | undefined;
-    if (data) settings = { apps: data.apps ?? true, blog: data.blog ?? true };
-  } catch {
-    // useLoaderData throws if used outside a matched route — keep defaults
-  }
-  // Touch useRouteContext to avoid unused-import lint if needed elsewhere
-  void useRouteContext;
+  const rootData = useLoaderData({ from: "__root__" }) as
+    | { apps?: boolean; blog?: boolean }
+    | undefined;
+  const settings = {
+    apps: rootData?.apps ?? true,
+    blog: rootData?.blog ?? true,
+  };
+
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md">
