@@ -1,13 +1,10 @@
 import { useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
 import { ArrowRight, Loader2, Check } from "lucide-react";
 import { toast } from "sonner";
-import { leadSchema } from "@/lib/leads";
-import { submitLead } from "@/lib/leads.functions";
+import { leadSchema, submitLead } from "@/lib/leads";
 import type { Variant } from "@/lib/site";
 
 export function LeadForm({ source }: { source: Variant }) {
-  const submitLeadFn = useServerFn(submitLead);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,7 +19,7 @@ export function LeadForm({ source }: { source: Variant }) {
     }
     setLoading(true);
     try {
-      await submitLeadFn({ data: { input: parsed.data, source } });
+      await submitLead(parsed.data, source);
       setDone(true);
       toast.success("Заявка отправлена. Мария свяжется в ближайшие 30 минут.");
     } catch (err) {

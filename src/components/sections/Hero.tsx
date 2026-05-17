@@ -34,11 +34,11 @@ export function Hero({ config, onOpenChat }: { config: VariantConfig; onOpenChat
             {config.badge}
           </div>
 
-          <h1 className="mt-6 font-display font-extrabold uppercase leading-[0.95] tracking-tight text-white md:text-6xl lg:text-7xl [text-shadow:_0_2px_24px_rgb(10_13_20_/_0.6)] whitespace-pre-line text-5xl">
+          <h1 className="mt-6 font-display text-4xl font-extrabold uppercase leading-[0.95] tracking-tight text-white md:text-6xl lg:text-7xl [text-shadow:_0_2px_24px_rgb(10_13_20_/_0.6)]">
             {config.h1}
           </h1>
 
-          <p className="mt-6 max-w-xl text-base text-white/80 [text-shadow:_0_1px_12px_rgb(10_13_20_/_0.5)] md:text-4xl">
+          <p className="mt-6 max-w-xl text-base text-white/80 md:text-lg [text-shadow:_0_1px_12px_rgb(10_13_20_/_0.5)]">
             {config.subhead}
           </p>
 

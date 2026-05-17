@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 export type PostListItem = {
   id: string;
@@ -22,15 +23,38 @@ export const listPosts = createServerFn({ method: "GET" })
     return schema.parse(d ?? {});
   })
   .handler(async ({ data }) => {
-    const { listPublishedPosts } = await import("./blog.server");
-    return listPublishedPosts(data.tag);
+    let query = supabaseAdmin
+      .from("posts")
+      .select("id, slug, title, excerpt, cover_image_url, tags, published_at")
+      .eq("published", true)
+      .order("published_at", { ascending: false, nullsFirst: false })
+      .limit(200);
+    if (data.tag) query = query.contains("tags", [data.tag]);
+    const { data: rows, error } = await query;
+    if (error) {
+      console.error("[listPosts]", error);
+      return { posts: [] as PostListItem[], tags: [] as string[] };
+    }
+    const posts = (rows ?? []) as PostListItem[];
+    const tagSet = new Set<string>();
+    posts.forEach((p) => p.tags?.forEach((t) => tagSet.add(t)));
+    return { posts, tags: Array.from(tagSet).sort() };
   });
 
 export const getPostBySlug = createServerFn({ method: "GET" })
   .inputValidator((d: unknown) => z.object({ slug: z.string().trim().min(1).max(200) }).parse(d))
   .handler(async ({ data }) => {
-    const { getPublishedPostBySlug } = await import("./blog.server");
-    return getPublishedPostBySlug(data.slug);
+    const { data: row, error } = await supabaseAdmin
+      .from("posts")
+      .select("id, slug, title, excerpt, content, cover_image_url, tags, published_at, updated_at")
+      .eq("slug", data.slug)
+      .eq("published", true)
+      .maybeSingle();
+    if (error) {
+      console.error("[getPostBySlug]", error);
+      return { post: null as PostFull | null };
+    }
+    return { post: (row as PostFull | null) ?? null };
   });
 
 const slugify = (s: string) =>
@@ -80,8 +104,15 @@ export const upsertPost = createServerFn({ method: "POST" })
       published: data.published,
       published_at: data.published ? new Date().toISOString() : null,
     };
-    const { savePost } = await import("./blog.server");
-    return savePost(data.id, payload);
+    const query = data.id
+      ? supabaseAdmin.from("posts").update(payload).eq("id", data.id).select("slug").single()
+      : supabaseAdmin.from("posts").insert(payload).select("slug").single();
+    const { data: row, error } = await query;
+    if (error) {
+      console.error("[upsertPost]", error);
+      return { ok: false as const, error: error.message };
+    }
+    return { ok: true as const, slug: row.slug as string };
   });
 
 export const adminListPosts = createServerFn({ method: "POST" })
@@ -91,8 +122,13 @@ export const adminListPosts = createServerFn({ method: "POST" })
     if (!expected || data.token !== expected) {
       return { ok: false as const, error: "Неверный пароль", posts: [] };
     }
-    const { listAdminPosts } = await import("./blog.server");
-    return listAdminPosts();
+    const { data: rows, error } = await supabaseAdmin
+      .from("posts")
+      .select("id, slug, title, excerpt, tags, published, published_at, updated_at")
+      .order("updated_at", { ascending: false })
+      .limit(200);
+    if (error) return { ok: false as const, error: error.message, posts: [] };
+    return { ok: true as const, posts: rows ?? [] };
   });
 
 export const adminGetPost = createServerFn({ method: "POST" })
@@ -104,8 +140,13 @@ export const adminGetPost = createServerFn({ method: "POST" })
     if (!expected || data.token !== expected) {
       return { ok: false as const, error: "Неверный пароль", post: null };
     }
-    const { getAdminPost } = await import("./blog.server");
-    return getAdminPost(data.id);
+    const { data: row, error } = await supabaseAdmin
+      .from("posts")
+      .select("*")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (error) return { ok: false as const, error: error.message, post: null };
+    return { ok: true as const, post: row };
   });
 
 export const adminDeletePost = createServerFn({ method: "POST" })
@@ -115,6 +156,7 @@ export const adminDeletePost = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const expected = process.env.BLOG_ADMIN_TOKEN;
     if (!expected || data.token !== expected) return { ok: false as const, error: "Неверный пароль" };
-    const { deleteAdminPost } = await import("./blog.server");
-    return deleteAdminPost(data.id);
+    const { error } = await supabaseAdmin.from("posts").delete().eq("id", data.id);
+    if (error) return { ok: false as const, error: error.message };
+    return { ok: true as const };
   });
