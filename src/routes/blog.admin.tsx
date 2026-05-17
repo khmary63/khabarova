@@ -136,7 +136,7 @@ function AdminPage() {
 
   async function openEditor(id?: string) {
     if (!id) {
-      setEditing({ title: "", excerpt: "", content: "", tags: [], published: true });
+      setEditing({ title: "", excerpt: "", content: "", contentHtml: "", tags: [], published: true });
       return;
     }
     const res = await getFn({ data: { token, id } });
@@ -144,12 +144,20 @@ function AdminPage() {
       toast.error(res.error || "Не найдено");
       return;
     }
-    setEditing(res.post as EditPost);
+    const post = res.post as Omit<EditPost, "contentHtml">;
+    const html = marked.parse(post.content || "", { async: false }) as string;
+    setEditing({ ...post, contentHtml: html });
   }
 
   async function handleSave(e: FormEvent) {
     e.preventDefault();
     if (!editing) return;
+    const html = editing.contentHtml || "";
+    const markdown = html.trim() ? turndown.turndown(html) : "";
+    if (!markdown.trim()) {
+      toast.error("Текст статьи не может быть пустым");
+      return;
+    }
     setLoading(true);
     const res = await saveFn({
       data: {
@@ -158,7 +166,7 @@ function AdminPage() {
         slug: editing.slug || undefined,
         title: editing.title || "",
         excerpt: editing.excerpt || "",
-        content: editing.content || "",
+        content: markdown,
         cover_image_url: editing.cover_image_url || "",
         tags: editing.tags || [],
         published: editing.published ?? true,
