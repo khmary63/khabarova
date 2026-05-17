@@ -114,7 +114,13 @@ function RootShell({ children }: { children: React.ReactNode }) {
         {/* Eureka chat widget */}
         {(() => {
           const EurekaWidget = "eureka-chat-widget" as unknown as React.ElementType;
-          return <EurekaWidget api-key="3fee383b-00bc-483a-a056-84a73212d830" lang="ru" />;
+          return (
+            <EurekaWidget
+              api-key="3fee383b-00bc-483a-a056-84a73212d830"
+              lang="ru"
+              open-by-window-message="true"
+            />
+          );
         })()}
         <script
           type="module"
