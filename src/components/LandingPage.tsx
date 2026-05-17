@@ -38,6 +38,3 @@ export function LandingPage({ config }: { config: VariantConfig }) {
     </div>
   );
 }
-    </div>
-  );
-}
