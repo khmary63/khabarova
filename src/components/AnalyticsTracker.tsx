@@ -66,6 +66,18 @@ export function AnalyticsTracker() {
           session_id: getSessionId(),
         },
       }).catch(() => {});
+      // Yandex.Metrika goal — skip form submit (it has its own lead_submit goal)
+      if (!label.startsWith("lead_submit")) {
+        try {
+          (window as unknown as { ym?: (id: number, action: string, goal: string) => void }).ym?.(
+            107882480,
+            "reachGoal",
+            "cta_click",
+          );
+        } catch {
+          // ignore
+        }
+      }
     }
     document.addEventListener("click", onClick, { capture: true });
     return () => document.removeEventListener("click", onClick, { capture: true } as never);
