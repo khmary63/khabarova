@@ -57,7 +57,7 @@ function ContactsPage() {
               Регион оказания услуг: Россия и страны СНГ
             </li>
             <li className="text-muted-foreground">
-              Работаем по договору и NDA
+              Работаем по договору
             </li>
           </ul>
         </section>
