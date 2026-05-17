@@ -139,8 +139,9 @@ function AdminPage() {
   }
 
   async function openEditor(id?: string) {
+    setSeoOptimized(false);
     if (!id) {
-      setEditing({ title: "", excerpt: "", content: "", contentHtml: "", tags: [], published: true });
+      setEditing({ title: "", excerpt: "", content: "", contentHtml: "", tags: [], published: false });
       return;
     }
     const res = await getFn({ data: { token, id } });
@@ -151,11 +152,59 @@ function AdminPage() {
     const post = res.post as Omit<EditPost, "contentHtml">;
     const html = marked.parse(post.content || "", { async: false }) as string;
     setEditing({ ...post, contentHtml: html });
+    setSeoOptimized(post.published); // уже опубликована — считаем оптимизированной
+  }
+
+  async function handleSeoOptimize() {
+    if (!editing) return;
+    const html = editing.contentHtml || "";
+    const markdown = html.trim() ? turndown.turndown(html) : "";
+    if (!markdown.trim()) {
+      toast.error("Сначала напишите текст статьи");
+      return;
+    }
+    if (!editing.title?.trim()) {
+      toast.error("Сначала укажите заголовок");
+      return;
+    }
+    setSeoLoading(true);
+    const res = await seoFn({
+      data: {
+        token,
+        title: editing.title || "",
+        excerpt: editing.excerpt || "",
+        content: markdown,
+        tags: editing.tags || [],
+      },
+    });
+    setSeoLoading(false);
+    if (!res.ok) {
+      toast.error(res.error || "Не удалось оптимизировать");
+      return;
+    }
+    const newHtml = marked.parse(res.content || markdown, { async: false }) as string;
+    setEditing((prev) =>
+      prev
+        ? {
+            ...prev,
+            title: res.title || prev.title,
+            excerpt: res.excerpt || prev.excerpt,
+            tags: res.tags && res.tags.length ? res.tags : prev.tags,
+            contentHtml: newHtml,
+          }
+        : prev,
+    );
+    setSeoOptimized(true);
+    toast.success("SEO-оптимизация готова. Проверьте и публикуйте.");
   }
 
   async function handleSave(e: FormEvent) {
     e.preventDefault();
     if (!editing) return;
+    if (editing.published && !seoOptimized) {
+      toast.error("Перед публикацией нажмите «SEO-оптимизация»");
+      return;
+    }
     const html = editing.contentHtml || "";
     const markdown = html.trim() ? turndown.turndown(html) : "";
     if (!markdown.trim()) {
