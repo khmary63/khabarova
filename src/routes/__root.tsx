@@ -123,6 +123,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
+      <AnalyticsTracker />
       <Toaster theme="dark" position="top-center" richColors />
     </QueryClientProvider>
   );
