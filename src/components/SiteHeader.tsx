@@ -14,6 +14,12 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md">
+      <div className="border-b border-border/40 bg-surface/40">
+        <div className="container-page flex h-8 items-center justify-end gap-2 text-[11px] text-muted-foreground">
+          <span className="h-1.5 w-1.5 rounded-full bg-success" aria-hidden />
+          <span>Менеджер на связи: пн–пт, 9:00–18:00 МСК</span>
+        </div>
+      </div>
       <div className="container-page flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <img src={logo} alt={SITE.brand} className="h-9 w-9 rounded-md object-contain" />
