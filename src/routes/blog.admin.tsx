@@ -56,8 +56,36 @@ function AdminPage() {
   const getFn = useServerFn(adminGetPost);
   const saveFn = useServerFn(upsertPost);
   const delFn = useServerFn(adminDeletePost);
+  const uploadFn = useServerFn(uploadBlogImage);
   const settingsFn = useServerFn(getSiteSettings);
   const updateSettingFn = useServerFn(updateSiteSetting);
+
+  const turndown = useMemo(() => {
+    const td = new TurndownService({ headingStyle: "atx", bulletListMarker: "-", codeBlockStyle: "fenced" });
+    td.keep(["u", "sup", "sub"]);
+    return td;
+  }, []);
+
+  async function uploadImage(file: File): Promise<string> {
+    const base64 = await new Promise<string>((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => {
+        const result = r.result as string;
+        const comma = result.indexOf(",");
+        resolve(comma >= 0 ? result.slice(comma + 1) : result);
+      };
+      r.onerror = () => reject(r.error);
+      r.readAsDataURL(file);
+    });
+    const res = await uploadFn({
+      data: { token, filename: file.name, contentType: file.type || "application/octet-stream", base64 },
+    });
+    if (!res.ok) {
+      toast.error(res.error || "Не удалось загрузить файл");
+      throw new Error(res.error || "upload failed");
+    }
+    return res.url;
+  }
 
   useEffect(() => {
     const saved = typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : "";
