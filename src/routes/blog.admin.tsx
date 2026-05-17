@@ -1,13 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, useEffect, useMemo, type FormEvent } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import TurndownService from "turndown";
+import { marked } from "marked";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { RichEditor } from "@/components/RichEditor";
 import {
   adminListPosts,
   adminGetPost,
   upsertPost,
   adminDeletePost,
+  uploadBlogImage,
 } from "@/lib/blog.functions";
 import { getSiteSettings, updateSiteSetting } from "@/lib/site-settings.functions";
 import { toast } from "sonner";
@@ -33,7 +37,7 @@ type AdminPost = {
   updated_at: string;
 };
 
-type EditPost = AdminPost & { content: string; cover_image_url: string | null };
+type EditPost = AdminPost & { content: string; contentHtml: string; cover_image_url: string | null };
 
 const TOKEN_KEY = "blog-admin-token";
 
@@ -52,8 +56,36 @@ function AdminPage() {
   const getFn = useServerFn(adminGetPost);
   const saveFn = useServerFn(upsertPost);
   const delFn = useServerFn(adminDeletePost);
+  const uploadFn = useServerFn(uploadBlogImage);
   const settingsFn = useServerFn(getSiteSettings);
   const updateSettingFn = useServerFn(updateSiteSetting);
+
+  const turndown = useMemo(() => {
+    const td = new TurndownService({ headingStyle: "atx", bulletListMarker: "-", codeBlockStyle: "fenced" });
+    td.keep(["u", "sup", "sub"]);
+    return td;
+  }, []);
+
+  async function uploadImage(file: File): Promise<string> {
+    const base64 = await new Promise<string>((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => {
+        const result = r.result as string;
+        const comma = result.indexOf(",");
+        resolve(comma >= 0 ? result.slice(comma + 1) : result);
+      };
+      r.onerror = () => reject(r.error);
+      r.readAsDataURL(file);
+    });
+    const res = await uploadFn({
+      data: { token, filename: file.name, contentType: file.type || "application/octet-stream", base64 },
+    });
+    if (!res.ok) {
+      toast.error(res.error || "Не удалось загрузить файл");
+      throw new Error(res.error || "upload failed");
+    }
+    return res.url;
+  }
 
   useEffect(() => {
     const saved = typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : "";
@@ -104,7 +136,7 @@ function AdminPage() {
 
   async function openEditor(id?: string) {
     if (!id) {
-      setEditing({ title: "", excerpt: "", content: "", tags: [], published: true });
+      setEditing({ title: "", excerpt: "", content: "", contentHtml: "", tags: [], published: true });
       return;
     }
     const res = await getFn({ data: { token, id } });
@@ -112,12 +144,20 @@ function AdminPage() {
       toast.error(res.error || "Не найдено");
       return;
     }
-    setEditing(res.post as EditPost);
+    const post = res.post as Omit<EditPost, "contentHtml">;
+    const html = marked.parse(post.content || "", { async: false }) as string;
+    setEditing({ ...post, contentHtml: html });
   }
 
   async function handleSave(e: FormEvent) {
     e.preventDefault();
     if (!editing) return;
+    const html = editing.contentHtml || "";
+    const markdown = html.trim() ? turndown.turndown(html) : "";
+    if (!markdown.trim()) {
+      toast.error("Текст статьи не может быть пустым");
+      return;
+    }
     setLoading(true);
     const res = await saveFn({
       data: {
@@ -126,7 +166,7 @@ function AdminPage() {
         slug: editing.slug || undefined,
         title: editing.title || "",
         excerpt: editing.excerpt || "",
-        content: editing.content || "",
+        content: markdown,
         cover_image_url: editing.cover_image_url || "",
         tags: editing.tags || [],
         published: editing.published ?? true,
@@ -333,14 +373,55 @@ function AdminPage() {
               />
             </Field>
 
-            <Field label="Обложка (URL картинки)">
-              <input
-                type="url"
-                value={editing.cover_image_url || ""}
-                onChange={(e) => setEditing({ ...editing, cover_image_url: e.target.value })}
-                placeholder="https://…"
-                className="input"
-              />
+            <Field label="Обложка статьи">
+              <div className="space-y-2">
+                {editing.cover_image_url ? (
+                  <div className="flex items-start gap-3 rounded-lg border border-border bg-background p-2">
+                    <img
+                      src={editing.cover_image_url}
+                      alt="cover"
+                      className="h-20 w-32 rounded object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setEditing({ ...editing, cover_image_url: "" })}
+                      className="text-xs text-muted-foreground hover:text-destructive"
+                    >
+                      Удалить обложку
+                    </button>
+                  </div>
+                ) : null}
+                <div className="flex flex-wrap items-center gap-2">
+                  <label className="cursor-pointer rounded-md border border-border bg-background px-3 py-1.5 text-xs hover:border-primary/40">
+                    Загрузить файл
+                    <input
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      onChange={async (e) => {
+                        const f = e.target.files?.[0];
+                        e.target.value = "";
+                        if (!f) return;
+                        try {
+                          const url = await uploadImage(f);
+                          setEditing((prev) => (prev ? { ...prev, cover_image_url: url } : prev));
+                          toast.success("Картинка загружена");
+                        } catch {
+                          /* toast handled in uploadImage */
+                        }
+                      }}
+                    />
+                  </label>
+                  <span className="text-xs text-muted-foreground">или вставьте ссылку:</span>
+                  <input
+                    type="url"
+                    value={editing.cover_image_url || ""}
+                    onChange={(e) => setEditing({ ...editing, cover_image_url: e.target.value })}
+                    placeholder="https://…"
+                    className="input flex-1 min-w-[200px]"
+                  />
+                </div>
+              </div>
             </Field>
 
             <Field label="Теги (через запятую)">
@@ -360,15 +441,15 @@ function AdminPage() {
               />
             </Field>
 
-            <Field label="Текст статьи (Markdown)">
-              <textarea
-                required
-                rows={20}
-                value={editing.content || ""}
-                onChange={(e) => setEditing({ ...editing, content: e.target.value })}
-                className="input font-mono text-sm"
-                placeholder={"# Заголовок\n\nАбзац текста. **Жирный**, *курсив*, [ссылка](https://…).\n\n## Подзаголовок\n\n- Пункт 1\n- Пункт 2"}
+            <Field label="Текст статьи">
+              <RichEditor
+                valueHtml={editing.contentHtml || ""}
+                onChangeHtml={(html) => setEditing((prev) => (prev ? { ...prev, contentHtml: html } : prev))}
+                onUploadImage={uploadImage}
               />
+              <p className="mt-1 text-xs text-muted-foreground">
+                Пишите обычным текстом. Используйте панель сверху для заголовков, списков, ссылок и картинок.
+              </p>
             </Field>
 
             <label className="flex items-center gap-2 text-sm">
