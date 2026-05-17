@@ -45,6 +45,7 @@ export function AnalyticsTracker() {
   // Global click delegation: any element with data-track="LabelName"
   useEffect(() => {
     if (typeof window === "undefined") return;
+    const listenerOpts: AddEventListenerOptions = { capture: true };
     function onClick(e: MouseEvent) {
       const target = e.target as HTMLElement | null;
       if (!target) return;
@@ -52,12 +53,12 @@ export function AnalyticsTracker() {
       if (!el) return;
       const label = el.getAttribute("data-track");
       if (!label) return;
+      const path = window.location.pathname;
+      if (path.startsWith("/blog/admin") || path.startsWith("/analytics")) return;
       const href =
         el.getAttribute("href") ||
         el.getAttribute("data-track-target") ||
         (el.tagName === "BUTTON" ? "button" : null);
-      const path = window.location.pathname;
-      if (path.startsWith("/blog/admin") || path.startsWith("/analytics")) return;
       clickFn({
         data: {
           path,
@@ -79,8 +80,8 @@ export function AnalyticsTracker() {
         }
       }
     }
-    document.addEventListener("click", onClick, { capture: true });
-    return () => document.removeEventListener("click", onClick, { capture: true } as never);
+    document.addEventListener("click", onClick, listenerOpts);
+    return () => document.removeEventListener("click", onClick, listenerOpts);
   }, [clickFn]);
 
   return null;
