@@ -31,6 +31,16 @@ export function Cases({ config }: { config: VariantConfig }) {
                 <div className="mt-3 inline-flex items-center gap-1 rounded-full border border-border bg-background px-2.5 py-1 text-[11px] text-muted-foreground">
                   Срок: {c.term}
                 </div>
+                {c.link && (
+                  <a
+                    href={c.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-block text-xs text-primary underline underline-offset-2 hover:text-primary/80"
+                  >
+                    Детали кейса →
+                  </a>
+                )}
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
