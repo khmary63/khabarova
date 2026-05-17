@@ -58,6 +58,7 @@ export const CASES = [
     term: "5 недель под ключ",
     metric: "−68%",
     metricLabel: "стоимость лида",
+    link: "",
   },
 ];
 
