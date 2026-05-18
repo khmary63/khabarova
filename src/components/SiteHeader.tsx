@@ -1,6 +1,7 @@
 import { Link, useLoaderData } from "@tanstack/react-router";
 import { Phone } from "lucide-react";
 import { SITE } from "@/lib/site";
+import { SocialIcons } from "@/components/SocialIcons";
 import logo from "@/assets/logo.png";
 
 export function SiteHeader() {
