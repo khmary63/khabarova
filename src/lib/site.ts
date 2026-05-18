@@ -11,6 +11,7 @@ export const SITE = {
   telegram: "https://t.me/neOptimization",
   max: "https://max.ru/id631212609521_biz",
   whatsapp: "https://wa.me/79171114030",
+  youtube: "https://www.youtube.com/@ХабароваМария",
 };
 
 export type Variant = "main" | "msb" | "b2b";
