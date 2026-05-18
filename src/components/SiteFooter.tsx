@@ -15,7 +15,7 @@ export function SiteFooter() {
         <div>
           <div className="text-xs uppercase tracking-widest text-muted-foreground">Контакты</div>
           <ul className="mt-3 space-y-2 text-sm">
-            <li><a href={SITE.phoneHref} className="hover:text-primary">{SITE.phone}</a> · <a href={SITE.whatsapp} className="hover:text-primary">WhatsApp</a></li>
+            <li><a href={SITE.phoneHref} className="hover:text-primary">{SITE.phone}</a></li>
             <li><a href={SITE.emailHref} className="hover:text-primary">{SITE.email}</a></li>
           </ul>
           <div className="mt-4 text-xs uppercase tracking-widest text-muted-foreground">Соцсети</div>
@@ -24,7 +24,7 @@ export function SiteFooter() {
         <div>
           <div className="text-xs uppercase tracking-widest text-muted-foreground">Где мы</div>
           <ul className="mt-3 space-y-2 text-sm">
-            <li><a href={SITE.avito} target="_blank" rel="noreferrer" className="hover:text-primary">Авито</a> · 2ГИС — {SITE.city}</li>
+            <li>2ГИС — {SITE.city}</li>
             <li>Дистанционно — вся Россия</li>
           </ul>
         </div>
