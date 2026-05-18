@@ -100,6 +100,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:locale", content: "ru_RU" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "google-site-verification", content: "cMNxxtMhitwNVAwwywctoyLUfZHOjXskqzV7MSlgkLc" },
+      // Регион сайта — Самара (для Яндекс.Вебмастера и геопоиска)
+      { name: "geo.region", content: "RU-SAM" },
+      { name: "geo.placename", content: "Самара" },
+      { name: "geo.position", content: "53.195873;50.100193" },
+      { name: "ICBM", content: "53.195873, 50.100193" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
