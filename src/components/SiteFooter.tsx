@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { SITE } from "@/lib/site";
+import { SocialIcons } from "@/components/SocialIcons";
 
 export function SiteFooter() {
   return (
@@ -16,10 +17,9 @@ export function SiteFooter() {
           <ul className="mt-3 space-y-2 text-sm">
             <li><a href={SITE.phoneHref} className="hover:text-primary">{SITE.phone}</a> · <a href={SITE.whatsapp} className="hover:text-primary">WhatsApp</a></li>
             <li><a href={SITE.emailHref} className="hover:text-primary">{SITE.email}</a></li>
-            <li><a href={SITE.telegram} target="_blank" rel="noreferrer" className="hover:text-primary">Telegram-канал</a></li>
-            <li><a href={SITE.vk} target="_blank" rel="noreferrer" className="hover:text-primary">ВКонтакте</a></li>
-            <li><a href={SITE.max} target="_blank" rel="noreferrer" className="hover:text-primary">Max</a></li>
           </ul>
+          <div className="mt-4 text-xs uppercase tracking-widest text-muted-foreground">Соцсети</div>
+          <SocialIcons className="mt-3" trackPrefix="footer" />
         </div>
         <div>
           <div className="text-xs uppercase tracking-widest text-muted-foreground">Где мы</div>

@@ -1,6 +1,7 @@
 import { Link, useLoaderData } from "@tanstack/react-router";
 import { Phone } from "lucide-react";
 import { SITE } from "@/lib/site";
+import { SocialIcons } from "@/components/SocialIcons";
 import logo from "@/assets/logo.png";
 
 export function SiteHeader() {
@@ -25,9 +26,12 @@ export function SiteHeader() {
             <Phone className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
             {SITE.phone}
           </a>
-          <div className="inline-flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-success" aria-hidden />
-            <span>Менеджер на связи: пн–пт, 9:00–18:00 МСК</span>
+          <div className="inline-flex items-center gap-3">
+            <div className="hidden items-center gap-2 sm:inline-flex">
+              <span className="h-1.5 w-1.5 rounded-full bg-success" aria-hidden />
+              <span>Менеджер на связи: пн–пт, 9:00–18:00 МСК</span>
+            </div>
+            <SocialIcons size="sm" trackPrefix="header" />
           </div>
         </div>
       </div>
