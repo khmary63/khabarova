@@ -12,6 +12,7 @@ export const SITE = {
   max: "https://max.ru/id631212609521_biz",
   whatsapp: "https://wa.me/79171114030",
   youtube: "https://www.youtube.com/@ХабароваМария",
+  instagram: "https://www.instagram.com/neyro_market/",
 };
 
 export type Variant = "main" | "msb" | "b2b";
