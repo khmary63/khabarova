@@ -34,6 +34,7 @@ const ITEMS: Item[] = [
   { label: "ВКонтакте", href: SITE.vk, Icon: VkIcon, track: "social_vk" },
   { label: "Max", href: SITE.max, Icon: MaxIcon, track: "social_max" },
   { label: "YouTube", href: SITE.youtube, Icon: Youtube, track: "social_youtube" },
+  { label: "Instagram", href: SITE.instagram, Icon: Instagram, track: "social_instagram" },
 ];
 
 type Props = {
