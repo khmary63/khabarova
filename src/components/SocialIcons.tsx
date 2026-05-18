@@ -1,4 +1,4 @@
-import { Youtube } from "lucide-react";
+import { Youtube, Instagram } from "lucide-react";
 import { SITE } from "@/lib/site";
 import type { ComponentType, SVGProps } from "react";
 
