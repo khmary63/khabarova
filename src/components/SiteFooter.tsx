@@ -24,7 +24,7 @@ export function SiteFooter() {
         <div>
           <div className="text-xs uppercase tracking-widest text-muted-foreground">Где мы</div>
           <ul className="mt-3 space-y-2 text-sm">
-            <li>Авито · 2ГИС — {SITE.city}</li>
+            <li><a href={SITE.avito} target="_blank" rel="noreferrer" className="hover:text-primary">Авито</a> · 2ГИС — {SITE.city}</li>
             <li>Дистанционно — вся Россия</li>
           </ul>
         </div>
