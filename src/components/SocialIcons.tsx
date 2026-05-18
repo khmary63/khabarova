@@ -50,10 +50,12 @@ const AvitoIcon = (props: SVGProps<SVGSVGElement>) => (
 const ITEMS: Item[] = [
   { label: "Telegram", href: SITE.telegram, Icon: TelegramIcon, track: "social_telegram" },
   { label: "ВКонтакте", href: SITE.vk, Icon: VkIcon, track: "social_vk" },
+  { label: "WhatsApp", href: SITE.whatsapp, Icon: WhatsAppIcon, track: "social_whatsapp" },
   { label: "Max", href: SITE.max, Icon: MaxIcon, track: "social_max" },
   { label: "YouTube", href: SITE.youtube, Icon: Youtube, track: "social_youtube" },
   { label: "RuTube", href: SITE.rutube, Icon: RuTubeIcon, track: "social_rutube" },
   { label: "Instagram", href: SITE.instagram, Icon: Instagram, track: "social_instagram" },
+  { label: "Avito", href: SITE.avito, Icon: AvitoIcon, track: "social_avito" },
 ];
 
 type Props = {
