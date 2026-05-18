@@ -29,11 +29,18 @@ type Item = {
   track: string;
 };
 
+const RuTubeIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+    <path d="M2 8.4c.3-2.2 1.9-3.7 4-4C8.2 4 10 4 12 4s3.8 0 6 .1c2.1.3 3.7 1.8 4 4 .1 1.3.1 2.7.1 4s0 2.7-.1 4c-.3 2.2-1.9 3.7-4 4-2.2.1-4 .1-6 .1s-3.8 0-6-.1c-2.1-.3-3.7-1.8-4-4C1.9 13.1 1.9 11.7 2 10.4V8.4Zm8.5 6.1 5-2.1-5-2.1v4.2Z" />
+  </svg>
+);
+
 const ITEMS: Item[] = [
   { label: "Telegram", href: SITE.telegram, Icon: TelegramIcon, track: "social_telegram" },
   { label: "ВКонтакте", href: SITE.vk, Icon: VkIcon, track: "social_vk" },
   { label: "Max", href: SITE.max, Icon: MaxIcon, track: "social_max" },
   { label: "YouTube", href: SITE.youtube, Icon: Youtube, track: "social_youtube" },
+  { label: "RuTube", href: SITE.rutube, Icon: RuTubeIcon, track: "social_rutube" },
   { label: "Instagram", href: SITE.instagram, Icon: Instagram, track: "social_instagram" },
 ];
 

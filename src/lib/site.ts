@@ -13,6 +13,8 @@ export const SITE = {
   whatsapp: "https://wa.me/79171114030",
   youtube: "https://www.youtube.com/@ХабароваМария",
   instagram: "https://www.instagram.com/neyro_market/",
+  rutube: "https://rutube.ru/channel/41159445/",
+  avito: "https://www.avito.ru/brands/8d8bf9331a2b9452f07ec9116b4acfd4/all?sellerId=7bb67bb488c32dfa3f54b0ef5758c102",
 };
 
 export type Variant = "main" | "msb" | "b2b";
