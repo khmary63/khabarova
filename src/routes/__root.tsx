@@ -114,8 +114,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://mc.yandex.ru", crossOrigin: "anonymous" },
       { rel: "preconnect", href: "https://mytopf.com", crossOrigin: "anonymous" },
       { rel: "preconnect", href: "https://eureca-ai.web.app", crossOrigin: "anonymous" },
+      { rel: "preconnect", href: "https://w2097894.yclients.com", crossOrigin: "anonymous" },
       { rel: "dns-prefetch", href: "https://mc.yandex.ru" },
       { rel: "dns-prefetch", href: "https://mytopf.com" },
+      { rel: "dns-prefetch", href: "https://w2097894.yclients.com" },
     ],
   }),
   shellComponent: RootShell,
@@ -171,6 +173,13 @@ function RootShell({ children }: { children: React.ReactNode }) {
             <img src="https://mytopf.com/counter?id=3766746;js=na" style={{ position: "absolute", left: "-9999px" }} alt="mytopf.com" />
           </div>
         </noscript>
+
+        {/* YClients online booking widget */}
+        <script
+          type="text/javascript"
+          src="https://w2097894.yclients.com/widgetJS"
+          charSet="UTF-8"
+        />
 
         <Scripts />
       </body>
