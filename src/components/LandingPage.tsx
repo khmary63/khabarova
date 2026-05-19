@@ -32,7 +32,7 @@ export function LandingPage({ config }: { config: VariantConfig }) {
         <LeadForm source={config.source} />
         <FinalCta />
       </main>
-      <SiteFooter />
+      <SiteFooter hideLocation={config.source === "main"} />
       <EurekaChatLauncher />
       <div className="h-20 md:hidden" aria-hidden />
     </div>
