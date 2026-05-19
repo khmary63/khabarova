@@ -5,7 +5,7 @@ import { SocialIcons } from "@/components/SocialIcons";
 export function SiteFooter({ hideLocation }: { hideLocation?: boolean }) {
   return (
     <footer className="border-t border-border bg-surface/40">
-      <div className="container-page grid gap-10 py-14 md:grid-cols-3">
+      <div className={`container-page grid gap-10 py-14 ${hideLocation ? "md:grid-cols-2" : "md:grid-cols-3"}`}>
         <div>
           <div className="font-display text-lg font-semibold tracking-tight">{SITE.brand}</div>
           <p className="mt-2 text-sm text-muted-foreground">
