@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SITE } from "@/lib/site";
+import { SocialIcons } from "@/components/SocialIcons";
 
 export const Route = createFileRoute("/contacts")({
   component: ContactsPage,
