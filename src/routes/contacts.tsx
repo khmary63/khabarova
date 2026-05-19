@@ -39,7 +39,7 @@ export const Route = createFileRoute("/contacts")({
             addressCountry: "RU",
           },
           founder: { "@type": "Person", name: SITE.expert },
-          sameAs: [SITE.vk, SITE.telegram],
+          sameAs: [SITE.vk, SITE.telegram, SITE.youtube, SITE.instagram, SITE.rutube, SITE.max, SITE.whatsapp],
         }),
       },
     ],
