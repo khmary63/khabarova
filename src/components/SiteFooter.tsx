@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { SITE } from "@/lib/site";
 import { SocialIcons } from "@/components/SocialIcons";
 
-export function SiteFooter() {
+export function SiteFooter({ hideLocation }: { hideLocation?: boolean }) {
   return (
     <footer className="border-t border-border bg-surface/40">
       <div className="container-page grid gap-10 py-14 md:grid-cols-3">
