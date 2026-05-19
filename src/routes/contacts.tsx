@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SITE } from "@/lib/site";
+import { SocialIcons } from "@/components/SocialIcons";
 
 export const Route = createFileRoute("/contacts")({
   component: ContactsPage,
@@ -38,7 +39,7 @@ export const Route = createFileRoute("/contacts")({
             addressCountry: "RU",
           },
           founder: { "@type": "Person", name: SITE.expert },
-          sameAs: [SITE.vk, SITE.telegram],
+          sameAs: [SITE.vk, SITE.telegram, SITE.youtube, SITE.instagram, SITE.rutube, SITE.max, SITE.whatsapp],
         }),
       },
     ],
@@ -148,6 +149,13 @@ function ContactsPage() {
               </a>
             </dd>
           </dl>
+        </section>
+
+        <section className="mt-6 rounded-2xl border border-border bg-surface p-6">
+          <div className="text-xs uppercase tracking-widest text-muted-foreground">
+            Мы в соцсетях
+          </div>
+          <SocialIcons className="mt-4" trackPrefix="contacts" />
         </section>
 
         <div className="mt-8">
