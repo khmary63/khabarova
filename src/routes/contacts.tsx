@@ -151,6 +151,13 @@ function ContactsPage() {
           </dl>
         </section>
 
+        <section className="mt-6 rounded-2xl border border-border bg-surface p-6">
+          <div className="text-xs uppercase tracking-widest text-muted-foreground">
+            Мы в соцсетях
+          </div>
+          <SocialIcons className="mt-4" trackPrefix="contacts" />
+        </section>
+
         <div className="mt-8">
           <Link
             to="/"
