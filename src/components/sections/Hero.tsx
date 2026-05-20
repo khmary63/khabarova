@@ -75,7 +75,7 @@ export function Hero({ config, onOpenChat }: { config: VariantConfig; onOpenChat
             </a>
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            Этот ИИ-продавец сам запишет вас на аудит в YClients — за 30 секунд.
+            Этот ИИ-продавец сам запишет вас на аудит — за 30 секунд.
           </p>
 
           <div className="mt-10 flex items-center gap-4 text-xs text-muted-foreground">
