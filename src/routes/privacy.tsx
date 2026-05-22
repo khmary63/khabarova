@@ -42,7 +42,7 @@ function PrivacyPage() {
             rel="noreferrer"
             className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm hover:border-primary hover:text-primary"
           >
-            Скачать PDF
+            Политика конфиденциальности
           </a>
           <Link
             to="/"

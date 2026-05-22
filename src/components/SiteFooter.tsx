@@ -37,7 +37,7 @@ export function SiteFooter({ hideLocation }: { hideLocation?: boolean }) {
           <div className="flex flex-wrap items-center gap-3">
             <Link to="/privacy" className="hover:text-primary">Политика конфиденциальности</Link>
             <span>·</span>
-            <a href="/privacy-policy.pdf" target="_blank" rel="noreferrer" className="hover:text-primary">Скачать PDF</a>
+            <a href="/privacy-policy.pdf" target="_blank" rel="noreferrer" className="hover:text-primary">Политика конфиденциальности</a>
           </div>
         </div>
       </div>
