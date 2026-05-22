@@ -20,6 +20,9 @@ export const Route = createFileRoute("/sitemap.xml")({
         if (settings.apps) {
           entries.push({ path: "/apps", changefreq: "monthly", priority: "0.7" });
         }
+        if (settings.reviews) {
+          entries.push({ path: "/reviews", changefreq: "monthly", priority: "0.7" });
+        }
         if (settings.blog) {
           entries.push({ path: "/blog", changefreq: "daily", priority: "0.9" });
 

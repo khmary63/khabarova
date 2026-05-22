@@ -1,0 +1,1 @@
+INSERT INTO public.site_settings (key, enabled) VALUES ('reviews', true) ON CONFLICT (key) DO NOTHING;
