@@ -100,6 +100,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:locale", content: "ru_RU" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "google-site-verification", content: "cMNxxtMhitwNVAwwywctoyLUfZHOjXskqzV7MSlgkLc" },
+      // GEO: разрешаем генеративным поисковикам брать полные сниппеты, крупные превью и видео.
+      { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
+      { name: "googlebot", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
       // Регион сайта — Самара (для Яндекс.Вебмастера и геопоиска)
       { name: "geo.region", content: "RU-SAM" },
       { name: "geo.placename", content: "Самара" },
