@@ -202,10 +202,6 @@ function AdminPage() {
   async function handleSave(e: FormEvent) {
     e.preventDefault();
     if (!editing) return;
-    if (editing.published && !seoOptimized) {
-      toast.error("Перед публикацией нажмите «SEO-оптимизация»");
-      return;
-    }
     const html = editing.contentHtml || "";
     const markdown = html.trim() ? turndown.turndown(html) : "";
     if (!markdown.trim()) {
@@ -531,8 +527,8 @@ function AdminPage() {
                   <h3 className="text-sm font-semibold">SEO-оптимизация</h3>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {seoOptimized
-                      ? "✓ Текст оптимизирован. Можно публиковать."
-                      : "Нажмите, чтобы ИИ переписал заголовок, описание, теги и текст для поисковых систем. Без этого публикация заблокирована."}
+                      ? "✓ Текст оптимизирован."
+                      : "Нажмите, чтобы ИИ переписал заголовок, описание, теги и текст для поисковых систем. Необязательно."}
                   </p>
                 </div>
                 <button
@@ -549,7 +545,7 @@ function AdminPage() {
             <div className="flex gap-2 pt-2">
               <button
                 type="submit"
-                disabled={loading || (editing.published && !seoOptimized)}
+                disabled={loading}
                 className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
               >
                 {loading ? "Сохранение…" : editing.published ? "Опубликовать" : "Сохранить черновик"}
