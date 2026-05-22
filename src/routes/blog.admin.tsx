@@ -116,13 +116,13 @@ function AdminPage() {
     setPosts(res.posts as AdminPost[]);
     try {
       const s = await settingsFn();
-      setVisibility({ apps: s.apps, blog: s.blog });
+      setVisibility({ apps: s.apps, blog: s.blog, reviews: s.reviews });
     } catch (e) {
       console.error(e);
     }
   }
 
-  async function toggleVisibility(key: "apps" | "blog", enabled: boolean) {
+  async function toggleVisibility(key: "apps" | "blog" | "reviews", enabled: boolean) {
     const prev = visibility;
     setVisibility({ ...prev, [key]: enabled });
     const res = await updateSettingFn({ data: { token, key, enabled } });
