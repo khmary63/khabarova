@@ -146,9 +146,10 @@ function AppsPage() {
             </span>
           </h1>
 
-          <p className="text-base leading-relaxed text-muted-foreground md:text-lg">
-            Здесь — мои продукты и услуги по быстрой разработке с ИИ. Собираю
-            MVP, ИИ-фичи и внутренние инструменты для бизнеса.
+          <p className="whitespace-pre-line text-base leading-relaxed text-muted-foreground md:text-lg">
+            Здесь — мои продукты и услуги по быстрой разработке с ИИ.{"\n"}
+            Собираю MVP, ИИ-фичи и внутренние инструменты для бизнеса.{"\n"}
+            За считанные часы настраиваю ИИ-ассистентов.
           </p>
         </header>
 
