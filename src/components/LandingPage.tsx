@@ -30,6 +30,7 @@ export function LandingPage({ config }: { config: VariantConfig }) {
         <Process />
         <Guarantees />
         <Objections />
+        <Faq />
         <LeadForm source={config.source} />
         <FinalCta />
       </main>
