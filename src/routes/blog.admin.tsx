@@ -196,7 +196,7 @@ function AdminPage() {
         : prev,
     );
     setSeoOptimized(true);
-    toast.success("SEO-оптимизация готова. Проверьте и публикуйте.");
+    toast.success("SEO + GEO оптимизация готова. Проверьте и публикуйте.");
   }
 
   async function handleSave(e: FormEvent) {
@@ -524,11 +524,11 @@ function AdminPage() {
             <div className="rounded-2xl border border-border bg-surface p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h3 className="text-sm font-semibold">SEO-оптимизация</h3>
+                  <h3 className="text-sm font-semibold">SEO + GEO оптимизация</h3>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {seoOptimized
-                      ? "✓ Текст оптимизирован."
-                      : "Нажмите, чтобы ИИ переписал заголовок, описание, теги и текст для поисковых систем. Необязательно."}
+                      ? "✓ Текст оптимизирован под поисковики и ИИ-ответы (ChatGPT, Perplexity, AI Overviews)."
+                      : "ИИ перепишет заголовок, описание, теги и текст: добавит TL;DR, структуру под цитирование и FAQ-секцию. Подходит и для Google/Яндекс, и для генеративных поисковиков."}
                   </p>
                 </div>
                 <button
@@ -537,7 +537,7 @@ function AdminPage() {
                   disabled={seoLoading}
                   className="shrink-0 rounded-full bg-foreground px-4 py-2 text-xs font-medium text-background disabled:opacity-50"
                 >
-                  {seoLoading ? "Оптимизация…" : seoOptimized ? "Оптимизировать ещё раз" : "SEO-оптимизация"}
+                  {seoLoading ? "Оптимизация…" : seoOptimized ? "Оптимизировать ещё раз" : "SEO + GEO оптимизация"}
                 </button>
               </div>
             </div>
