@@ -17,14 +17,14 @@ export const Route = createFileRoute("/blog/")({
   },
   head: ({ loaderData }) => ({
     meta: [
-      { title: "Блог НейроМаркет — ИИ-продавцы, кейсы, автоматизация" },
+      { title: "Блог НейроМаркет — ИИ-продавцы, кейсы, автоматизация, вайбкодинг" },
       {
         name: "description",
         content:
           "Статьи и кейсы об ИИ-продавцах, нейроворонках и автоматизации продаж для бизнеса в Самаре и по России.",
       },
       { property: "og:title", content: "Блог НейроМаркет" },
-      { property: "og:description", content: "ИИ-продавцы, кейсы, автоматизация продаж." },
+      { property: "og:description", content: "ИИ-продавцы, кейсы, автоматизация продаж, вайбкодинг." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/blog" },
     ],
@@ -62,7 +62,7 @@ function BlogIndex() {
         <header className="mb-10 max-w-3xl">
           <p className="text-sm uppercase tracking-widest text-primary">Блог</p>
           <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight md:text-5xl">
-            ИИ-продавцы, кейсы и автоматизация
+            ИИ-продавцы, кейсы, автоматизация, вайбкодинг
           </h1>
           <p className="mt-3 text-muted-foreground">
             Практика внедрения ИИ-продавцов, нейроворонок и онлайн-записи. Без воды — только то,
