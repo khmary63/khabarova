@@ -6,6 +6,7 @@ import { Demo } from "@/components/sections/Demo";
 import { About } from "@/components/sections/About";
 import { Process } from "@/components/sections/Process";
 import { Objections } from "@/components/sections/Objections";
+import { Faq } from "@/components/sections/Faq";
 import { Guarantees } from "@/components/sections/Guarantees";
 import { LeadForm } from "@/components/sections/LeadForm";
 import { FinalCta } from "@/components/sections/FinalCta";
