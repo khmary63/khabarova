@@ -545,7 +545,7 @@ function AdminPage() {
             <div className="flex gap-2 pt-2">
               <button
                 type="submit"
-                disabled={loading || (editing.published && !seoOptimized)}
+                disabled={loading}
                 className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
               >
                 {loading ? "Сохранение…" : editing.published ? "Опубликовать" : "Сохранить черновик"}
