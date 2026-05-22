@@ -24,7 +24,7 @@ export const Route = createFileRoute("/blog/")({
           "Статьи и кейсы об ИИ-продавцах, нейроворонках и автоматизации продаж для бизнеса в Самаре и по России.",
       },
       { property: "og:title", content: "Блог НейроМаркет" },
-      { property: "og:description", content: "ИИ-продавцы, кейсы, автоматизация продаж." },
+      { property: "og:description", content: "ИИ-продавцы, кейсы, автоматизация продаж, вайбкодинг." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/blog" },
     ],
