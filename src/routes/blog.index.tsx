@@ -62,7 +62,7 @@ function BlogIndex() {
         <header className="mb-10 max-w-3xl">
           <p className="text-sm uppercase tracking-widest text-primary">Блог</p>
           <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight md:text-5xl">
-            ИИ-продавцы, кейсы и автоматизация
+            ИИ-продавцы, кейсы, автоматизация, вайбкодинг
           </h1>
           <p className="mt-3 text-muted-foreground">
             Практика внедрения ИИ-продавцов, нейроворонок и онлайн-записи. Без воды — только то,
