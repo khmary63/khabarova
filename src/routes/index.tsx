@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LandingPage } from "@/components/LandingPage";
+import { FAQ_ITEMS } from "@/components/sections/Faq";
 import { VARIANTS, SITE } from "@/lib/site";
 
 const cfg = VARIANTS.main;
@@ -44,6 +45,18 @@ export const Route = createFileRoute("/")({
           name: SITE.brand,
           url: "https://neyromarket.com",
           inLanguage: "ru-RU",
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: FAQ_ITEMS.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
         }),
       },
     ],
