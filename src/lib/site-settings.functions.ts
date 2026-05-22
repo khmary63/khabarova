@@ -2,9 +2,9 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-export type SiteSettings = { apps: boolean; blog: boolean };
+export type SiteSettings = { apps: boolean; blog: boolean; reviews: boolean };
 
-const DEFAULTS: SiteSettings = { apps: true, blog: true };
+const DEFAULTS: SiteSettings = { apps: true, blog: true, reviews: true };
 
 export const getSiteSettings = createServerFn({ method: "GET" }).handler(async () => {
   const { data, error } = await supabaseAdmin
@@ -16,7 +16,7 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(async (
   }
   const settings: SiteSettings = { ...DEFAULTS };
   for (const row of data ?? []) {
-    if (row.key === "apps" || row.key === "blog") {
+    if (row.key === "apps" || row.key === "blog" || row.key === "reviews") {
       settings[row.key] = row.enabled;
     }
   }
@@ -28,7 +28,7 @@ export const updateSiteSetting = createServerFn({ method: "POST" })
     z
       .object({
         token: z.string().min(1),
-        key: z.enum(["apps", "blog"]),
+        key: z.enum(["apps", "blog", "reviews"]),
         enabled: z.boolean(),
       })
       .parse(d),

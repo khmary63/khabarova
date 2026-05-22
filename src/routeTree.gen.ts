@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as MsbRouteImport } from './routes/msb'
 import { Route as ContactsRouteImport } from './routes/contacts'
@@ -24,6 +25,11 @@ import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReviewsRoute = ReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/contacts': typeof ContactsRoute
   '/msb': typeof MsbRoute
   '/privacy': typeof PrivacyRoute
+  '/reviews': typeof ReviewsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/admin': typeof BlogAdminRoute
@@ -98,6 +105,7 @@ export interface FileRoutesByTo {
   '/contacts': typeof ContactsRoute
   '/msb': typeof MsbRoute
   '/privacy': typeof PrivacyRoute
+  '/reviews': typeof ReviewsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/admin': typeof BlogAdminRoute
@@ -112,6 +120,7 @@ export interface FileRoutesById {
   '/contacts': typeof ContactsRoute
   '/msb': typeof MsbRoute
   '/privacy': typeof PrivacyRoute
+  '/reviews': typeof ReviewsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/admin': typeof BlogAdminRoute
@@ -127,6 +136,7 @@ export interface FileRouteTypes {
     | '/contacts'
     | '/msb'
     | '/privacy'
+    | '/reviews'
     | '/sitemap.xml'
     | '/blog/$slug'
     | '/blog/admin'
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/contacts'
     | '/msb'
     | '/privacy'
+    | '/reviews'
     | '/sitemap.xml'
     | '/blog/$slug'
     | '/blog/admin'
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/contacts'
     | '/msb'
     | '/privacy'
+    | '/reviews'
     | '/sitemap.xml'
     | '/blog/$slug'
     | '/blog/admin'
@@ -167,6 +179,7 @@ export interface RootRouteChildren {
   ContactsRoute: typeof ContactsRoute
   MsbRoute: typeof MsbRoute
   PrivacyRoute: typeof PrivacyRoute
+  ReviewsRoute: typeof ReviewsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   BlogSlugRoute: typeof BlogSlugRoute
   BlogAdminRoute: typeof BlogAdminRoute
@@ -180,6 +193,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reviews': {
+      id: '/reviews'
+      path: '/reviews'
+      fullPath: '/reviews'
+      preLoaderRoute: typeof ReviewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -263,6 +283,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactsRoute: ContactsRoute,
   MsbRoute: MsbRoute,
   PrivacyRoute: PrivacyRoute,
+  ReviewsRoute: ReviewsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   BlogSlugRoute: BlogSlugRoute,
   BlogAdminRoute: BlogAdminRoute,
