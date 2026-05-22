@@ -110,7 +110,7 @@ function ReviewsPage() {
           </h1>
           <p className="text-base leading-relaxed text-muted-foreground md:text-lg">
             Реальные истории предпринимателей, которые внедрили ИИ-продавцов и
-            автоматизировали отдел продаж вместе с НейроМаркет.
+            автоматизировали отдел продаж
           </p>
         </header>
 
