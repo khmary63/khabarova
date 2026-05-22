@@ -25,7 +25,6 @@ export function SiteFooter({ hideLocation }: { hideLocation?: boolean }) {
           <div>
             <div className="text-xs uppercase tracking-widest text-muted-foreground">Где мы</div>
             <ul className="mt-3 space-y-2 text-sm">
-              <li>2ГИС — {SITE.city}</li>
               <li>Дистанционно — вся Россия</li>
             </ul>
           </div>
