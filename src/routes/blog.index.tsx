@@ -26,9 +26,9 @@ export const Route = createFileRoute("/blog/")({
       { property: "og:title", content: "Блог НейроМаркет" },
       { property: "og:description", content: "ИИ-продавцы, кейсы, автоматизация продаж, вайбкодинг." },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/blog" },
+      { property: "og:url", content: "https://neyromarket.com/blog" },
     ],
-    links: [{ rel: "canonical", href: "/blog" }],
+    links: [{ rel: "canonical", href: "https://neyromarket.com/blog" }],
     scripts: loaderData
       ? [
           {
@@ -37,12 +37,28 @@ export const Route = createFileRoute("/blog/")({
               "@context": "https://schema.org",
               "@type": "Blog",
               name: "Блог НейроМаркет",
-              blogPost: loaderData.posts.slice(0, 20).map((p: { title: string; slug: string; published_at: string | null }) => ({
+              url: "https://neyromarket.com/blog",
+              inLanguage: "ru-RU",
+              publisher: { "@id": "https://neyromarket.com/#organization" },
+              blogPost: loaderData.posts.slice(0, 20).map((p: { title: string; slug: string; excerpt: string; published_at: string | null }) => ({
                 "@type": "BlogPosting",
                 headline: p.title,
-                url: `/blog/${p.slug}`,
+                description: p.excerpt,
+                url: `https://neyromarket.com/blog/${p.slug}`,
                 datePublished: p.published_at,
+                author: { "@type": "Person", name: "Мария Хабарова" },
               })),
+            }),
+          },
+          {
+            type: "application/ld+json",
+            children: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Главная", item: "https://neyromarket.com/" },
+                { "@type": "ListItem", position: 2, name: "Блог", item: "https://neyromarket.com/blog" },
+              ],
             }),
           },
         ]

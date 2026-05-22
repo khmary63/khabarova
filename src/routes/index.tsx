@@ -2,9 +2,19 @@ import { createFileRoute } from "@tanstack/react-router";
 import { LandingPage } from "@/components/LandingPage";
 import { FAQ_ITEMS } from "@/components/sections/Faq";
 import { VARIANTS, SITE } from "@/lib/site";
+import {
+  SITE_URL,
+  organizationSchema,
+  personSchema,
+  websiteSchema,
+  breadcrumbSchema,
+  faqSchema,
+  serviceSchema,
+  caseStudiesItemList,
+} from "@/lib/seo";
 
 const cfg = VARIANTS.main;
-const URL = "https://neyromarket.com/";
+const URL = `${SITE_URL}/`;
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -16,48 +26,31 @@ export const Route = createFileRoute("/")({
       { property: "og:type", content: "website" },
       { property: "og:url", content: URL },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "author", content: SITE.expert },
     ],
     links: [{ rel: "canonical", href: URL }],
     scripts: [
+      { type: "application/ld+json", children: JSON.stringify(organizationSchema()) },
+      { type: "application/ld+json", children: JSON.stringify(personSchema()) },
+      { type: "application/ld+json", children: JSON.stringify(websiteSchema()) },
       {
         type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          name: SITE.brand,
-          url: "https://neyromarket.com",
-          email: SITE.email,
-          telephone: SITE.phone,
-          address: {
-            "@type": "PostalAddress",
-            addressLocality: SITE.city,
-            addressCountry: "RU",
-          },
-          founder: { "@type": "Person", name: SITE.expert },
-          sameAs: [SITE.vk, SITE.telegram],
-        }),
+        children: JSON.stringify(
+          serviceSchema({
+            name: "Внедрение ИИ-сотрудников в отдел продаж",
+            description:
+              "Внедряем ИИ-продавцов и нейроворонки под ключ: ответ за секунды 24/7, интеграция с CRM и мессенджерами. Первый результат за 7 дней, базовое внедрение — 2 недели.",
+            url: "/",
+            serviceType: "Внедрение ИИ-сотрудников в продажи",
+            audience: "Малый и средний бизнес, B2B",
+          }),
+        ),
       },
+      { type: "application/ld+json", children: JSON.stringify(caseStudiesItemList()) },
+      { type: "application/ld+json", children: JSON.stringify(faqSchema(FAQ_ITEMS)) },
       {
         type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          name: SITE.brand,
-          url: "https://neyromarket.com",
-          inLanguage: "ru-RU",
-        }),
-      },
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: FAQ_ITEMS.map((f) => ({
-            "@type": "Question",
-            name: f.q,
-            acceptedAnswer: { "@type": "Answer", text: f.a },
-          })),
-        }),
+        children: JSON.stringify(breadcrumbSchema([{ name: "Главная", path: "/" }])),
       },
     ],
   }),
