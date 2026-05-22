@@ -196,7 +196,7 @@ function AdminPage() {
         : prev,
     );
     setSeoOptimized(true);
-    toast.success("SEO-оптимизация готова. Проверьте и публикуйте.");
+    toast.success("SEO + GEO оптимизация готова. Проверьте и публикуйте.");
   }
 
   async function handleSave(e: FormEvent) {
