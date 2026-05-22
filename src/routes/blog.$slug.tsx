@@ -3,7 +3,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { getPostBySlug } from "@/lib/blog.functions";
 import { getSiteSettings } from "@/lib/site-settings.functions";
-import { renderMarkdown } from "@/lib/markdown";
+import { renderMarkdown, extractFaq, wordCount } from "@/lib/markdown";
 
 export const Route = createFileRoute("/blog/$slug")({
   loader: async ({ params }) => {
@@ -11,12 +11,58 @@ export const Route = createFileRoute("/blog/$slug")({
     if (!s.blog) throw notFound();
     const { post } = await getPostBySlug({ data: { slug: params.slug } });
     if (!post) throw notFound();
-    return { post, html: renderMarkdown(post.content) };
+    return {
+      post,
+      html: renderMarkdown(post.content),
+      faqs: extractFaq(post.content),
+      words: wordCount(post.content),
+    };
   },
   head: ({ loaderData, params }) => {
     if (!loaderData) return { meta: [{ title: "Статья" }] };
-    const { post } = loaderData;
+    const { post, faqs, words } = loaderData;
     const desc = post.excerpt || post.title;
+    const url = `https://neyromarket.com/blog/${params.slug}`;
+    const articleSchema: Record<string, unknown> = {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: post.title,
+      description: desc,
+      image: post.cover_image_url || undefined,
+      datePublished: post.published_at,
+      dateModified: post.updated_at,
+      author: {
+        "@type": "Person",
+        name: "Мария Хабарова",
+        url: "https://neyromarket.com",
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "НейроМаркет",
+        url: "https://neyromarket.com",
+      },
+      mainEntityOfPage: { "@type": "WebPage", "@id": url },
+      keywords: post.tags?.join(", "),
+      inLanguage: "ru-RU",
+      wordCount: words || undefined,
+    };
+    const scripts: Array<{ type: string; children: string }> = [
+      { type: "application/ld+json", children: JSON.stringify(articleSchema) },
+    ];
+    if (faqs.length > 0) {
+      scripts.push({
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqs.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }),
+      });
+    }
     return {
       meta: [
         { title: `${post.title} — Блог НейроМаркет` },
@@ -24,7 +70,7 @@ export const Route = createFileRoute("/blog/$slug")({
         { property: "og:title", content: post.title },
         { property: "og:description", content: desc },
         { property: "og:type", content: "article" },
-        { property: "og:url", content: `/blog/${params.slug}` },
+        { property: "og:url", content: url },
         ...(post.cover_image_url
           ? [{ property: "og:image", content: post.cover_image_url }]
           : []),
@@ -32,27 +78,11 @@ export const Route = createFileRoute("/blog/$slug")({
           ? [{ property: "article:published_time", content: post.published_at }]
           : []),
       ],
-      links: [{ rel: "canonical", href: `/blog/${params.slug}` }],
-      scripts: [
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BlogPosting",
-            headline: post.title,
-            description: desc,
-            image: post.cover_image_url || undefined,
-            datePublished: post.published_at,
-            dateModified: post.updated_at,
-            author: { "@type": "Person", name: "Мария Хабарова" },
-            publisher: { "@type": "Organization", name: "НейроМаркет" },
-            mainEntityOfPage: `/blog/${params.slug}`,
-            keywords: post.tags?.join(", "),
-          }),
-        },
-      ],
+      links: [{ rel: "canonical", href: url }],
+      scripts,
     };
   },
+
   notFoundComponent: () => (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <SiteHeader />
