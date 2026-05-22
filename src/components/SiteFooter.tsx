@@ -36,8 +36,6 @@ export function SiteFooter({ hideLocation }: { hideLocation?: boolean }) {
           <div>© {new Date().getFullYear()} {SITE.brand}. {SITE.expert}.</div>
           <div className="flex flex-wrap items-center gap-3">
             <Link to="/privacy" className="hover:text-primary">Политика конфиденциальности</Link>
-            <span>·</span>
-            <a href="/privacy-policy.pdf" target="_blank" rel="noreferrer" className="hover:text-primary">Политика конфиденциальности</a>
           </div>
         </div>
       </div>
