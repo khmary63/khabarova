@@ -4,6 +4,9 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { SITE } from "@/lib/site";
 import { ArrowRight } from "lucide-react";
 import { getSiteSettings } from "@/lib/site-settings.functions";
+import { SITE_URL, breadcrumbSchema, serviceSchema } from "@/lib/seo";
+
+const URL = `${SITE_URL}/apps`;
 
 export const Route = createFileRoute("/apps")({
   loader: async () => {
@@ -22,12 +25,35 @@ export const Route = createFileRoute("/apps")({
       { property: "og:title", content: "Приложения и услуги вайбкодинга" },
       {
         property: "og:description",
-        content: "Готовые приложения и услуги по вайбкодингу от Марии.",
+        content: "Готовые приложения и услуги по вайбкодингу от Марии Хабаровой: MVP за выходные, ИИ-фичи в продукт, обучение.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/apps" },
+      { property: "og:url", content: URL },
     ],
-    links: [{ rel: "canonical", href: "/apps" }],
+    links: [{ rel: "canonical", href: URL }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(
+          serviceSchema({
+            name: "Вайбкодинг: MVP и ИИ-фичи под ключ",
+            description:
+              "Быстрая разработка веб-сервисов, MVP и ИИ-инструментов методом вайбкодинга. MVP за выходные от 60 000 ₽, ИИ-фичи в продукт от 35 000 ₽, менторство от 8 000 ₽/час.",
+            url: "/apps",
+            serviceType: "Вайбкодинг, MVP-разработка, интеграция ИИ",
+          }),
+        ),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(
+          breadcrumbSchema([
+            { name: "Главная", path: "/" },
+            { name: "Приложения и вайбкодинг", path: "/apps" },
+          ]),
+        ),
+      },
+    ],
   }),
   component: AppsPage,
 });
