@@ -48,9 +48,10 @@ function AdminPage() {
   const [posts, setPosts] = useState<AdminPost[]>([]);
   const [editing, setEditing] = useState<Partial<EditPost> | null>(null);
   const [loading, setLoading] = useState(false);
-  const [visibility, setVisibility] = useState<{ apps: boolean; blog: boolean }>({
+  const [visibility, setVisibility] = useState<{ apps: boolean; blog: boolean; reviews: boolean }>({
     apps: true,
     blog: true,
+    reviews: true,
   });
 
   const listFn = useServerFn(adminListPosts);
@@ -337,6 +338,16 @@ function AdminPage() {
                   />
                   <span>
                     Показывать страницу <span className="font-medium">«Блог»</span> (/blog)
+                  </span>
+                </label>
+                <label className="flex items-center gap-3 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={visibility.reviews}
+                    onChange={(e) => toggleVisibility("reviews", e.target.checked)}
+                  />
+                  <span>
+                    Показывать страницу <span className="font-medium">«Отзывы»</span> (/reviews)
                   </span>
                 </label>
               </div>

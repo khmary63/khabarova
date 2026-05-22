@@ -6,11 +6,12 @@ import logo from "@/assets/logo.png";
 
 export function SiteHeader() {
   const rootData = useLoaderData({ from: "__root__" }) as
-    | { apps?: boolean; blog?: boolean }
+    | { apps?: boolean; blog?: boolean; reviews?: boolean }
     | undefined;
   const settings = {
     apps: rootData?.apps ?? true,
     blog: rootData?.blog ?? true,
+    reviews: rootData?.reviews ?? true,
   };
 
 
@@ -51,6 +52,9 @@ export function SiteHeader() {
           )}
           {settings.blog && (
             <Link to="/blog" className="transition hover:text-foreground" activeProps={{ className: "text-foreground" }}>Блог</Link>
+          )}
+          {settings.reviews && (
+            <Link to="/reviews" className="transition hover:text-foreground" activeProps={{ className: "text-foreground" }}>Отзывы</Link>
           )}
           <Link to="/contacts" className="transition hover:text-foreground" activeProps={{ className: "text-foreground" }}>Контакты</Link>
         </nav>
