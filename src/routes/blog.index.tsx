@@ -64,9 +64,9 @@ function BlogIndex() {
           <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight md:text-5xl">
             ИИ-продавцы, кейсы, автоматизация, вайбкодинг
           </h1>
-          <p className="mt-3 text-muted-foreground">
-            Практика внедрения ИИ-продавцов, нейроворонок и онлайн-записи. Без воды — только то,
-            что работает на конверсию.
+          <p className="mt-3 whitespace-pre-line text-muted-foreground">
+            Практика внедрения ИИ-продавцов, нейроворонок, онлайн-записи и прочих "фишек".{"\n"}
+            Без воды — только то, что работает на конверсию.
           </p>
         </header>
 
