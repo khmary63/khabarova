@@ -17,7 +17,7 @@ export const Route = createFileRoute("/blog/")({
   },
   head: ({ loaderData }) => ({
     meta: [
-      { title: "Блог НейроМаркет — ИИ-продавцы, кейсы, автоматизация" },
+      { title: "Блог НейроМаркет — ИИ-продавцы, кейсы, автоматизация, вайбкодинг" },
       {
         name: "description",
         content:
