@@ -4,6 +4,9 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { SITE } from "@/lib/site";
 import { Quote, Star } from "lucide-react";
 import { getSiteSettings } from "@/lib/site-settings.functions";
+import { SITE_URL, breadcrumbSchema, ORG_ID } from "@/lib/seo";
+
+const URL = `${SITE_URL}/reviews`;
 
 export const Route = createFileRoute("/reviews")({
   loader: async () => {
@@ -25,9 +28,44 @@ export const Route = createFileRoute("/reviews")({
         content: "Что говорят клиенты о внедрении ИИ-продавцов от Марии Хабаровой.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/reviews" },
+      { property: "og:url", content: URL },
     ],
-    links: [{ rel: "canonical", href: "/reviews" }],
+    links: [{ rel: "canonical", href: URL }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "@id": ORG_ID,
+          name: SITE.brand,
+          url: SITE_URL,
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: "5",
+            reviewCount: "6",
+            bestRating: "5",
+            worstRating: "1",
+          },
+          review: reviews.map((r) => ({
+            "@type": "Review",
+            author: { "@type": "Person", name: r.name },
+            reviewBody: r.text,
+            reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+            itemReviewed: { "@id": ORG_ID },
+          })),
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(
+          breadcrumbSchema([
+            { name: "Главная", path: "/" },
+            { name: "Отзывы", path: "/reviews" },
+          ]),
+        ),
+      },
+    ],
   }),
   component: ReviewsPage,
 });
