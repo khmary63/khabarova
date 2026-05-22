@@ -69,15 +69,6 @@ function ContactsPage() {
               <Link to="/privacy" className="hover:text-primary">
                 Политика конфиденциальности
               </Link>
-              {" · "}
-              <a
-                href="/privacy-policy.pdf"
-                target="_blank"
-                rel="noreferrer"
-                className="text-muted-foreground hover:text-primary"
-              >
-                PDF
-              </a>
             </li>
             <li className="text-muted-foreground">
               Работаем по договору и NDA

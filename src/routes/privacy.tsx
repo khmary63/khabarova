@@ -36,14 +36,6 @@ function PrivacyPage() {
         </p>
 
         <div className="mt-6 flex flex-wrap gap-3">
-          <a
-            href="/privacy-policy.pdf"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm hover:border-primary hover:text-primary"
-          >
-            Политика конфиденциальности
-          </a>
           <Link
             to="/"
             className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm hover:border-primary hover:text-primary"
