@@ -202,10 +202,6 @@ function AdminPage() {
   async function handleSave(e: FormEvent) {
     e.preventDefault();
     if (!editing) return;
-    if (editing.published && !seoOptimized) {
-      toast.error("Перед публикацией нажмите «SEO-оптимизация»");
-      return;
-    }
     const html = editing.contentHtml || "";
     const markdown = html.trim() ? turndown.turndown(html) : "";
     if (!markdown.trim()) {
