@@ -149,18 +149,34 @@ function ReviewsPage() {
               Расскажите о своих задачах — подберём, как внедрить ИИ-продавца
               именно в ваш бизнес.
             </p>
-            <div className="flex flex-col items-center justify-center gap-4 pt-2 sm:flex-row">
+            <div className="flex flex-col items-center justify-center gap-3 pt-2 sm:flex-row sm:flex-wrap">
               <a
                 href={SITE.whatsapp}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full rounded-2xl bg-primary px-8 py-4 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-105 hover:bg-primary/90 active:scale-95 sm:w-auto"
+                className="w-full rounded-2xl bg-[#25D366] px-6 py-4 text-sm font-bold text-white shadow-lg shadow-[#25D366]/20 transition-all hover:scale-105 hover:bg-[#25D366]/90 active:scale-95 sm:w-auto"
               >
                 Написать в WhatsApp
               </a>
               <a
+                href={SITE.telegram}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full rounded-2xl bg-[#229ED9] px-6 py-4 text-sm font-bold text-white shadow-lg shadow-[#229ED9]/20 transition-all hover:scale-105 hover:bg-[#229ED9]/90 active:scale-95 sm:w-auto"
+              >
+                Написать в Telegram
+              </a>
+              <a
+                href={SITE.max}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full rounded-2xl bg-foreground px-6 py-4 text-sm font-bold text-background shadow-lg transition-all hover:scale-105 hover:bg-foreground/90 active:scale-95 sm:w-auto"
+              >
+                Написать в Max
+              </a>
+              <a
                 href="/#lead"
-                className="w-full rounded-2xl border border-white/10 bg-white/5 px-8 py-4 text-sm font-bold text-foreground transition-all hover:bg-white/10 sm:w-auto"
+                className="w-full rounded-2xl border border-white/10 bg-white/5 px-6 py-4 text-sm font-bold text-foreground transition-all hover:bg-white/10 sm:w-auto"
               >
                 Бесплатный ИИ-аудит
               </a>
