@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LandingPage } from "@/components/LandingPage";
+import { FAQ_ITEMS } from "@/components/sections/Faq";
 import { VARIANTS, SITE } from "@/lib/site";
 
 const cfg = VARIANTS.main;
