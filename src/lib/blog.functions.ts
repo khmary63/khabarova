@@ -350,3 +350,38 @@ ${data.content}
       return { ok: false as const, error: "Сетевая ошибка" };
     }
   });
+
+export const republishToTelegram = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({ token: z.string().min(1), id: z.string().uuid() }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    const expected = process.env.BLOG_ADMIN_TOKEN;
+    if (!expected || data.token !== expected) {
+      return { ok: false as const, error: "Неверный пароль" };
+    }
+    const { data: post, error } = await supabaseAdmin
+      .from("posts")
+      .select("id, slug, title, excerpt, tags, cover_image_url, published")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (error || !post) {
+      return { ok: false as const, error: error?.message || "Статья не найдена" };
+    }
+    if (!post.published) {
+      return { ok: false as const, error: "Сначала опубликуйте статью" };
+    }
+    const res = await postBlogToTelegram({
+      title: post.title as string,
+      excerpt: (post.excerpt as string) || "",
+      slug: post.slug as string,
+      tags: (post.tags as string[]) || [],
+      coverImageUrl: (post.cover_image_url as string | null) || null,
+    });
+    if (!res.ok) return { ok: false as const, error: res.error };
+    await supabaseAdmin
+      .from("posts")
+      .update({ telegram_posted_at: new Date().toISOString() })
+      .eq("id", data.id);
+    return { ok: true as const };
+  });
