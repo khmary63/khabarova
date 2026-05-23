@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { postBlogToTelegram } from "@/lib/telegram.server";
+
 
 export type PostListItem = {
   id: string;
