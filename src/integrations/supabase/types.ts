@@ -142,6 +142,7 @@ export type Database = {
           published_at: string | null
           slug: string
           tags: string[]
+          telegram_posted_at: string | null
           title: string
           updated_at: string
         }
@@ -155,6 +156,7 @@ export type Database = {
           published_at?: string | null
           slug: string
           tags?: string[]
+          telegram_posted_at?: string | null
           title: string
           updated_at?: string
         }
@@ -168,6 +170,7 @@ export type Database = {
           published_at?: string | null
           slug?: string
           tags?: string[]
+          telegram_posted_at?: string | null
           title?: string
           updated_at?: string
         }
