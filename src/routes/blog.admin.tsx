@@ -64,8 +64,10 @@ function AdminPage() {
   const delFn = useServerFn(adminDeletePost);
   const uploadFn = useServerFn(uploadBlogImage);
   const seoFn = useServerFn(optimizeForSeo);
+  const tgFn = useServerFn(republishToTelegram);
   const settingsFn = useServerFn(getSiteSettings);
   const updateSettingFn = useServerFn(updateSiteSetting);
+
   const [seoLoading, setSeoLoading] = useState(false);
   const [seoOptimized, setSeoOptimized] = useState(false);
 
