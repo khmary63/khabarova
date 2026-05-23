@@ -38,7 +38,9 @@ type AdminPost = {
   published: boolean;
   published_at: string | null;
   updated_at: string;
+  telegram_posted_at: string | null;
 };
+
 
 type EditPost = AdminPost & { content: string; contentHtml: string; cover_image_url: string | null };
 
