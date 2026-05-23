@@ -384,7 +384,14 @@ function AdminPage() {
                       />
                       <h2 className="truncate font-medium">{p.title || "(без названия)"}</h2>
                     </div>
-                    <p className="mt-1 truncate text-xs text-muted-foreground">/blog/{p.slug}</p>
+                    <p className="mt-1 truncate text-xs text-muted-foreground">
+                      /blog/{p.slug}
+                      {p.telegram_posted_at ? (
+                        <span className="ml-2 text-emerald-600">· отправлено в Telegram/Дзен</span>
+                      ) : p.published ? (
+                        <span className="ml-2 text-amber-600">· не отправлено в Telegram</span>
+                      ) : null}
+                    </p>
                   </div>
                   <div className="flex shrink-0 gap-2">
                     {p.published && (
@@ -396,6 +403,15 @@ function AdminPage() {
                       >
                         Открыть
                       </Link>
+                    )}
+                    {p.published && (
+                      <button
+                        onClick={() => sendToTelegram(p.id)}
+                        className="rounded-md border border-border px-3 py-1.5 text-xs"
+                        title="Опубликовать в Telegram-канал. Дзен подхватит автоматически."
+                      >
+                        {p.telegram_posted_at ? "↻ В Telegram" : "→ В Telegram"}
+                      </button>
                     )}
                     <button
                       onClick={() => openEditor(p.id)}
@@ -410,6 +426,7 @@ function AdminPage() {
                       Удалить
                     </button>
                   </div>
+
                 </li>
               ))}
               {posts.length === 0 && (
