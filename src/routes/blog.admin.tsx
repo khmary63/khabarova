@@ -234,9 +234,26 @@ function AdminPage() {
       return;
     }
     toast.success("Сохранено");
+    if (res.telegram?.posted) {
+      toast.success("Опубликовано в Telegram → автоматически уйдёт в Дзен");
+    } else if (res.telegram?.error) {
+      toast.error(`Telegram: ${res.telegram.error}`);
+    }
     setEditing(null);
     void refresh();
   }
+
+  async function sendToTelegram(id: string) {
+    if (!confirm("Опубликовать (или переопубликовать) статью в Telegram-канал?")) return;
+    const res = await tgFn({ data: { token, id } });
+    if (!res.ok) {
+      toast.error(res.error || "Не удалось отправить");
+      return;
+    }
+    toast.success("Отправлено в Telegram → подхватится Дзеном");
+    void refresh();
+  }
+
 
   async function handleDelete(id: string) {
     if (!confirm("Удалить статью?")) return;
