@@ -13,7 +13,9 @@ import {
   adminDeletePost,
   uploadBlogImage,
   optimizeForSeo,
+  republishToTelegram,
 } from "@/lib/blog.functions";
+
 import { getSiteSettings, updateSiteSetting } from "@/lib/site-settings.functions";
 import { toast } from "sonner";
 
@@ -36,7 +38,9 @@ type AdminPost = {
   published: boolean;
   published_at: string | null;
   updated_at: string;
+  telegram_posted_at: string | null;
 };
+
 
 type EditPost = AdminPost & { content: string; contentHtml: string; cover_image_url: string | null };
 
@@ -60,8 +64,10 @@ function AdminPage() {
   const delFn = useServerFn(adminDeletePost);
   const uploadFn = useServerFn(uploadBlogImage);
   const seoFn = useServerFn(optimizeForSeo);
+  const tgFn = useServerFn(republishToTelegram);
   const settingsFn = useServerFn(getSiteSettings);
   const updateSettingFn = useServerFn(updateSiteSetting);
+
   const [seoLoading, setSeoLoading] = useState(false);
   const [seoOptimized, setSeoOptimized] = useState(false);
 
@@ -228,9 +234,26 @@ function AdminPage() {
       return;
     }
     toast.success("Сохранено");
+    if (res.telegram?.posted) {
+      toast.success("Опубликовано в Telegram → автоматически уйдёт в Дзен");
+    } else if (res.telegram?.error) {
+      toast.error(`Telegram: ${res.telegram.error}`);
+    }
     setEditing(null);
     void refresh();
   }
+
+  async function sendToTelegram(id: string) {
+    if (!confirm("Опубликовать (или переопубликовать) статью в Telegram-канал?")) return;
+    const res = await tgFn({ data: { token, id } });
+    if (!res.ok) {
+      toast.error(res.error || "Не удалось отправить");
+      return;
+    }
+    toast.success("Отправлено в Telegram → подхватится Дзеном");
+    void refresh();
+  }
+
 
   async function handleDelete(id: string) {
     if (!confirm("Удалить статью?")) return;
@@ -361,7 +384,14 @@ function AdminPage() {
                       />
                       <h2 className="truncate font-medium">{p.title || "(без названия)"}</h2>
                     </div>
-                    <p className="mt-1 truncate text-xs text-muted-foreground">/blog/{p.slug}</p>
+                    <p className="mt-1 truncate text-xs text-muted-foreground">
+                      /blog/{p.slug}
+                      {p.telegram_posted_at ? (
+                        <span className="ml-2 text-emerald-600">· отправлено в Telegram/Дзен</span>
+                      ) : p.published ? (
+                        <span className="ml-2 text-amber-600">· не отправлено в Telegram</span>
+                      ) : null}
+                    </p>
                   </div>
                   <div className="flex shrink-0 gap-2">
                     {p.published && (
@@ -373,6 +403,15 @@ function AdminPage() {
                       >
                         Открыть
                       </Link>
+                    )}
+                    {p.published && (
+                      <button
+                        onClick={() => sendToTelegram(p.id)}
+                        className="rounded-md border border-border px-3 py-1.5 text-xs"
+                        title="Опубликовать в Telegram-канал. Дзен подхватит автоматически."
+                      >
+                        {p.telegram_posted_at ? "↻ В Telegram" : "→ В Telegram"}
+                      </button>
                     )}
                     <button
                       onClick={() => openEditor(p.id)}
@@ -387,6 +426,7 @@ function AdminPage() {
                       Удалить
                     </button>
                   </div>
+
                 </li>
               ))}
               {posts.length === 0 && (

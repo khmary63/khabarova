@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { postBlogToTelegram } from "@/lib/telegram.server";
+
 
 export type PostListItem = {
   id: string;
@@ -94,6 +96,18 @@ export const upsertPost = createServerFn({ method: "POST" })
       return { ok: false as const, error: "Неверный пароль" };
     }
     const slug = (data.slug?.trim() || slugify(data.title)) || `post-${Date.now()}`;
+
+    // Узнаём, публиковали ли мы уже эту статью в Telegram, чтобы не дублировать.
+    let alreadyPostedToTelegram = false;
+    if (data.id) {
+      const { data: existing } = await supabaseAdmin
+        .from("posts")
+        .select("telegram_posted_at")
+        .eq("id", data.id)
+        .maybeSingle();
+      alreadyPostedToTelegram = Boolean(existing?.telegram_posted_at);
+    }
+
     const payload = {
       slug,
       title: data.title,
@@ -105,14 +119,40 @@ export const upsertPost = createServerFn({ method: "POST" })
       published_at: data.published ? new Date().toISOString() : null,
     };
     const query = data.id
-      ? supabaseAdmin.from("posts").update(payload).eq("id", data.id).select("slug").single()
-      : supabaseAdmin.from("posts").insert(payload).select("slug").single();
+      ? supabaseAdmin.from("posts").update(payload).eq("id", data.id).select("id, slug").single()
+      : supabaseAdmin.from("posts").insert(payload).select("id, slug").single();
     const { data: row, error } = await query;
     if (error) {
       console.error("[upsertPost]", error);
       return { ok: false as const, error: error.message };
     }
-    return { ok: true as const, slug: row.slug as string };
+
+    // Автопостинг в Telegram-канал при первой публикации.
+    // Канал затем синхронизируется с Дзеном через их официального бота
+    // (https://dzen.ru/help/ru/channel/cross-platform.html).
+    let telegram: { posted: boolean; error?: string } = { posted: false };
+    if (data.published && !alreadyPostedToTelegram) {
+      const tgRes = await postBlogToTelegram({
+        title: data.title,
+        excerpt: data.excerpt,
+        slug: row.slug as string,
+        tags: data.tags,
+        coverImageUrl: data.cover_image_url || null,
+      });
+      if (tgRes.ok) {
+        await supabaseAdmin
+          .from("posts")
+          .update({ telegram_posted_at: new Date().toISOString() })
+          .eq("id", row.id);
+        telegram = { posted: true };
+      } else {
+        telegram = { posted: false, error: tgRes.error };
+        console.error("[upsertPost] telegram post failed", tgRes.error);
+      }
+    }
+
+    return { ok: true as const, slug: row.slug as string, telegram };
+
   });
 
 export const adminListPosts = createServerFn({ method: "POST" })
@@ -124,9 +164,10 @@ export const adminListPosts = createServerFn({ method: "POST" })
     }
     const { data: rows, error } = await supabaseAdmin
       .from("posts")
-      .select("id, slug, title, excerpt, tags, published, published_at, updated_at")
+      .select("id, slug, title, excerpt, tags, published, published_at, updated_at, telegram_posted_at")
       .order("updated_at", { ascending: false })
       .limit(200);
+
     if (error) return { ok: false as const, error: error.message, posts: [] };
     return { ok: true as const, posts: rows ?? [] };
   });
@@ -308,4 +349,39 @@ ${data.content}
       console.error("[optimizeForSeo]", e);
       return { ok: false as const, error: "Сетевая ошибка" };
     }
+  });
+
+export const republishToTelegram = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({ token: z.string().min(1), id: z.string().uuid() }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    const expected = process.env.BLOG_ADMIN_TOKEN;
+    if (!expected || data.token !== expected) {
+      return { ok: false as const, error: "Неверный пароль" };
+    }
+    const { data: post, error } = await supabaseAdmin
+      .from("posts")
+      .select("id, slug, title, excerpt, tags, cover_image_url, published")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (error || !post) {
+      return { ok: false as const, error: error?.message || "Статья не найдена" };
+    }
+    if (!post.published) {
+      return { ok: false as const, error: "Сначала опубликуйте статью" };
+    }
+    const res = await postBlogToTelegram({
+      title: post.title as string,
+      excerpt: (post.excerpt as string) || "",
+      slug: post.slug as string,
+      tags: (post.tags as string[]) || [],
+      coverImageUrl: (post.cover_image_url as string | null) || null,
+    });
+    if (!res.ok) return { ok: false as const, error: res.error };
+    await supabaseAdmin
+      .from("posts")
+      .update({ telegram_posted_at: new Date().toISOString() })
+      .eq("id", data.id);
+    return { ok: true as const };
   });
