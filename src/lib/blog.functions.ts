@@ -96,6 +96,18 @@ export const upsertPost = createServerFn({ method: "POST" })
       return { ok: false as const, error: "Неверный пароль" };
     }
     const slug = (data.slug?.trim() || slugify(data.title)) || `post-${Date.now()}`;
+
+    // Узнаём, публиковали ли мы уже эту статью в Telegram, чтобы не дублировать.
+    let alreadyPostedToTelegram = false;
+    if (data.id) {
+      const { data: existing } = await supabaseAdmin
+        .from("posts")
+        .select("telegram_posted_at")
+        .eq("id", data.id)
+        .maybeSingle();
+      alreadyPostedToTelegram = Boolean(existing?.telegram_posted_at);
+    }
+
     const payload = {
       slug,
       title: data.title,
@@ -107,14 +119,40 @@ export const upsertPost = createServerFn({ method: "POST" })
       published_at: data.published ? new Date().toISOString() : null,
     };
     const query = data.id
-      ? supabaseAdmin.from("posts").update(payload).eq("id", data.id).select("slug").single()
-      : supabaseAdmin.from("posts").insert(payload).select("slug").single();
+      ? supabaseAdmin.from("posts").update(payload).eq("id", data.id).select("id, slug").single()
+      : supabaseAdmin.from("posts").insert(payload).select("id, slug").single();
     const { data: row, error } = await query;
     if (error) {
       console.error("[upsertPost]", error);
       return { ok: false as const, error: error.message };
     }
-    return { ok: true as const, slug: row.slug as string };
+
+    // Автопостинг в Telegram-канал при первой публикации.
+    // Канал затем синхронизируется с Дзеном через их официального бота
+    // (https://dzen.ru/help/ru/channel/cross-platform.html).
+    let telegram: { posted: boolean; error?: string } = { posted: false };
+    if (data.published && !alreadyPostedToTelegram) {
+      const tgRes = await postBlogToTelegram({
+        title: data.title,
+        excerpt: data.excerpt,
+        slug: row.slug as string,
+        tags: data.tags,
+        coverImageUrl: data.cover_image_url || null,
+      });
+      if (tgRes.ok) {
+        await supabaseAdmin
+          .from("posts")
+          .update({ telegram_posted_at: new Date().toISOString() })
+          .eq("id", row.id);
+        telegram = { posted: true };
+      } else {
+        telegram = { posted: false, error: tgRes.error };
+        console.error("[upsertPost] telegram post failed", tgRes.error);
+      }
+    }
+
+    return { ok: true as const, slug: row.slug as string, telegram };
+
   });
 
 export const adminListPosts = createServerFn({ method: "POST" })
