@@ -164,9 +164,10 @@ export const adminListPosts = createServerFn({ method: "POST" })
     }
     const { data: rows, error } = await supabaseAdmin
       .from("posts")
-      .select("id, slug, title, excerpt, tags, published, published_at, updated_at")
+      .select("id, slug, title, excerpt, tags, published, published_at, updated_at, telegram_posted_at")
       .order("updated_at", { ascending: false })
       .limit(200);
+
     if (error) return { ok: false as const, error: error.message, posts: [] };
     return { ok: true as const, posts: rows ?? [] };
   });
