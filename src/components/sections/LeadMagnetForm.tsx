@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Download, Loader2, Check } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { submitLeadMagnet } from "@/lib/blog.functions";
@@ -120,7 +121,11 @@ export function LeadMagnetForm({ slug, title, description, buttonLabel }: Props)
             )}
           </button>
           <p className="sm:col-span-2 text-[11px] text-muted-foreground">
-            Нажимая кнопку, вы соглашаетесь на обработку персональных данных.
+            Нажимая кнопку, вы соглашаетесь на{" "}
+            <Link to="/privacy" className="underline hover:text-primary">
+              обработку персональных данных
+            </Link>
+            .
           </p>
         </form>
       )}
