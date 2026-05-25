@@ -155,6 +155,14 @@ function PostPage() {
             className="prose-blog mt-10"
             dangerouslySetInnerHTML={{ __html: html }}
           />
+          {post.lead_magnet_enabled && post.lead_magnet_title && (
+            <LeadMagnetForm
+              slug={post.slug}
+              title={post.lead_magnet_title}
+              description={post.lead_magnet_description}
+              buttonLabel={post.lead_magnet_button_label}
+            />
+          )}
         </article>
       </main>
       <SiteFooter />
