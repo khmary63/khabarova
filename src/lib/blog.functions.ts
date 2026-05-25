@@ -53,7 +53,7 @@ export const getPostBySlug = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const { data: row, error } = await supabaseAdmin
       .from("posts")
-      .select("id, slug, title, excerpt, content, cover_image_url, tags, published_at, updated_at")
+      .select("id, slug, title, excerpt, content, cover_image_url, tags, published_at, updated_at, lead_magnet_enabled, lead_magnet_title, lead_magnet_description, lead_magnet_button_label, lead_magnet_file_name")
       .eq("slug", data.slug)
       .eq("published", true)
       .maybeSingle();
