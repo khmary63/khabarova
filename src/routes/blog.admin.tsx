@@ -150,6 +150,45 @@ function AdminPage() {
     } catch (e) {
       console.error(e);
     }
+    void refreshSubmissions(t);
+  }
+
+  async function refreshSubmissions(t = token) {
+    const res = await listSubmissionsFn({ data: { token: t } });
+    if (res.ok) setSubmissions(res.submissions);
+  }
+
+  function exportSubmissionsCsv() {
+    if (submissions.length === 0) {
+      toast.error("Пока нет заявок для выгрузки");
+      return;
+    }
+    const escape = (v: string | null) => {
+      const s = (v ?? "").replace(/"/g, '""');
+      return `"${s}"`;
+    };
+    const header = ["Дата", "Имя", "Телефон", "Лид-магнит", "Статья (slug)"].join(",");
+    const lines = submissions.map((s) =>
+      [
+        new Date(s.created_at).toLocaleString("ru-RU"),
+        s.name,
+        s.phone,
+        s.magnet_title,
+        s.post_slug,
+      ]
+        .map(escape)
+        .join(","),
+    );
+    const csv = "\uFEFF" + [header, ...lines].join("\r\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `lead-magnet-submissions-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   }
 
   async function toggleVisibility(key: "apps" | "blog" | "reviews", enabled: boolean) {
