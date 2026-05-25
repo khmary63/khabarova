@@ -43,7 +43,17 @@ type AdminPost = {
 };
 
 
-type EditPost = AdminPost & { content: string; contentHtml: string; cover_image_url: string | null };
+type EditPost = AdminPost & {
+  content: string;
+  contentHtml: string;
+  cover_image_url: string | null;
+  lead_magnet_enabled: boolean;
+  lead_magnet_title: string | null;
+  lead_magnet_description: string | null;
+  lead_magnet_button_label: string | null;
+  lead_magnet_file_path: string | null;
+  lead_magnet_file_name: string | null;
+};
 
 const TOKEN_KEY = "blog-admin-token";
 
