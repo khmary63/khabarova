@@ -15,6 +15,7 @@ import {
   optimizeForSeo,
   republishToTelegram,
   uploadLeadMagnetFile,
+  adminListLeadMagnetSubmissions,
 } from "@/lib/blog.functions";
 
 import { getSiteSettings, updateSiteSetting } from "@/lib/site-settings.functions";
@@ -61,6 +62,16 @@ function AdminPage() {
   const [token, setToken] = useState("");
   const [authed, setAuthed] = useState(false);
   const [posts, setPosts] = useState<AdminPost[]>([]);
+  const [submissions, setSubmissions] = useState<
+    Array<{
+      id: string;
+      name: string;
+      phone: string;
+      post_slug: string | null;
+      magnet_title: string | null;
+      created_at: string;
+    }>
+  >([]);
   const [editing, setEditing] = useState<Partial<EditPost> | null>(null);
   const [loading, setLoading] = useState(false);
   const [visibility, setVisibility] = useState<{ apps: boolean; blog: boolean; reviews: boolean }>({
@@ -77,6 +88,7 @@ function AdminPage() {
   const seoFn = useServerFn(optimizeForSeo);
   const tgFn = useServerFn(republishToTelegram);
   const uploadMagnetFn = useServerFn(uploadLeadMagnetFile);
+  const listSubmissionsFn = useServerFn(adminListLeadMagnetSubmissions);
   const settingsFn = useServerFn(getSiteSettings);
   const updateSettingFn = useServerFn(updateSiteSetting);
 
@@ -138,6 +150,45 @@ function AdminPage() {
     } catch (e) {
       console.error(e);
     }
+    void refreshSubmissions(t);
+  }
+
+  async function refreshSubmissions(t = token) {
+    const res = await listSubmissionsFn({ data: { token: t } });
+    if (res.ok) setSubmissions(res.submissions);
+  }
+
+  function exportSubmissionsCsv() {
+    if (submissions.length === 0) {
+      toast.error("Пока нет заявок для выгрузки");
+      return;
+    }
+    const escape = (v: string | null) => {
+      const s = (v ?? "").replace(/"/g, '""');
+      return `"${s}"`;
+    };
+    const header = ["Дата", "Имя", "Телефон", "Лид-магнит", "Статья (slug)"].join(",");
+    const lines = submissions.map((s) =>
+      [
+        new Date(s.created_at).toLocaleString("ru-RU"),
+        s.name,
+        s.phone,
+        s.magnet_title,
+        s.post_slug,
+      ]
+        .map(escape)
+        .join(","),
+    );
+    const csv = "\uFEFF" + [header, ...lines].join("\r\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `lead-magnet-submissions-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   }
 
   async function toggleVisibility(key: "apps" | "blog" | "reviews", enabled: boolean) {
@@ -413,6 +464,94 @@ function AdminPage() {
                 </label>
               </div>
             </section>
+
+            <section className="mb-8 rounded-2xl border border-border bg-surface p-5">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="font-display text-base font-semibold">Заявки на лид-магниты</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Люди, которые скачали материалы через формы внутри статей. Всего: {submissions.length}.
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => void refreshSubmissions()}
+                    className="rounded-full border border-border px-3 py-1.5 text-xs"
+                  >
+                    Обновить
+                  </button>
+                  <button
+                    onClick={exportSubmissionsCsv}
+                    disabled={submissions.length === 0}
+                    className="rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground disabled:opacity-50"
+                  >
+                    Скачать CSV
+                  </button>
+                </div>
+              </div>
+
+              {submissions.length === 0 ? (
+                <p className="mt-4 rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+                  Пока никто не оставил заявку.
+                </p>
+              ) : (
+                <div className="mt-4 max-h-96 overflow-auto rounded-lg border border-border">
+                  <table className="w-full text-left text-sm">
+                    <thead className="sticky top-0 bg-surface text-xs uppercase text-muted-foreground">
+                      <tr>
+                        <th className="px-3 py-2 font-medium">Дата</th>
+                        <th className="px-3 py-2 font-medium">Имя</th>
+                        <th className="px-3 py-2 font-medium">Телефон</th>
+                        <th className="px-3 py-2 font-medium">Лид-магнит</th>
+                        <th className="px-3 py-2 font-medium">Статья</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                      {submissions.map((s) => (
+                        <tr key={s.id}>
+                          <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">
+                            {new Date(s.created_at).toLocaleString("ru-RU", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </td>
+                          <td className="px-3 py-2">{s.name}</td>
+                          <td className="px-3 py-2">
+                            <a
+                              href={`tel:${s.phone.replace(/\s/g, "")}`}
+                              className="hover:text-primary"
+                            >
+                              {s.phone}
+                            </a>
+                          </td>
+                          <td className="px-3 py-2 text-muted-foreground">
+                            {s.magnet_title || "—"}
+                          </td>
+                          <td className="px-3 py-2 text-xs text-muted-foreground">
+                            {s.post_slug ? (
+                              <Link
+                                to="/blog/$slug"
+                                params={{ slug: s.post_slug }}
+                                target="_blank"
+                                className="hover:text-primary"
+                              >
+                                /{s.post_slug}
+                              </Link>
+                            ) : (
+                              "—"
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+
 
             <ul className="divide-y divide-border rounded-2xl border border-border bg-surface">
               {posts.map((p) => (
