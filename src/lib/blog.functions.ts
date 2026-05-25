@@ -17,6 +17,11 @@ export type PostListItem = {
 export type PostFull = PostListItem & {
   content: string;
   updated_at: string;
+  lead_magnet_enabled: boolean;
+  lead_magnet_title: string | null;
+  lead_magnet_description: string | null;
+  lead_magnet_button_label: string | null;
+  lead_magnet_file_name: string | null;
 };
 
 export const listPosts = createServerFn({ method: "GET" })
