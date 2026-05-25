@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Download, Loader2, Check } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { submitLeadMagnet } from "@/lib/blog.functions";
