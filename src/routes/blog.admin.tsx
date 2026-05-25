@@ -62,6 +62,16 @@ function AdminPage() {
   const [token, setToken] = useState("");
   const [authed, setAuthed] = useState(false);
   const [posts, setPosts] = useState<AdminPost[]>([]);
+  const [submissions, setSubmissions] = useState<
+    Array<{
+      id: string;
+      name: string;
+      phone: string;
+      post_slug: string | null;
+      magnet_title: string | null;
+      created_at: string;
+    }>
+  >([]);
   const [editing, setEditing] = useState<Partial<EditPost> | null>(null);
   const [loading, setLoading] = useState(false);
   const [visibility, setVisibility] = useState<{ apps: boolean; blog: boolean; reviews: boolean }>({
