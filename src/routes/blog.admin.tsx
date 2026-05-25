@@ -239,6 +239,17 @@ function AdminPage() {
       toast.error("Текст статьи не может быть пустым");
       return;
     }
+    const magnetOn = !!editing.lead_magnet_enabled;
+    if (magnetOn) {
+      if (!editing.lead_magnet_title?.trim()) {
+        toast.error("Заполните заголовок лид-магнита");
+        return;
+      }
+      if (!editing.lead_magnet_file_path) {
+        toast.error("Загрузите PDF-файл лид-магнита");
+        return;
+      }
+    }
     setLoading(true);
     const res = await saveFn({
       data: {
@@ -251,6 +262,12 @@ function AdminPage() {
         cover_image_url: editing.cover_image_url || "",
         tags: editing.tags || [],
         published: editing.published ?? true,
+        lead_magnet_enabled: magnetOn,
+        lead_magnet_title: editing.lead_magnet_title || "",
+        lead_magnet_description: editing.lead_magnet_description || "",
+        lead_magnet_button_label: editing.lead_magnet_button_label || "",
+        lead_magnet_file_path: editing.lead_magnet_file_path || "",
+        lead_magnet_file_name: editing.lead_magnet_file_name || "",
       },
     });
     setLoading(false);
