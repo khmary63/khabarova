@@ -80,6 +80,44 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_magnet_submissions: {
+        Row: {
+          created_at: string
+          id: string
+          magnet_title: string | null
+          name: string
+          phone: string
+          post_id: string | null
+          post_slug: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          magnet_title?: string | null
+          name: string
+          phone: string
+          post_id?: string | null
+          post_slug?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          magnet_title?: string | null
+          name?: string
+          phone?: string
+          post_id?: string | null
+          post_slug?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_magnet_submissions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           created_at: string
@@ -138,6 +176,12 @@ export type Database = {
           created_at: string
           excerpt: string
           id: string
+          lead_magnet_button_label: string | null
+          lead_magnet_description: string | null
+          lead_magnet_enabled: boolean
+          lead_magnet_file_name: string | null
+          lead_magnet_file_path: string | null
+          lead_magnet_title: string | null
           published: boolean
           published_at: string | null
           slug: string
@@ -152,6 +196,12 @@ export type Database = {
           created_at?: string
           excerpt?: string
           id?: string
+          lead_magnet_button_label?: string | null
+          lead_magnet_description?: string | null
+          lead_magnet_enabled?: boolean
+          lead_magnet_file_name?: string | null
+          lead_magnet_file_path?: string | null
+          lead_magnet_title?: string | null
           published?: boolean
           published_at?: string | null
           slug: string
@@ -166,6 +216,12 @@ export type Database = {
           created_at?: string
           excerpt?: string
           id?: string
+          lead_magnet_button_label?: string | null
+          lead_magnet_description?: string | null
+          lead_magnet_enabled?: boolean
+          lead_magnet_file_name?: string | null
+          lead_magnet_file_path?: string | null
+          lead_magnet_title?: string | null
           published?: boolean
           published_at?: string | null
           slug?: string
