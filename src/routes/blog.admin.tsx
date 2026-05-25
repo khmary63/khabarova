@@ -14,6 +14,7 @@ import {
   uploadBlogImage,
   optimizeForSeo,
   republishToTelegram,
+  uploadLeadMagnetFile,
 } from "@/lib/blog.functions";
 
 import { getSiteSettings, updateSiteSetting } from "@/lib/site-settings.functions";
@@ -42,7 +43,17 @@ type AdminPost = {
 };
 
 
-type EditPost = AdminPost & { content: string; contentHtml: string; cover_image_url: string | null };
+type EditPost = AdminPost & {
+  content: string;
+  contentHtml: string;
+  cover_image_url: string | null;
+  lead_magnet_enabled: boolean;
+  lead_magnet_title: string | null;
+  lead_magnet_description: string | null;
+  lead_magnet_button_label: string | null;
+  lead_magnet_file_path: string | null;
+  lead_magnet_file_name: string | null;
+};
 
 const TOKEN_KEY = "blog-admin-token";
 
@@ -65,6 +76,7 @@ function AdminPage() {
   const uploadFn = useServerFn(uploadBlogImage);
   const seoFn = useServerFn(optimizeForSeo);
   const tgFn = useServerFn(republishToTelegram);
+  const uploadMagnetFn = useServerFn(uploadLeadMagnetFile);
   const settingsFn = useServerFn(getSiteSettings);
   const updateSettingFn = useServerFn(updateSiteSetting);
 
@@ -148,7 +160,20 @@ function AdminPage() {
   async function openEditor(id?: string) {
     setSeoOptimized(false);
     if (!id) {
-      setEditing({ title: "", excerpt: "", content: "", contentHtml: "", tags: [], published: false });
+      setEditing({
+        title: "",
+        excerpt: "",
+        content: "",
+        contentHtml: "",
+        tags: [],
+        published: false,
+        lead_magnet_enabled: false,
+        lead_magnet_title: "",
+        lead_magnet_description: "",
+        lead_magnet_button_label: "",
+        lead_magnet_file_path: "",
+        lead_magnet_file_name: "",
+      });
       return;
     }
     const res = await getFn({ data: { token, id } });
@@ -214,6 +239,17 @@ function AdminPage() {
       toast.error("Текст статьи не может быть пустым");
       return;
     }
+    const magnetOn = !!editing.lead_magnet_enabled;
+    if (magnetOn) {
+      if (!editing.lead_magnet_title?.trim()) {
+        toast.error("Заполните заголовок лид-магнита");
+        return;
+      }
+      if (!editing.lead_magnet_file_path) {
+        toast.error("Загрузите PDF-файл лид-магнита");
+        return;
+      }
+    }
     setLoading(true);
     const res = await saveFn({
       data: {
@@ -226,6 +262,12 @@ function AdminPage() {
         cover_image_url: editing.cover_image_url || "",
         tags: editing.tags || [],
         published: editing.published ?? true,
+        lead_magnet_enabled: magnetOn,
+        lead_magnet_title: editing.lead_magnet_title || "",
+        lead_magnet_description: editing.lead_magnet_description || "",
+        lead_magnet_button_label: editing.lead_magnet_button_label || "",
+        lead_magnet_file_path: editing.lead_magnet_file_path || "",
+        lead_magnet_file_name: editing.lead_magnet_file_name || "",
       },
     });
     setLoading(false);
@@ -560,6 +602,140 @@ function AdminPage() {
               />
               Опубликовать (иначе сохранится как черновик)
             </label>
+
+            <div className="rounded-2xl border border-border bg-surface p-4 space-y-3">
+              <label className="flex items-start gap-2 text-sm font-semibold">
+                <input
+                  type="checkbox"
+                  className="mt-1"
+                  checked={!!editing.lead_magnet_enabled}
+                  onChange={(e) =>
+                    setEditing({ ...editing, lead_magnet_enabled: e.target.checked })
+                  }
+                />
+                <span>
+                  Опубликовать лид-магнит вместе со статьёй
+                  <span className="block text-xs font-normal text-muted-foreground">
+                    Внутри статьи появится форма: имя + телефон. После заполнения посетитель скачает PDF, а контакт попадёт в базу.
+                  </span>
+                </span>
+              </label>
+
+              {editing.lead_magnet_enabled && (
+                <div className="space-y-3 border-t border-border pt-3">
+                  <Field label="Заголовок формы">
+                    <input
+                      maxLength={300}
+                      value={editing.lead_magnet_title || ""}
+                      onChange={(e) =>
+                        setEditing({ ...editing, lead_magnet_title: e.target.value })
+                      }
+                      placeholder="Например: Бесплатный чек-лист по юнит-экономике"
+                      className="input"
+                    />
+                  </Field>
+
+                  <Field label="Описание (что человек получит)">
+                    <textarea
+                      rows={3}
+                      maxLength={2000}
+                      value={editing.lead_magnet_description || ""}
+                      onChange={(e) =>
+                        setEditing({ ...editing, lead_magnet_description: e.target.value })
+                      }
+                      placeholder="Я подготовила для вас бесплатный чек-лист о том, как проверить свою юнит-экономику…"
+                      className="input"
+                    />
+                  </Field>
+
+                  <Field label="Подпись кнопки (необязательно)">
+                    <input
+                      maxLength={60}
+                      value={editing.lead_magnet_button_label || ""}
+                      onChange={(e) =>
+                        setEditing({ ...editing, lead_magnet_button_label: e.target.value })
+                      }
+                      placeholder="Скачать"
+                      className="input"
+                    />
+                  </Field>
+
+                  <Field label="PDF-файл лид-магнита">
+                    <div className="space-y-2">
+                      {editing.lead_magnet_file_path ? (
+                        <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-background p-2 text-sm">
+                          <span className="truncate">
+                            📎 {editing.lead_magnet_file_name || "Файл загружен"}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setEditing({
+                                ...editing,
+                                lead_magnet_file_path: "",
+                                lead_magnet_file_name: "",
+                              })
+                            }
+                            className="text-xs text-muted-foreground hover:text-destructive"
+                          >
+                            Удалить
+                          </button>
+                        </div>
+                      ) : null}
+                      <label className="cursor-pointer inline-block rounded-md border border-border bg-background px-3 py-1.5 text-xs hover:border-primary/40">
+                        {editing.lead_magnet_file_path ? "Заменить файл" : "Загрузить PDF"}
+                        <input
+                          type="file"
+                          accept="application/pdf,.pdf"
+                          hidden
+                          onChange={async (e) => {
+                            const f = e.target.files?.[0];
+                            e.target.value = "";
+                            if (!f) return;
+                            const base64 = await new Promise<string>((resolve, reject) => {
+                              const r = new FileReader();
+                              r.onload = () => {
+                                const result = r.result as string;
+                                const comma = result.indexOf(",");
+                                resolve(comma >= 0 ? result.slice(comma + 1) : result);
+                              };
+                              r.onerror = () => reject(r.error);
+                              r.readAsDataURL(f);
+                            });
+                            const res = await uploadMagnetFn({
+                              data: {
+                                token,
+                                filename: f.name,
+                                contentType: f.type || "application/pdf",
+                                base64,
+                              },
+                            });
+                            if (!res.ok) {
+                              toast.error(res.error || "Не удалось загрузить файл");
+                              return;
+                            }
+                            setEditing((prev) =>
+                              prev
+                                ? {
+                                    ...prev,
+                                    lead_magnet_file_path: res.path,
+                                    lead_magnet_file_name: res.filename,
+                                  }
+                                : prev,
+                            );
+                            toast.success("Файл загружен");
+                          }}
+                        />
+                      </label>
+                      <p className="text-xs text-muted-foreground">
+                        До 15 МБ. Ссылку получит только тот, кто оставил имя и телефон.
+                      </p>
+                    </div>
+                  </Field>
+                </div>
+              )}
+            </div>
+
 
             <div className="rounded-2xl border border-border bg-surface p-4">
               <div className="flex items-start justify-between gap-3">

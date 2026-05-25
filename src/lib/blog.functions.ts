@@ -17,6 +17,11 @@ export type PostListItem = {
 export type PostFull = PostListItem & {
   content: string;
   updated_at: string;
+  lead_magnet_enabled: boolean;
+  lead_magnet_title: string | null;
+  lead_magnet_description: string | null;
+  lead_magnet_button_label: string | null;
+  lead_magnet_file_name: string | null;
 };
 
 export const listPosts = createServerFn({ method: "GET" })
@@ -48,7 +53,7 @@ export const getPostBySlug = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const { data: row, error } = await supabaseAdmin
       .from("posts")
-      .select("id, slug, title, excerpt, content, cover_image_url, tags, published_at, updated_at")
+      .select("id, slug, title, excerpt, content, cover_image_url, tags, published_at, updated_at, lead_magnet_enabled, lead_magnet_title, lead_magnet_description, lead_magnet_button_label, lead_magnet_file_name")
       .eq("slug", data.slug)
       .eq("published", true)
       .maybeSingle();
@@ -86,6 +91,12 @@ const upsertSchema = z.object({
   cover_image_url: z.string().trim().url().max(500).optional().or(z.literal("")),
   tags: z.array(z.string().trim().min(1).max(50)).max(20).default([]),
   published: z.boolean().default(true),
+  lead_magnet_enabled: z.boolean().default(false),
+  lead_magnet_title: z.string().trim().max(300).optional().or(z.literal("")),
+  lead_magnet_description: z.string().trim().max(2000).optional().or(z.literal("")),
+  lead_magnet_button_label: z.string().trim().max(60).optional().or(z.literal("")),
+  lead_magnet_file_path: z.string().trim().max(500).optional().or(z.literal("")),
+  lead_magnet_file_name: z.string().trim().max(200).optional().or(z.literal("")),
 });
 
 export const upsertPost = createServerFn({ method: "POST" })
@@ -117,6 +128,12 @@ export const upsertPost = createServerFn({ method: "POST" })
       tags: data.tags,
       published: data.published,
       published_at: data.published ? new Date().toISOString() : null,
+      lead_magnet_enabled: data.lead_magnet_enabled,
+      lead_magnet_title: data.lead_magnet_enabled ? (data.lead_magnet_title || null) : null,
+      lead_magnet_description: data.lead_magnet_enabled ? (data.lead_magnet_description || null) : null,
+      lead_magnet_button_label: data.lead_magnet_enabled ? (data.lead_magnet_button_label || null) : null,
+      lead_magnet_file_path: data.lead_magnet_enabled ? (data.lead_magnet_file_path || null) : null,
+      lead_magnet_file_name: data.lead_magnet_enabled ? (data.lead_magnet_file_name || null) : null,
     };
     const query = data.id
       ? supabaseAdmin.from("posts").update(payload).eq("id", data.id).select("id, slug").single()
@@ -384,4 +401,101 @@ export const republishToTelegram = createServerFn({ method: "POST" })
       .update({ telegram_posted_at: new Date().toISOString() })
       .eq("id", data.id);
     return { ok: true as const };
+  });
+
+// ===== Lead magnet: upload file (admin) =====
+const uploadMagnetSchema = z.object({
+  token: z.string().min(1),
+  filename: z.string().trim().min(1).max(200),
+  contentType: z.string().trim().min(1).max(100),
+  base64: z.string().min(1).max(20_000_000),
+});
+
+export const uploadLeadMagnetFile = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => uploadMagnetSchema.parse(d))
+  .handler(async ({ data }) => {
+    const expected = process.env.BLOG_ADMIN_TOKEN;
+    if (!expected || data.token !== expected) {
+      return { ok: false as const, error: "Неверный пароль" };
+    }
+    let bytes: Uint8Array;
+    try {
+      const bin = atob(data.base64);
+      bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    } catch {
+      return { ok: false as const, error: "Не удалось прочитать файл" };
+    }
+    if (bytes.byteLength > 15 * 1024 * 1024) {
+      return { ok: false as const, error: "Файл больше 15 МБ" };
+    }
+    const ext = (data.filename.split(".").pop() || "bin").toLowerCase().slice(0, 8);
+    const safeExt = /^[a-z0-9]+$/.test(ext) ? ext : "bin";
+    const path = `${new Date().getFullYear()}/${crypto.randomUUID()}.${safeExt}`;
+    const { error: upErr } = await supabaseAdmin.storage
+      .from("lead-magnets")
+      .upload(path, bytes, { contentType: data.contentType, upsert: false });
+    if (upErr) {
+      console.error("[uploadLeadMagnetFile]", upErr);
+      return { ok: false as const, error: upErr.message };
+    }
+    return { ok: true as const, path, filename: data.filename };
+  });
+
+// ===== Lead magnet: visitor submits form, gets signed download URL =====
+const submitMagnetSchema = z.object({
+  slug: z.string().trim().min(1).max(200),
+  name: z.string().trim().min(1).max(100),
+  phone: z
+    .string()
+    .trim()
+    .min(3)
+    .max(50)
+    .regex(/^[+\d\s()\-]+$/, "Только цифры, пробелы и + ( ) -"),
+});
+
+export const submitLeadMagnet = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => submitMagnetSchema.parse(d))
+  .handler(async ({ data }) => {
+    const { data: post, error: postErr } = await supabaseAdmin
+      .from("posts")
+      .select("id, slug, lead_magnet_enabled, lead_magnet_title, lead_magnet_file_path, lead_magnet_file_name, published")
+      .eq("slug", data.slug)
+      .eq("published", true)
+      .maybeSingle();
+    if (postErr || !post) {
+      return { ok: false as const, error: "Статья не найдена" };
+    }
+    if (!post.lead_magnet_enabled || !post.lead_magnet_file_path) {
+      return { ok: false as const, error: "Лид-магнит недоступен" };
+    }
+
+    const { error: insErr } = await supabaseAdmin
+      .from("lead_magnet_submissions")
+      .insert({
+        post_id: post.id,
+        post_slug: post.slug,
+        magnet_title: post.lead_magnet_title,
+        name: data.name,
+        phone: data.phone,
+      });
+    if (insErr) {
+      console.error("[submitLeadMagnet] insert", insErr);
+      return { ok: false as const, error: "Не удалось сохранить заявку" };
+    }
+
+    const { data: signed, error: signErr } = await supabaseAdmin.storage
+      .from("lead-magnets")
+      .createSignedUrl(post.lead_magnet_file_path as string, 60 * 10, {
+        download: post.lead_magnet_file_name || true,
+      });
+    if (signErr || !signed?.signedUrl) {
+      console.error("[submitLeadMagnet] sign", signErr);
+      return { ok: false as const, error: "Не удалось подготовить файл" };
+    }
+    return {
+      ok: true as const,
+      url: signed.signedUrl,
+      filename: post.lead_magnet_file_name || "lead-magnet.pdf",
+    };
   });
