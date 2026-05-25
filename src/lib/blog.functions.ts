@@ -128,6 +128,12 @@ export const upsertPost = createServerFn({ method: "POST" })
       tags: data.tags,
       published: data.published,
       published_at: data.published ? new Date().toISOString() : null,
+      lead_magnet_enabled: data.lead_magnet_enabled,
+      lead_magnet_title: data.lead_magnet_enabled ? (data.lead_magnet_title || null) : null,
+      lead_magnet_description: data.lead_magnet_enabled ? (data.lead_magnet_description || null) : null,
+      lead_magnet_button_label: data.lead_magnet_enabled ? (data.lead_magnet_button_label || null) : null,
+      lead_magnet_file_path: data.lead_magnet_enabled ? (data.lead_magnet_file_path || null) : null,
+      lead_magnet_file_name: data.lead_magnet_enabled ? (data.lead_magnet_file_name || null) : null,
     };
     const query = data.id
       ? supabaseAdmin.from("posts").update(payload).eq("id", data.id).select("id, slug").single()
