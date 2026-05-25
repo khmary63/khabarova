@@ -76,6 +76,7 @@ function AdminPage() {
   const uploadFn = useServerFn(uploadBlogImage);
   const seoFn = useServerFn(optimizeForSeo);
   const tgFn = useServerFn(republishToTelegram);
+  const uploadMagnetFn = useServerFn(uploadLeadMagnetFile);
   const settingsFn = useServerFn(getSiteSettings);
   const updateSettingFn = useServerFn(updateSiteSetting);
 
