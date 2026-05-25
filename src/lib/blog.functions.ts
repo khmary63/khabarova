@@ -499,3 +499,20 @@ export const submitLeadMagnet = createServerFn({ method: "POST" })
       filename: post.lead_magnet_file_name || "lead-magnet.pdf",
     };
   });
+
+// ===== Lead magnet: admin list of submissions =====
+export const adminListLeadMagnetSubmissions = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ token: z.string().min(1) }).parse(d))
+  .handler(async ({ data }) => {
+    const expected = process.env.BLOG_ADMIN_TOKEN;
+    if (!expected || data.token !== expected) {
+      return { ok: false as const, error: "Неверный пароль", submissions: [] };
+    }
+    const { data: rows, error } = await supabaseAdmin
+      .from("lead_magnet_submissions")
+      .select("id, name, phone, post_slug, magnet_title, created_at")
+      .order("created_at", { ascending: false })
+      .limit(2000);
+    if (error) return { ok: false as const, error: error.message, submissions: [] };
+    return { ok: true as const, submissions: rows ?? [] };
+  });
