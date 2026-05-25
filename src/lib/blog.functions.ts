@@ -91,6 +91,12 @@ const upsertSchema = z.object({
   cover_image_url: z.string().trim().url().max(500).optional().or(z.literal("")),
   tags: z.array(z.string().trim().min(1).max(50)).max(20).default([]),
   published: z.boolean().default(true),
+  lead_magnet_enabled: z.boolean().default(false),
+  lead_magnet_title: z.string().trim().max(300).optional().or(z.literal("")),
+  lead_magnet_description: z.string().trim().max(2000).optional().or(z.literal("")),
+  lead_magnet_button_label: z.string().trim().max(60).optional().or(z.literal("")),
+  lead_magnet_file_path: z.string().trim().max(500).optional().or(z.literal("")),
+  lead_magnet_file_name: z.string().trim().max(200).optional().or(z.literal("")),
 });
 
 export const upsertPost = createServerFn({ method: "POST" })
