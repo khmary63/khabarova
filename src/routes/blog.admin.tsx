@@ -160,7 +160,20 @@ function AdminPage() {
   async function openEditor(id?: string) {
     setSeoOptimized(false);
     if (!id) {
-      setEditing({ title: "", excerpt: "", content: "", contentHtml: "", tags: [], published: false });
+      setEditing({
+        title: "",
+        excerpt: "",
+        content: "",
+        contentHtml: "",
+        tags: [],
+        published: false,
+        lead_magnet_enabled: false,
+        lead_magnet_title: "",
+        lead_magnet_description: "",
+        lead_magnet_button_label: "",
+        lead_magnet_file_path: "",
+        lead_magnet_file_name: "",
+      });
       return;
     }
     const res = await getFn({ data: { token, id } });
