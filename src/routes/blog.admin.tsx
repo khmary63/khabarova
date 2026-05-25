@@ -15,6 +15,7 @@ import {
   optimizeForSeo,
   republishToTelegram,
   uploadLeadMagnetFile,
+  adminListLeadMagnetSubmissions,
 } from "@/lib/blog.functions";
 
 import { getSiteSettings, updateSiteSetting } from "@/lib/site-settings.functions";
