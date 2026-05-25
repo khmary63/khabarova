@@ -465,6 +465,94 @@ function AdminPage() {
               </div>
             </section>
 
+            <section className="mb-8 rounded-2xl border border-border bg-surface p-5">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="font-display text-base font-semibold">Заявки на лид-магниты</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Люди, которые скачали материалы через формы внутри статей. Всего: {submissions.length}.
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => void refreshSubmissions()}
+                    className="rounded-full border border-border px-3 py-1.5 text-xs"
+                  >
+                    Обновить
+                  </button>
+                  <button
+                    onClick={exportSubmissionsCsv}
+                    disabled={submissions.length === 0}
+                    className="rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground disabled:opacity-50"
+                  >
+                    Скачать CSV
+                  </button>
+                </div>
+              </div>
+
+              {submissions.length === 0 ? (
+                <p className="mt-4 rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+                  Пока никто не оставил заявку.
+                </p>
+              ) : (
+                <div className="mt-4 max-h-96 overflow-auto rounded-lg border border-border">
+                  <table className="w-full text-left text-sm">
+                    <thead className="sticky top-0 bg-surface text-xs uppercase text-muted-foreground">
+                      <tr>
+                        <th className="px-3 py-2 font-medium">Дата</th>
+                        <th className="px-3 py-2 font-medium">Имя</th>
+                        <th className="px-3 py-2 font-medium">Телефон</th>
+                        <th className="px-3 py-2 font-medium">Лид-магнит</th>
+                        <th className="px-3 py-2 font-medium">Статья</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                      {submissions.map((s) => (
+                        <tr key={s.id}>
+                          <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">
+                            {new Date(s.created_at).toLocaleString("ru-RU", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </td>
+                          <td className="px-3 py-2">{s.name}</td>
+                          <td className="px-3 py-2">
+                            <a
+                              href={`tel:${s.phone.replace(/\s/g, "")}`}
+                              className="hover:text-primary"
+                            >
+                              {s.phone}
+                            </a>
+                          </td>
+                          <td className="px-3 py-2 text-muted-foreground">
+                            {s.magnet_title || "—"}
+                          </td>
+                          <td className="px-3 py-2 text-xs text-muted-foreground">
+                            {s.post_slug ? (
+                              <Link
+                                to="/blog/$slug"
+                                params={{ slug: s.post_slug }}
+                                target="_blank"
+                                className="hover:text-primary"
+                              >
+                                /{s.post_slug}
+                              </Link>
+                            ) : (
+                              "—"
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+
+
             <ul className="divide-y divide-border rounded-2xl border border-border bg-surface">
               {posts.map((p) => (
                 <li key={p.id} className="flex items-center justify-between gap-4 p-4">
