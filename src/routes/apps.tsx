@@ -153,6 +153,7 @@ type PortfolioItem = {
   description: string;
   url: string;
   tag: string;
+  image: string;
 };
 
 const portfolio: PortfolioItem[] = [
@@ -162,6 +163,7 @@ const portfolio: PortfolioItem[] = [
       "Интернет-магазин по продаже автозапчастей для китайской спецтехники в России.",
     url: "https://rde163.ru/",
     tag: "Интернет-магазин",
+    image: portfolioRde163,
   },
   {
     title: "Agent NeyroMarket",
@@ -169,17 +171,9 @@ const portfolio: PortfolioItem[] = [
       "Лендинг-презентация продукта. Простая версия лендинга с подключённым ИИ-продавцом.",
     url: "https://agent.neyromarket.com/",
     tag: "Лендинг + ИИ",
+    image: portfolioAgent,
   },
 ];
-
-function getFaviconUrl(url: string) {
-  try {
-    const host = new globalThis.URL(url).hostname;
-    return `https://www.google.com/s2/favicons?domain=${host}&sz=128`;
-  } catch {
-    return "";
-  }
-}
 
 function AppsPage() {
   return (
