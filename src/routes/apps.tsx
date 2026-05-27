@@ -4,9 +4,8 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { SITE } from "@/lib/site";
 import { ArrowRight } from "lucide-react";
 import { getSiteSettings } from "@/lib/site-settings.functions";
+import { listPortfolio, type PortfolioProject } from "@/lib/portfolio.functions";
 import { SITE_URL, breadcrumbSchema, serviceSchema } from "@/lib/seo";
-import portfolioRde163 from "@/assets/portfolio/rde163.png";
-import portfolioAgent from "@/assets/portfolio/agent-neyromarket.png";
 
 const URL = `${SITE_URL}/apps`;
 
@@ -14,8 +13,10 @@ export const Route = createFileRoute("/apps")({
   loader: async () => {
     const s = await getSiteSettings();
     if (!s.apps) throw notFound();
-    return null;
+    const { projects } = await listPortfolio();
+    return { portfolio: projects };
   },
+
   head: () => ({
     meta: [
       { title: "Приложения и услуги вайбкодинга — НейроМаркет" },
@@ -148,35 +149,13 @@ const services: Service[] = [
   },
 ];
 
-type PortfolioItem = {
-  title: string;
-  description: string;
-  url: string;
-  tag: string;
-  image: string;
-};
 
-const portfolio: PortfolioItem[] = [
-  {
-    title: "RDE163",
-    description:
-      "Интернет-магазин по продаже автозапчастей для китайской спецтехники в России.",
-    url: "https://rde163.ru/",
-    tag: "Интернет-магазин",
-    image: portfolioRde163,
-  },
-  {
-    title: "Agent NeyroMarket",
-    description:
-      "Лендинг-презентация продукта. \nПростая версия лендинга с подключённым ИИ-продавцом.",
-    url: "https://agent.neyromarket.com/",
-    tag: "Лендинг + ИИ",
-    image: portfolioAgent,
-  },
-];
+
 
 function AppsPage() {
+  const { portfolio } = Route.useLoaderData() as { portfolio: PortfolioProject[] };
   return (
+
     <div className="relative min-h-screen overflow-hidden bg-background">
       {/* Ambient glows */}
       <div
@@ -353,7 +332,7 @@ function AppsPage() {
                     aria-label={`Открыть ${p.title}`}
                   >
                     <img
-                      src={p.image}
+                      src={p.image_url}
                       alt={`Эскиз главной страницы ${p.title}`}
                       className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                       loading="lazy"

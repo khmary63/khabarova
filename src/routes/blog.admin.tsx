@@ -6,6 +6,8 @@ import { marked } from "marked";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { RichEditor } from "@/components/RichEditor";
+import { PortfolioAdmin } from "@/components/PortfolioAdmin";
+
 import {
   adminListPosts,
   adminGetPost,
@@ -552,8 +554,10 @@ function AdminPage() {
               )}
             </section>
 
+            <PortfolioAdmin token={token} />
 
             <ul className="divide-y divide-border rounded-2xl border border-border bg-surface">
+
               {posts.map((p) => (
                 <li key={p.id} className="flex items-center justify-between gap-4 p-4">
                   <div className="min-w-0">
