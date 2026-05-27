@@ -123,7 +123,7 @@ const services: Service[] = [
     bullets: [
       "Подбор модели решения под задачу",
       "Промпт-инжиниринг",
-      "Готовые ИИ-ассистенты для Perplexitу Space",
+      "Готовые ИИ-ассистенты для Perplexitу Spaces",
       "Метрики и логи",
     ],
     featured: true,
