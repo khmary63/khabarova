@@ -191,7 +191,7 @@ function AppsPage() {
         {/* Apps */}
         <section className="space-y-10">
           <h2 className="font-display text-2xl font-bold tracking-tight text-foreground md:text-3xl">
-            Мои приложения
+            Сам себе маркетолог
           </h2>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
