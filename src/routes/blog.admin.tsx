@@ -6,6 +6,8 @@ import { marked } from "marked";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { RichEditor } from "@/components/RichEditor";
+import { PortfolioAdmin } from "@/components/PortfolioAdmin";
+
 import {
   adminListPosts,
   adminGetPost,
