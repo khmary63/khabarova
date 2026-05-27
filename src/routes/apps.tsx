@@ -146,6 +146,39 @@ const services: Service[] = [
   },
 ];
 
+type PortfolioItem = {
+  title: string;
+  description: string;
+  url: string;
+  tag: string;
+};
+
+const portfolio: PortfolioItem[] = [
+  {
+    title: "RDE163",
+    description:
+      "Интернет-магазин по продаже автозапчастей для китайской спецтехники в России.",
+    url: "https://rde163.ru/",
+    tag: "Интернет-магазин",
+  },
+  {
+    title: "Agent NeyroMarket",
+    description:
+      "Лендинг-презентация продукта. Простая версия лендинга с подключённым ИИ-продавцом.",
+    url: "https://agent.neyromarket.com/",
+    tag: "Лендинг + ИИ",
+  },
+];
+
+function getFaviconUrl(url: string) {
+  try {
+    const host = new URL(url).hostname;
+    return `https://www.google.com/s2/favicons?domain=${host}&sz=128`;
+  } catch {
+    return "";
+  }
+}
+
 function AppsPage() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
