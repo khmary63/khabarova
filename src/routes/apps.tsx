@@ -153,7 +153,9 @@ const services: Service[] = [
 
 
 function AppsPage() {
+  const { portfolio } = Route.useLoaderData() as { portfolio: PortfolioProject[] };
   return (
+
     <div className="relative min-h-screen overflow-hidden bg-background">
       {/* Ambient glows */}
       <div
