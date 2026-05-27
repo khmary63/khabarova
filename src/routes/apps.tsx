@@ -332,7 +332,7 @@ function AppsPage() {
                     aria-label={`Открыть ${p.title}`}
                   >
                     <img
-                      src={p.image}
+                      src={p.image_url}
                       alt={`Эскиз главной страницы ${p.title}`}
                       className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                       loading="lazy"
