@@ -325,6 +325,75 @@ function AppsPage() {
           </div>
         </section>
 
+        {/* Portfolio */}
+        <section className="space-y-10">
+          <div className="space-y-2">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+              Портфолио проектов
+            </h2>
+            <p className="text-muted-foreground">
+              Сайты, интернет-магазины и приложения, которые я уже запустила.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {portfolio.map((p) => {
+              const favicon = getFaviconUrl(p.url);
+              let host = "";
+              try {
+                host = new globalThis.URL(p.url).hostname.replace(/^www\./, "");
+              } catch {
+                host = p.url;
+              }
+              return (
+                <article
+                  key={p.url}
+                  className="group relative flex flex-col gap-5 overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 transition-all duration-500 hover:border-primary/50"
+                >
+                  <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-primary/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                  <div className="relative flex items-center gap-4">
+                    <div className="flex h-14 w-14 flex-none items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-white/10">
+                      {favicon ? (
+                        <img
+                          src={favicon}
+                          alt={`Иконка ${p.title}`}
+                          className="h-8 w-8"
+                          loading="lazy"
+                        />
+                      ) : null}
+                    </div>
+                    <div className="min-w-0 space-y-1">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                        {p.tag}
+                      </span>
+                      <h3 className="truncate font-display text-lg font-bold text-foreground">
+                        {p.title}
+                      </h3>
+                      <div className="truncate text-xs text-muted-foreground">
+                        {host}
+                      </div>
+                    </div>
+                  </div>
+                  <p className="relative text-sm leading-relaxed text-muted-foreground">
+                    {p.description}
+                  </p>
+                  <div className="relative mt-auto">
+                    <a
+                      href={p.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg transition-all hover:scale-105 active:scale-95"
+                    >
+                      Открыть
+                      <ArrowRight className="h-4 w-4" />
+                    </a>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
         {/* CTA */}
         <section className="group relative">
           <div className="pointer-events-none absolute inset-0 rounded-[2.5rem] bg-primary/20 opacity-0 blur-[80px] transition-opacity duration-700 group-hover:opacity-100" />
