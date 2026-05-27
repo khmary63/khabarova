@@ -303,12 +303,12 @@ function AppsPage() {
               Напишите задачу — отвечу за пару часов и предложу формат: готовое
               приложение, услуга под ключ. Если задача для меня окажется слишком сложной — найду специалиста, который в состоянии ее выполнить.
             </p>
-            <div className="flex flex-col items-center justify-center gap-4 pt-2 sm:flex-row">
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
               <a
                 href={SITE.whatsapp}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full rounded-2xl bg-primary px-8 py-4 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-105 hover:bg-primary/90 active:scale-95 sm:w-auto"
+                className="rounded-full bg-[#25D366] px-6 py-3 text-sm font-bold text-white shadow-lg transition-all hover:scale-105 active:scale-95"
               >
                 Написать в WhatsApp
               </a>
@@ -316,9 +316,23 @@ function AppsPage() {
                 href={SITE.telegram}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full rounded-2xl border border-white/10 bg-white/5 px-8 py-4 text-sm font-bold text-foreground transition-all hover:bg-white/10 sm:w-auto"
+                className="rounded-full bg-[#229ED9] px-6 py-3 text-sm font-bold text-white shadow-lg transition-all hover:scale-105 active:scale-95"
               >
-                Telegram
+                Написать в Telegram
+              </a>
+              <a
+                href={SITE.max}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full bg-white px-6 py-3 text-sm font-bold text-neutral-900 shadow-lg transition-all hover:scale-105 active:scale-95"
+              >
+                Написать в Max
+              </a>
+              <a
+                href="/#lead"
+                className="rounded-full border border-white/10 bg-white/5 px-6 py-3 text-sm font-bold text-foreground transition-all hover:bg-white/10"
+              >
+                Бесплатная консультация
               </a>
             </div>
           </div>
