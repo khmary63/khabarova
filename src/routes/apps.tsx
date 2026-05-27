@@ -166,9 +166,9 @@ function AppsPage() {
           </div>
 
           <h1 className="font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-foreground md:text-6xl">
-            Приложения, которые я собираю на{" "}
+            Магия{" "}
             <span className="bg-gradient-to-r from-primary to-indigo-400 bg-clip-text text-transparent">
-              вайбкодинге
+              вайбкодинга
             </span>
           </h1>
 
