@@ -294,7 +294,7 @@ function AppsPage() {
             </h2>
             <p className="mx-auto max-w-xl leading-relaxed text-muted-foreground">
               Напишите задачу — отвечу за пару часов и предложу формат: готовое
-              приложение, услуга под ключ или менторство.
+              приложение, услуга под ключ. Если задача для меня окажется слишком сложной — найду специалиста, который в состоянии ее выполнить.
             </p>
             <div className="flex flex-col items-center justify-center gap-4 pt-2 sm:flex-row">
               <a
