@@ -172,7 +172,7 @@ const portfolio: PortfolioItem[] = [
 
 function getFaviconUrl(url: string) {
   try {
-    const host = new URL(url).hostname;
+    const host = new globalThis.URL(url).hostname;
     return `https://www.google.com/s2/favicons?domain=${host}&sz=128`;
   } catch {
     return "";
