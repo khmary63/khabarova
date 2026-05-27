@@ -149,32 +149,8 @@ const services: Service[] = [
   },
 ];
 
-type PortfolioItem = {
-  title: string;
-  description: string;
-  url: string;
-  tag: string;
-  image: string;
-};
 
-const portfolio: PortfolioItem[] = [
-  {
-    title: "RDE163",
-    description:
-      "Интернет-магазин по продаже автозапчастей для китайской спецтехники в России.",
-    url: "https://rde163.ru/",
-    tag: "Интернет-магазин",
-    image: portfolioRde163,
-  },
-  {
-    title: "Agent NeyroMarket",
-    description:
-      "Лендинг-презентация продукта. \nПростая версия лендинга с подключённым ИИ-продавцом.",
-    url: "https://agent.neyromarket.com/",
-    tag: "Лендинг + ИИ",
-    image: portfolioAgent,
-  },
-];
+
 
 function AppsPage() {
   return (
