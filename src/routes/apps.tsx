@@ -168,7 +168,7 @@ const portfolio: PortfolioItem[] = [
   {
     title: "Agent NeyroMarket",
     description:
-      "Лендинг-презентация продукта. Простая версия лендинга с подключённым ИИ-продавцом.",
+      "Лендинг-презентация продукта. \nПростая версия лендинга с подключённым ИИ-продавцом.",
     url: "https://agent.neyromarket.com/",
     tag: "Лендинг + ИИ",
     image: portfolioAgent,
