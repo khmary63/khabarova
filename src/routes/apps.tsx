@@ -5,6 +5,8 @@ import { SITE } from "@/lib/site";
 import { ArrowRight } from "lucide-react";
 import { getSiteSettings } from "@/lib/site-settings.functions";
 import { SITE_URL, breadcrumbSchema, serviceSchema } from "@/lib/seo";
+import portfolioRde163 from "@/assets/portfolio/rde163.png";
+import portfolioAgent from "@/assets/portfolio/agent-neyromarket.png";
 
 const URL = `${SITE_URL}/apps`;
 
@@ -151,6 +153,7 @@ type PortfolioItem = {
   description: string;
   url: string;
   tag: string;
+  image: string;
 };
 
 const portfolio: PortfolioItem[] = [
@@ -160,6 +163,7 @@ const portfolio: PortfolioItem[] = [
       "Интернет-магазин по продаже автозапчастей для китайской спецтехники в России.",
     url: "https://rde163.ru/",
     tag: "Интернет-магазин",
+    image: portfolioRde163,
   },
   {
     title: "Agent NeyroMarket",
@@ -167,17 +171,9 @@ const portfolio: PortfolioItem[] = [
       "Лендинг-презентация продукта. Простая версия лендинга с подключённым ИИ-продавцом.",
     url: "https://agent.neyromarket.com/",
     tag: "Лендинг + ИИ",
+    image: portfolioAgent,
   },
 ];
-
-function getFaviconUrl(url: string) {
-  try {
-    const host = new globalThis.URL(url).hostname;
-    return `https://www.google.com/s2/favicons?domain=${host}&sz=128`;
-  } catch {
-    return "";
-  }
-}
 
 function AppsPage() {
   return (
@@ -336,9 +332,8 @@ function AppsPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {portfolio.map((p) => {
-              const favicon = getFaviconUrl(p.url);
               let host = "";
               try {
                 host = new globalThis.URL(p.url).hostname.replace(/^www\./, "");
@@ -348,51 +343,54 @@ function AppsPage() {
               return (
                 <article
                   key={p.url}
-                  className="group relative flex flex-col gap-5 overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 transition-all duration-500 hover:border-primary/50"
+                  className="group relative flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/5 transition-all duration-500 hover:border-primary/50"
                 >
-                  <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-primary/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                  <div className="relative flex items-center gap-4">
-                    <div className="flex h-14 w-14 flex-none items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-white/10">
-                      {favicon ? (
-                        <img
-                          src={favicon}
-                          alt={`Иконка ${p.title}`}
-                          className="h-8 w-8"
-                          loading="lazy"
-                        />
-                      ) : null}
-                    </div>
-                    <div className="min-w-0 space-y-1">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                        {p.tag}
-                      </span>
-                      <h3 className="truncate font-display text-lg font-bold text-foreground">
+                  <a
+                    href={p.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="relative block aspect-[16/10] overflow-hidden bg-neutral-900"
+                    aria-label={`Открыть ${p.title}`}
+                  >
+                    <img
+                      src={p.image}
+                      alt={`Эскиз главной страницы ${p.title}`}
+                      className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    <span className="absolute left-4 top-4 rounded-full bg-black/60 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur">
+                      {p.tag}
+                    </span>
+                  </a>
+                  <div className="flex flex-1 flex-col gap-4 p-6">
+                    <div className="space-y-1">
+                      <h3 className="font-display text-xl font-bold text-foreground transition-colors group-hover:text-primary">
                         {p.title}
                       </h3>
-                      <div className="truncate text-xs text-muted-foreground">
-                        {host}
-                      </div>
+                      <div className="text-xs text-muted-foreground">{host}</div>
                     </div>
-                  </div>
-                  <p className="relative text-sm leading-relaxed text-muted-foreground">
-                    {p.description}
-                  </p>
-                  <div className="relative mt-auto">
-                    <a
-                      href={p.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg transition-all hover:scale-105 active:scale-95"
-                    >
-                      Открыть
-                      <ArrowRight className="h-4 w-4" />
-                    </a>
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {p.description}
+                    </p>
+                    <div className="mt-auto pt-2">
+                      <a
+                        href={p.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg transition-all hover:scale-105 active:scale-95"
+                      >
+                        Открыть
+                        <ArrowRight className="h-4 w-4" />
+                      </a>
+                    </div>
                   </div>
                 </article>
               );
             })}
           </div>
         </section>
+
 
         {/* CTA */}
         <section className="group relative">
