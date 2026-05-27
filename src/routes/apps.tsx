@@ -5,6 +5,8 @@ import { SITE } from "@/lib/site";
 import { ArrowRight } from "lucide-react";
 import { getSiteSettings } from "@/lib/site-settings.functions";
 import { SITE_URL, breadcrumbSchema, serviceSchema } from "@/lib/seo";
+import portfolioRde163 from "@/assets/portfolio/rde163.png";
+import portfolioAgent from "@/assets/portfolio/agent-neyromarket.png";
 
 const URL = `${SITE_URL}/apps`;
 
