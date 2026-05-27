@@ -349,7 +349,7 @@ function AppsPage() {
                     href={p.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="relative block aspect-[16/10] overflow-hidden bg-neutral-900"
+                    className="relative block aspect-[4/3] overflow-hidden bg-neutral-900"
                     aria-label={`Открыть ${p.title}`}
                   >
                     <img
