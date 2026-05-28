@@ -174,6 +174,7 @@ function BlogIndex() {
         )}
       </main>
       <SiteFooter />
+      <EurekaChatLauncher />
     </div>
   );
 }
