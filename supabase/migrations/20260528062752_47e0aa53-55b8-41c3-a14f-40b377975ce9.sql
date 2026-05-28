@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Portfolio images are publicly accessible" ON storage.objects;
