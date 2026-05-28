@@ -225,6 +225,7 @@ function ReviewsPage() {
       </main>
 
       <SiteFooter />
+      <EurekaChatLauncher />
     </div>
   );
 }
