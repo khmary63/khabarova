@@ -448,6 +448,7 @@ function AppsPage() {
       </main>
 
       <SiteFooter />
+      <EurekaChatLauncher />
     </div>
   );
 }
