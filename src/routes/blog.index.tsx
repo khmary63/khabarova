@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { EurekaChatLauncher } from "@/components/EurekaChatLauncher";
 import { listPosts } from "@/lib/blog.functions";
 import { getSiteSettings } from "@/lib/site-settings.functions";
 import { z } from "zod";
