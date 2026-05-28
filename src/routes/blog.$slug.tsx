@@ -101,6 +101,7 @@ export const Route = createFileRoute("/blog/$slug")({
         </div>
       </main>
       <SiteFooter />
+      <EurekaChatLauncher />
     </div>
   ),
   component: PostPage,
