@@ -142,7 +142,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
           const EurekaWidget = "eureka-chat-widget" as unknown as React.ElementType;
           return (
             <EurekaWidget
-              api-key="3fee383b-00bc-483a-a056-84a73212d830"
+              api-key="0c6d47e9-9b16-4eaf-9f40-79b4007c9575"
               lang="ru"
               open-by-window-message="true"
             />
