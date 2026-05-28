@@ -94,7 +94,7 @@ const apps: AppItem[] = [
     href: "https://virus.neyromarket.com/",
     status: "live",
     badge: "По подписке",
-    image: new globalThis.URL("../assets/portfolio/virus.png", import.meta.url).href,
+    image: virusImage,
     external: true,
   },
   {
