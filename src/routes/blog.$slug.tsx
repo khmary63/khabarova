@@ -168,6 +168,7 @@ function PostPage() {
         </article>
       </main>
       <SiteFooter />
+      <EurekaChatLauncher />
     </div>
   );
 }
