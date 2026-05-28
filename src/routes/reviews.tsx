@@ -1,6 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { EurekaChatLauncher } from "@/components/EurekaChatLauncher";
 import { SITE } from "@/lib/site";
 import { Quote, Star } from "lucide-react";
 import { getSiteSettings } from "@/lib/site-settings.functions";
@@ -224,6 +225,7 @@ function ReviewsPage() {
       </main>
 
       <SiteFooter />
+      <EurekaChatLauncher />
     </div>
   );
 }
