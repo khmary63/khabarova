@@ -83,7 +83,7 @@ const apps: AppItem[] = [
     href: "https://crosspost.neyromarket.com/",
     status: "live",
     badge: "Бесплатно / по подписке",
-    image: new globalThis.URL("../assets/portfolio/crosspost.png", import.meta.url).href,
+    image: crosspostImage,
     external: true,
   },
   {
