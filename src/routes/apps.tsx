@@ -85,12 +85,15 @@ const apps: AppItem[] = [
     external: true,
   },
   {
-    title: "НейроМаркет — этот сайт",
+    title: "Контент-завод V.I.R.U.S.",
     description:
-      "Лендинг с ИИ-консультантом, демо-чатом, блогом и админкой. Полностью собран на вайбкодинге за несколько часов.",
-    tag: "Лендинг + ИИ-чат",
-    href: "/",
+      "Генерация вирусных Reels и Shorts по маркетинговой методике «V.I.R.U.S.».\nОт поиска идеи и тренда до публикации — в один клик. Автопостинг в YouTube Shorts и VK Клипы.\nНе нужно тратить часы времени на съёмки и монтаж коротких видео. Делайте это в несколько кликов с помощью контент-завода.",
+    tag: "SaaS · Reels & Shorts",
+    href: "https://virus.neyromarket.com/",
     status: "live",
+    badge: "По подписке",
+    image: new globalThis.URL("../assets/portfolio/virus.png", import.meta.url).href,
+    external: true,
   },
   {
     title: "ИИ-ассистент для записи",
