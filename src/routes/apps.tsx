@@ -67,9 +67,23 @@ type AppItem = {
   tag: string;
   href?: string;
   status: "live" | "soon";
+  badge?: string;
+  image?: string;
+  external?: boolean;
 };
 
 const apps: AppItem[] = [
+  {
+    title: "КроссПост",
+    description:
+      "Автоматизируйте свой контент-маркетинг! Наш сервис поможет вам публиковать посты во всех соцсетях одновременно. Экономьте время, увеличивайте охват.\nСоздавайте посты с помощью AI, оформляйте в стильных шаблонах и публикуйте сразу в Telegram, ВКонтакте и Макс. Планируйте контент на недели вперёд.",
+    tag: "SaaS · Контент-маркетинг",
+    href: "https://crosspost.neyromarket.com/",
+    status: "live",
+    badge: "Бесплатно / по подписке",
+    image: new URL("../assets/portfolio/crosspost.png", import.meta.url).href,
+    external: true,
+  },
   {
     title: "НейроМаркет — этот сайт",
     description:
