@@ -97,20 +97,6 @@ const apps: AppItem[] = [
     image: virusImage,
     external: true,
   },
-  {
-    title: "ИИ-ассистент для записи",
-    description:
-      "Виджет, который общается с клиентами в WhatsApp/Telegram и сам записывает их в YCLIENTS без оператора.",
-    tag: "SaaS · ИИ",
-    status: "soon",
-  },
-  {
-    title: "Генератор офферов",
-    description:
-      "Внутренний инструмент: за минуту делает структурированный оффер и продающий лендинг под нишу клиента.",
-    tag: "Внутренний tool",
-    status: "soon",
-  },
 ];
 
 type Service = {
