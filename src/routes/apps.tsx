@@ -67,9 +67,23 @@ type AppItem = {
   tag: string;
   href?: string;
   status: "live" | "soon";
+  badge?: string;
+  image?: string;
+  external?: boolean;
 };
 
 const apps: AppItem[] = [
+  {
+    title: "КроссПост",
+    description:
+      "Автоматизируйте свой контент-маркетинг! Наш сервис поможет вам публиковать посты во всех соцсетях одновременно. Экономьте время, увеличивайте охват.\nСоздавайте посты с помощью AI, оформляйте в стильных шаблонах и публикуйте сразу в Telegram, ВКонтакте и Макс. Планируйте контент на недели вперёд.",
+    tag: "SaaS · Контент-маркетинг",
+    href: "https://crosspost.neyromarket.com/",
+    status: "live",
+    badge: "Бесплатно / по подписке",
+    image: new globalThis.URL("../assets/portfolio/crosspost.png", import.meta.url).href,
+    external: true,
+  },
   {
     title: "НейроМаркет — этот сайт",
     description:
@@ -208,10 +222,21 @@ function AppsPage() {
               return (
                 <article
                   key={app.title}
-                  className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 transition-all duration-500 hover:border-primary/50"
+                  className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 transition-all duration-500 hover:border-primary/50"
                 >
                   <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-primary/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                  <div className={`relative space-y-4 ${isLive ? "" : "opacity-70"}`}>
+                  {app.image && (
+                    <div className="relative aspect-[4/3] overflow-hidden bg-neutral-900">
+                      <img
+                        src={app.image}
+                        alt={`Эскиз ${app.title}`}
+                        className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                    </div>
+                  )}
+                  <div className={`relative space-y-4 p-8 ${isLive ? "" : "opacity-70"}`}>
                     <div className="flex items-start justify-between gap-3">
                       <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                         {app.tag}
@@ -219,27 +244,39 @@ function AppsPage() {
                       <span
                         className={
                           isLive
-                            ? "rounded-full bg-primary/20 px-2.5 py-1 text-[10px] font-bold text-primary"
-                            : "rounded-full bg-white/5 px-2.5 py-1 text-[10px] font-bold text-muted-foreground"
+                            ? "whitespace-nowrap rounded-full bg-primary/20 px-2.5 py-1 text-[10px] font-bold text-primary"
+                            : "whitespace-nowrap rounded-full bg-white/5 px-2.5 py-1 text-[10px] font-bold text-muted-foreground"
                         }
                       >
-                        {isLive ? "В работе" : "Скоро"}
+                        {app.badge ?? (isLive ? "В работе" : "Скоро")}
                       </span>
                     </div>
                     <h3 className="font-display text-xl font-bold text-foreground transition-colors group-hover:text-primary">
                       {app.title}
                     </h3>
-                    <p className="text-sm leading-relaxed text-muted-foreground">
+                    <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
                       {app.description}
                     </p>
                     {app.href && (
-                      <Link
-                        to={app.href}
-                        className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-primary/80"
-                      >
-                        Открыть
-                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                      </Link>
+                      app.external ? (
+                        <a
+                          href={app.href}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-primary/80"
+                        >
+                          Открыть
+                          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        </a>
+                      ) : (
+                        <Link
+                          to={app.href}
+                          className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-primary/80"
+                        >
+                          Открыть
+                          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        </Link>
+                      )
                     )}
                   </div>
                 </article>
