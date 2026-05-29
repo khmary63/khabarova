@@ -42,6 +42,8 @@ type AdminPost = {
   title: string;
   excerpt: string;
   tags: string[];
+  category: string;
+
   published: boolean;
   published_at: string | null;
   updated_at: string;
