@@ -718,6 +718,20 @@ function AdminPage() {
               </div>
             </Field>
 
+            <Field label="Рубрика">
+              <select
+                value={(editing.category as string) || "ai"}
+                onChange={(e) => setEditing({ ...editing, category: e.target.value })}
+                className="input"
+              >
+                {(["ai", "marketing"] as PostCategory[]).map((c) => (
+                  <option key={c} value={c}>
+                    {CATEGORY_LABELS[c]}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
             <Field label="Теги (через запятую)">
               <input
                 value={(editing.tags || []).join(", ")}
