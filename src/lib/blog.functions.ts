@@ -197,7 +197,7 @@ export const adminListPosts = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const expected = process.env.BLOG_ADMIN_TOKEN;
     if (!expected || data.token !== expected) {
-      return { ok: false as const, error: "Неверный пароль", posts: [] };
+      .select("id, slug, title, excerpt, tags, category, published, published_at, updated_at, telegram_posted_at")
     }
     const { data: rows, error } = await supabaseAdmin
       .from("posts")
