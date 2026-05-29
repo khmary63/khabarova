@@ -76,7 +76,7 @@ export const Route = createFileRoute("/blog/")({
 
 function BlogIndex() {
   const { posts, tags } = Route.useLoaderData();
-  const { tag } = Route.useSearch();
+  const { tag, category } = Route.useSearch();
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
@@ -93,35 +93,35 @@ function BlogIndex() {
           </p>
         </header>
 
-        {tags.length > 0 && (
-          <div className="mb-8 flex flex-wrap gap-2">
+        {/* Рубрики */}
+        <div className="mb-8 flex flex-wrap gap-2">
+          <Link
+            to="/blog"
+            search={{ tag }}
+            className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${
+              !category
+                ? "border-primary bg-primary/10 text-foreground"
+                : "border-border text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Все рубрики
+          </Link>
+          {CATEGORIES.map((c) => (
             <Link
+              key={c}
               to="/blog"
-              search={{}}
-              className={`rounded-full border px-3 py-1 text-sm transition ${
-                !tag
+              search={{ tag, category: c }}
+              className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${
+                category === c
                   ? "border-primary bg-primary/10 text-foreground"
                   : "border-border text-muted-foreground hover:text-foreground"
               }`}
             >
-              Все
+              {CATEGORY_LABELS[c]}
             </Link>
-            {tags.map((t: string) => (
-              <Link
-                key={t}
-                to="/blog"
-                search={{ tag: t }}
-                className={`rounded-full border px-3 py-1 text-sm transition ${
-                  tag === t
-                    ? "border-primary bg-primary/10 text-foreground"
-                    : "border-border text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                #{t}
-              </Link>
-            ))}
-          </div>
-        )}
+          ))}
+        </div>
+
 
         {posts.length === 0 ? (
           <div className="rounded-2xl border border-border bg-surface p-10 text-center text-muted-foreground">
