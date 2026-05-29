@@ -141,7 +141,9 @@ export const upsertPost = createServerFn({ method: "POST" })
       slug,
       title: data.title,
       excerpt: data.excerpt,
-      content: data.content,
+      tags: data.tags,
+      category: data.category,
+
       cover_image_url: data.cover_image_url || null,
       tags: data.tags,
       published: data.published,
