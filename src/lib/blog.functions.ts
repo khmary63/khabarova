@@ -4,6 +4,13 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { postBlogToTelegram } from "@/lib/telegram.server";
 
 
+export type PostCategory = "ai" | "marketing";
+
+export const CATEGORY_LABELS: Record<PostCategory, string> = {
+  ai: "ИИ решения",
+  marketing: "Маркетинг",
+};
+
 export type PostListItem = {
   id: string;
   slug: string;
@@ -11,8 +18,10 @@ export type PostListItem = {
   excerpt: string;
   cover_image_url: string | null;
   tags: string[];
+  category: string;
   published_at: string | null;
 };
+
 
 export type PostFull = PostListItem & {
   content: string;
