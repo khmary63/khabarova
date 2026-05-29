@@ -2,20 +2,26 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { EurekaChatLauncher } from "@/components/EurekaChatLauncher";
-import { listPosts } from "@/lib/blog.functions";
+import { listPosts, CATEGORY_LABELS, type PostCategory } from "@/lib/blog.functions";
 import { getSiteSettings } from "@/lib/site-settings.functions";
 import { z } from "zod";
 
-const searchSchema = z.object({ tag: z.string().trim().max(50).optional() });
+const searchSchema = z.object({
+  tag: z.string().trim().max(50).optional(),
+  category: z.enum(["ai", "marketing"]).optional(),
+});
+
+const CATEGORIES: PostCategory[] = ["ai", "marketing"];
 
 export const Route = createFileRoute("/blog/")({
   validateSearch: searchSchema,
-  loaderDeps: ({ search }) => ({ tag: search.tag }),
+  loaderDeps: ({ search }) => ({ tag: search.tag, category: search.category }),
   loader: async ({ deps }) => {
     const s = await getSiteSettings();
     if (!s.blog) throw notFound();
-    return listPosts({ data: { tag: deps.tag } });
+    return listPosts({ data: { tag: deps.tag, category: deps.category } });
   },
+
   head: ({ loaderData }) => ({
     meta: [
       { title: "Блог НейроМаркет — ИИ-продавцы, кейсы, автоматизация, вайбкодинг" },
