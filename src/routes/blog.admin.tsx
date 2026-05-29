@@ -224,6 +224,8 @@ function AdminPage() {
         content: "",
         contentHtml: "",
         tags: [],
+        category: "ai",
+
         published: false,
         lead_magnet_enabled: false,
         lead_magnet_title: "",
