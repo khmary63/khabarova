@@ -106,6 +106,8 @@ const upsertSchema = z.object({
   content: z.string().min(1).max(100000),
   cover_image_url: z.string().trim().url().max(500).optional().or(z.literal("")),
   tags: z.array(z.string().trim().min(1).max(50)).max(20).default([]),
+  category: z.enum(["ai", "marketing"]).default("ai"),
+
   published: z.boolean().default(true),
   lead_magnet_enabled: z.boolean().default(false),
   lead_magnet_title: z.string().trim().max(300).optional().or(z.literal("")),
