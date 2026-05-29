@@ -63,17 +63,13 @@ export const listPosts = createServerFn({ method: "GET" })
     return { posts, tags: Array.from(tagSet).sort() };
   });
 
-    const tagSet = new Set<string>();
-    posts.forEach((p) => p.tags?.forEach((t) => tagSet.add(t)));
-    return { posts, tags: Array.from(tagSet).sort() };
-  });
-
 export const getPostBySlug = createServerFn({ method: "GET" })
   .inputValidator((d: unknown) => z.object({ slug: z.string().trim().min(1).max(200) }).parse(d))
   .handler(async ({ data }) => {
     const { data: row, error } = await supabaseAdmin
       .from("posts")
-      .select("id, slug, title, excerpt, content, cover_image_url, tags, published_at, updated_at, lead_magnet_enabled, lead_magnet_title, lead_magnet_description, lead_magnet_button_label, lead_magnet_file_name")
+      .select("id, slug, title, excerpt, content, cover_image_url, tags, category, published_at, updated_at, lead_magnet_enabled, lead_magnet_title, lead_magnet_description, lead_magnet_button_label, lead_magnet_file_name")
+
       .eq("slug", data.slug)
       .eq("published", true)
       .maybeSingle();
