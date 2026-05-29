@@ -178,6 +178,41 @@ function BlogIndex() {
             ))}
           </ul>
         )}
+
+        {/* Теги — внизу страницы */}
+        {tags.length > 0 && (
+          <div className="mt-12 border-t border-border pt-8">
+            <p className="mb-3 text-sm font-medium text-muted-foreground">Темы</p>
+            <div className="flex flex-wrap gap-2">
+              <Link
+                to="/blog"
+                search={{ category }}
+                className={`rounded-full border px-3 py-1 text-sm transition ${
+                  !tag
+                    ? "border-primary bg-primary/10 text-foreground"
+                    : "border-border text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Все
+              </Link>
+              {tags.map((t: string) => (
+                <Link
+                  key={t}
+                  to="/blog"
+                  search={{ tag: t, category }}
+                  className={`rounded-full border px-3 py-1 text-sm transition ${
+                    tag === t
+                      ? "border-primary bg-primary/10 text-foreground"
+                      : "border-border text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  #{t}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
       </main>
       <SiteFooter />
       <EurekaChatLauncher />
