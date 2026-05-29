@@ -724,7 +724,7 @@ function AdminPage() {
                 onChange={(e) => setEditing({ ...editing, category: e.target.value })}
                 className="input"
               >
-                {(["ai", "marketing"] as PostCategory[]).map((c) => (
+                {(["ai", "marketing", "education"] as PostCategory[]).map((c) => (
                   <option key={c} value={c}>
                     {CATEGORY_LABELS[c]}
                   </option>
