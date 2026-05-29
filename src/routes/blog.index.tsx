@@ -8,10 +8,10 @@ import { z } from "zod";
 
 const searchSchema = z.object({
   tag: z.string().trim().max(50).optional(),
-  category: z.enum(["ai", "marketing"]).optional(),
+  category: z.enum(["ai", "marketing", "education"]).optional(),
 });
 
-const CATEGORIES: PostCategory[] = ["ai", "marketing"];
+const CATEGORIES: PostCategory[] = ["ai", "marketing", "education"];
 
 export const Route = createFileRoute("/blog/")({
   validateSearch: searchSchema,
