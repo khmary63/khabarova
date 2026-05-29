@@ -30,20 +30,32 @@ export type PostFull = PostListItem & {
   lead_magnet_title: string | null;
   lead_magnet_description: string | null;
   lead_magnet_button_label: string | null;
-  lead_magnet_file_name: string | null;
-};
-
 export const listPosts = createServerFn({ method: "GET" })
   .inputValidator((d: unknown) => {
-    const schema = z.object({ tag: z.string().trim().max(50).optional() }).default({});
+    const schema = z
+      .object({
+        tag: z.string().trim().max(50).optional(),
+        category: z.enum(["ai", "marketing"]).optional(),
+      })
+      .default({});
     return schema.parse(d ?? {});
   })
   .handler(async ({ data }) => {
     let query = supabaseAdmin
       .from("posts")
-      .select("id, slug, title, excerpt, cover_image_url, tags, published_at")
+      .select("id, slug, title, excerpt, cover_image_url, tags, category, published_at")
       .eq("published", true)
       .order("published_at", { ascending: false, nullsFirst: false })
+      .limit(200);
+    if (data.tag) query = query.contains("tags", [data.tag]);
+    if (data.category) query = query.eq("category", data.category);
+    const { data: rows, error } = await query;
+    if (error) {
+      console.error("[listPosts]", error);
+      return { posts: [] as PostListItem[], tags: [] as string[] };
+    }
+    const posts = (rows ?? []) as PostListItem[];
+
       .limit(200);
     if (data.tag) query = query.contains("tags", [data.tag]);
     const { data: rows, error } = await query;
