@@ -141,11 +141,11 @@ export const upsertPost = createServerFn({ method: "POST" })
       slug,
       title: data.title,
       excerpt: data.excerpt,
+      content: data.content,
+      cover_image_url: data.cover_image_url || null,
       tags: data.tags,
       category: data.category,
 
-      cover_image_url: data.cover_image_url || null,
-      tags: data.tags,
       published: data.published,
       published_at: data.published ? new Date().toISOString() : null,
       lead_magnet_enabled: data.lead_magnet_enabled,
