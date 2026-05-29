@@ -4,11 +4,12 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { postBlogToTelegram } from "@/lib/telegram.server";
 
 
-export type PostCategory = "ai" | "marketing";
+export type PostCategory = "ai" | "marketing" | "education";
 
 export const CATEGORY_LABELS: Record<PostCategory, string> = {
-  ai: "ИИ решения",
-  marketing: "Маркетинг",
+  ai: "Управление бизнесом",
+  marketing: "Нейромаркетинг",
+  education: "Образовательный контент",
 };
 
 export type PostListItem = {
@@ -38,7 +39,7 @@ export const listPosts = createServerFn({ method: "GET" })
     const schema = z
       .object({
         tag: z.string().trim().max(50).optional(),
-        category: z.enum(["ai", "marketing"]).optional(),
+        category: z.enum(["ai", "marketing", "education"]).optional(),
       })
       .default({});
     return schema.parse(d ?? {});
@@ -106,7 +107,7 @@ const upsertSchema = z.object({
   content: z.string().min(1).max(100000),
   cover_image_url: z.string().trim().url().max(500).optional().or(z.literal("")),
   tags: z.array(z.string().trim().min(1).max(50)).max(20).default([]),
-  category: z.enum(["ai", "marketing"]).default("ai"),
+  category: z.enum(["ai", "marketing", "education"]).default("ai"),
 
   published: z.boolean().default(true),
   lead_magnet_enabled: z.boolean().default(false),
