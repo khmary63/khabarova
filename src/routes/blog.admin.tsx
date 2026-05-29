@@ -321,6 +321,8 @@ function AdminPage() {
         content: markdown,
         cover_image_url: editing.cover_image_url || "",
         tags: editing.tags || [],
+        category: (editing.category as PostCategory) || "ai",
+
         published: editing.published ?? true,
         lead_magnet_enabled: magnetOn,
         lead_magnet_title: editing.lead_magnet_title || "",
