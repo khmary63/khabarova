@@ -2,20 +2,26 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { EurekaChatLauncher } from "@/components/EurekaChatLauncher";
-import { listPosts } from "@/lib/blog.functions";
+import { listPosts, CATEGORY_LABELS, type PostCategory } from "@/lib/blog.functions";
 import { getSiteSettings } from "@/lib/site-settings.functions";
 import { z } from "zod";
 
-const searchSchema = z.object({ tag: z.string().trim().max(50).optional() });
+const searchSchema = z.object({
+  tag: z.string().trim().max(50).optional(),
+  category: z.enum(["ai", "marketing"]).optional(),
+});
+
+const CATEGORIES: PostCategory[] = ["ai", "marketing"];
 
 export const Route = createFileRoute("/blog/")({
   validateSearch: searchSchema,
-  loaderDeps: ({ search }) => ({ tag: search.tag }),
+  loaderDeps: ({ search }) => ({ tag: search.tag, category: search.category }),
   loader: async ({ deps }) => {
     const s = await getSiteSettings();
     if (!s.blog) throw notFound();
-    return listPosts({ data: { tag: deps.tag } });
+    return listPosts({ data: { tag: deps.tag, category: deps.category } });
   },
+
   head: ({ loaderData }) => ({
     meta: [
       { title: "Блог НейроМаркет — ИИ-продавцы, кейсы, автоматизация, вайбкодинг" },
@@ -70,7 +76,7 @@ export const Route = createFileRoute("/blog/")({
 
 function BlogIndex() {
   const { posts, tags } = Route.useLoaderData();
-  const { tag } = Route.useSearch();
+  const { tag, category } = Route.useSearch();
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
@@ -87,35 +93,35 @@ function BlogIndex() {
           </p>
         </header>
 
-        {tags.length > 0 && (
-          <div className="mb-8 flex flex-wrap gap-2">
+        {/* Рубрики */}
+        <div className="mb-8 flex flex-wrap gap-2">
+          <Link
+            to="/blog"
+            search={{ tag }}
+            className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${
+              !category
+                ? "border-primary bg-primary/10 text-foreground"
+                : "border-border text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Все рубрики
+          </Link>
+          {CATEGORIES.map((c) => (
             <Link
+              key={c}
               to="/blog"
-              search={{}}
-              className={`rounded-full border px-3 py-1 text-sm transition ${
-                !tag
+              search={{ tag, category: c }}
+              className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${
+                category === c
                   ? "border-primary bg-primary/10 text-foreground"
                   : "border-border text-muted-foreground hover:text-foreground"
               }`}
             >
-              Все
+              {CATEGORY_LABELS[c]}
             </Link>
-            {tags.map((t: string) => (
-              <Link
-                key={t}
-                to="/blog"
-                search={{ tag: t }}
-                className={`rounded-full border px-3 py-1 text-sm transition ${
-                  tag === t
-                    ? "border-primary bg-primary/10 text-foreground"
-                    : "border-border text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                #{t}
-              </Link>
-            ))}
-          </div>
-        )}
+          ))}
+        </div>
+
 
         {posts.length === 0 ? (
           <div className="rounded-2xl border border-border bg-surface p-10 text-center text-muted-foreground">
@@ -172,6 +178,41 @@ function BlogIndex() {
             ))}
           </ul>
         )}
+
+        {/* Теги — внизу страницы */}
+        {tags.length > 0 && (
+          <div className="mt-12 border-t border-border pt-8">
+            <p className="mb-3 text-sm font-medium text-muted-foreground">Темы</p>
+            <div className="flex flex-wrap gap-2">
+              <Link
+                to="/blog"
+                search={{ category }}
+                className={`rounded-full border px-3 py-1 text-sm transition ${
+                  !tag
+                    ? "border-primary bg-primary/10 text-foreground"
+                    : "border-border text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Все
+              </Link>
+              {tags.map((t: string) => (
+                <Link
+                  key={t}
+                  to="/blog"
+                  search={{ tag: t, category }}
+                  className={`rounded-full border px-3 py-1 text-sm transition ${
+                    tag === t
+                      ? "border-primary bg-primary/10 text-foreground"
+                      : "border-border text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  #{t}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
       </main>
       <SiteFooter />
       <EurekaChatLauncher />

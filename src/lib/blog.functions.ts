@@ -4,6 +4,13 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { postBlogToTelegram } from "@/lib/telegram.server";
 
 
+export type PostCategory = "ai" | "marketing";
+
+export const CATEGORY_LABELS: Record<PostCategory, string> = {
+  ai: "ИИ решения",
+  marketing: "Маркетинг",
+};
+
 export type PostListItem = {
   id: string;
   slug: string;
@@ -11,8 +18,10 @@ export type PostListItem = {
   excerpt: string;
   cover_image_url: string | null;
   tags: string[];
+  category: string;
   published_at: string | null;
 };
+
 
 export type PostFull = PostListItem & {
   content: string;
@@ -26,17 +35,23 @@ export type PostFull = PostListItem & {
 
 export const listPosts = createServerFn({ method: "GET" })
   .inputValidator((d: unknown) => {
-    const schema = z.object({ tag: z.string().trim().max(50).optional() }).default({});
+    const schema = z
+      .object({
+        tag: z.string().trim().max(50).optional(),
+        category: z.enum(["ai", "marketing"]).optional(),
+      })
+      .default({});
     return schema.parse(d ?? {});
   })
   .handler(async ({ data }) => {
     let query = supabaseAdmin
       .from("posts")
-      .select("id, slug, title, excerpt, cover_image_url, tags, published_at")
+      .select("id, slug, title, excerpt, cover_image_url, tags, category, published_at")
       .eq("published", true)
       .order("published_at", { ascending: false, nullsFirst: false })
       .limit(200);
     if (data.tag) query = query.contains("tags", [data.tag]);
+    if (data.category) query = query.eq("category", data.category);
     const { data: rows, error } = await query;
     if (error) {
       console.error("[listPosts]", error);
@@ -53,7 +68,8 @@ export const getPostBySlug = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const { data: row, error } = await supabaseAdmin
       .from("posts")
-      .select("id, slug, title, excerpt, content, cover_image_url, tags, published_at, updated_at, lead_magnet_enabled, lead_magnet_title, lead_magnet_description, lead_magnet_button_label, lead_magnet_file_name")
+      .select("id, slug, title, excerpt, content, cover_image_url, tags, category, published_at, updated_at, lead_magnet_enabled, lead_magnet_title, lead_magnet_description, lead_magnet_button_label, lead_magnet_file_name")
+
       .eq("slug", data.slug)
       .eq("published", true)
       .maybeSingle();
@@ -90,6 +106,8 @@ const upsertSchema = z.object({
   content: z.string().min(1).max(100000),
   cover_image_url: z.string().trim().url().max(500).optional().or(z.literal("")),
   tags: z.array(z.string().trim().min(1).max(50)).max(20).default([]),
+  category: z.enum(["ai", "marketing"]).default("ai"),
+
   published: z.boolean().default(true),
   lead_magnet_enabled: z.boolean().default(false),
   lead_magnet_title: z.string().trim().max(300).optional().or(z.literal("")),
@@ -126,6 +144,8 @@ export const upsertPost = createServerFn({ method: "POST" })
       content: data.content,
       cover_image_url: data.cover_image_url || null,
       tags: data.tags,
+      category: data.category,
+
       published: data.published,
       published_at: data.published ? new Date().toISOString() : null,
       lead_magnet_enabled: data.lead_magnet_enabled,
@@ -181,7 +201,7 @@ export const adminListPosts = createServerFn({ method: "POST" })
     }
     const { data: rows, error } = await supabaseAdmin
       .from("posts")
-      .select("id, slug, title, excerpt, tags, published, published_at, updated_at, telegram_posted_at")
+      .select("id, slug, title, excerpt, tags, category, published, published_at, updated_at, telegram_posted_at")
       .order("updated_at", { ascending: false })
       .limit(200);
 

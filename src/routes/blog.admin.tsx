@@ -18,7 +18,10 @@ import {
   republishToTelegram,
   uploadLeadMagnetFile,
   adminListLeadMagnetSubmissions,
+  CATEGORY_LABELS,
+  type PostCategory,
 } from "@/lib/blog.functions";
+
 
 import { getSiteSettings, updateSiteSetting } from "@/lib/site-settings.functions";
 import { toast } from "sonner";
@@ -39,6 +42,8 @@ type AdminPost = {
   title: string;
   excerpt: string;
   tags: string[];
+  category: string;
+
   published: boolean;
   published_at: string | null;
   updated_at: string;
@@ -219,6 +224,8 @@ function AdminPage() {
         content: "",
         contentHtml: "",
         tags: [],
+        category: "ai",
+
         published: false,
         lead_magnet_enabled: false,
         lead_magnet_title: "",
@@ -314,6 +321,8 @@ function AdminPage() {
         content: markdown,
         cover_image_url: editing.cover_image_url || "",
         tags: editing.tags || [],
+        category: (editing.category as PostCategory) || "ai",
+
         published: editing.published ?? true,
         lead_magnet_enabled: magnetOn,
         lead_magnet_title: editing.lead_magnet_title || "",
@@ -707,6 +716,20 @@ function AdminPage() {
                   />
                 </div>
               </div>
+            </Field>
+
+            <Field label="Рубрика">
+              <select
+                value={(editing.category as string) || "ai"}
+                onChange={(e) => setEditing({ ...editing, category: e.target.value })}
+                className="input"
+              >
+                {(["ai", "marketing"] as PostCategory[]).map((c) => (
+                  <option key={c} value={c}>
+                    {CATEGORY_LABELS[c]}
+                  </option>
+                ))}
+              </select>
             </Field>
 
             <Field label="Теги (через запятую)">
