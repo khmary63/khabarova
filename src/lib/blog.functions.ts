@@ -197,11 +197,11 @@ export const adminListPosts = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const expected = process.env.BLOG_ADMIN_TOKEN;
     if (!expected || data.token !== expected) {
-      .select("id, slug, title, excerpt, tags, category, published, published_at, updated_at, telegram_posted_at")
+      return { ok: false as const, error: "Неверный пароль", posts: [] };
     }
     const { data: rows, error } = await supabaseAdmin
       .from("posts")
-      .select("id, slug, title, excerpt, tags, published, published_at, updated_at, telegram_posted_at")
+      .select("id, slug, title, excerpt, tags, category, published, published_at, updated_at, telegram_posted_at")
       .order("updated_at", { ascending: false })
       .limit(200);
 
