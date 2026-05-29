@@ -30,6 +30,9 @@ export type PostFull = PostListItem & {
   lead_magnet_title: string | null;
   lead_magnet_description: string | null;
   lead_magnet_button_label: string | null;
+  lead_magnet_file_name: string | null;
+};
+
 export const listPosts = createServerFn({ method: "GET" })
   .inputValidator((d: unknown) => {
     const schema = z
@@ -55,15 +58,11 @@ export const listPosts = createServerFn({ method: "GET" })
       return { posts: [] as PostListItem[], tags: [] as string[] };
     }
     const posts = (rows ?? []) as PostListItem[];
+    const tagSet = new Set<string>();
+    posts.forEach((p) => p.tags?.forEach((t) => tagSet.add(t)));
+    return { posts, tags: Array.from(tagSet).sort() };
+  });
 
-      .limit(200);
-    if (data.tag) query = query.contains("tags", [data.tag]);
-    const { data: rows, error } = await query;
-    if (error) {
-      console.error("[listPosts]", error);
-      return { posts: [] as PostListItem[], tags: [] as string[] };
-    }
-    const posts = (rows ?? []) as PostListItem[];
     const tagSet = new Set<string>();
     posts.forEach((p) => p.tags?.forEach((t) => tagSet.add(t)));
     return { posts, tags: Array.from(tagSet).sort() };
