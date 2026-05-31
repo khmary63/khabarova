@@ -1,4 +1,4 @@
-import { ArrowRight, Check, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Sparkles, Calculator } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import mariaHero from "@/assets/maria-hero.jpg";
 import { SITE, type VariantConfig } from "@/lib/site";
@@ -65,6 +65,14 @@ export function Hero({ config, onOpenChat }: { config: VariantConfig; onOpenChat
               <Sparkles className="h-4 w-4" strokeWidth={2} />
               Поговорить с моим ИИ-продавцом
             </button>
+            <Link
+              to="/roi"
+              data-track="hero_roi_calc"
+              className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-5 py-3 text-sm font-semibold text-primary transition hover:bg-primary/20"
+            >
+              <Calculator className="h-4 w-4" strokeWidth={2} />
+              Рассчитать ROI за 1 минуту
+            </Link>
             <a
               href="#lead"
               data-track="hero_lead_form"
