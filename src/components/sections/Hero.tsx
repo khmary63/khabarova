@@ -1,4 +1,4 @@
-import { ArrowRight, Check, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Sparkles, Calculator } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import mariaHero from "@/assets/maria-hero.jpg";
 import { SITE, type VariantConfig } from "@/lib/site";
