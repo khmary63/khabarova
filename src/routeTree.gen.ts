@@ -21,6 +21,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as RoiIndexRouteImport } from './routes/roi.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as RoiResultRouteImport } from './routes/roi.result'
+import { Route as RoiSectorRouteImport } from './routes/roi.$sector'
 import { Route as BlogAdminRouteImport } from './routes/blog.admin'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 
@@ -84,6 +85,11 @@ const RoiResultRoute = RoiResultRouteImport.update({
   path: '/roi/result',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RoiSectorRoute = RoiSectorRouteImport.update({
+  id: '/roi/$sector',
+  path: '/roi/$sector',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogAdminRoute = BlogAdminRouteImport.update({
   id: '/blog/admin',
   path: '/blog/admin',
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/admin': typeof BlogAdminRoute
+  '/roi/$sector': typeof RoiSectorRoute
   '/roi/result': typeof RoiResultRoute
   '/blog/': typeof BlogIndexRoute
   '/roi/': typeof RoiIndexRoute
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/admin': typeof BlogAdminRoute
+  '/roi/$sector': typeof RoiSectorRoute
   '/roi/result': typeof RoiResultRoute
   '/blog': typeof BlogIndexRoute
   '/roi': typeof RoiIndexRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/admin': typeof BlogAdminRoute
+  '/roi/$sector': typeof RoiSectorRoute
   '/roi/result': typeof RoiResultRoute
   '/blog/': typeof BlogIndexRoute
   '/roi/': typeof RoiIndexRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/blog/$slug'
     | '/blog/admin'
+    | '/roi/$sector'
     | '/roi/result'
     | '/blog/'
     | '/roi/'
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/blog/$slug'
     | '/blog/admin'
+    | '/roi/$sector'
     | '/roi/result'
     | '/blog'
     | '/roi'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/blog/$slug'
     | '/blog/admin'
+    | '/roi/$sector'
     | '/roi/result'
     | '/blog/'
     | '/roi/'
@@ -207,6 +219,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   BlogSlugRoute: typeof BlogSlugRoute
   BlogAdminRoute: typeof BlogAdminRoute
+  RoiSectorRoute: typeof RoiSectorRoute
   RoiResultRoute: typeof RoiResultRoute
   BlogIndexRoute: typeof BlogIndexRoute
   RoiIndexRoute: typeof RoiIndexRoute
@@ -298,6 +311,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RoiResultRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/roi/$sector': {
+      id: '/roi/$sector'
+      path: '/roi/$sector'
+      fullPath: '/roi/$sector'
+      preLoaderRoute: typeof RoiSectorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/admin': {
       id: '/blog/admin'
       path: '/blog/admin'
@@ -327,6 +347,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   BlogSlugRoute: BlogSlugRoute,
   BlogAdminRoute: BlogAdminRoute,
+  RoiSectorRoute: RoiSectorRoute,
   RoiResultRoute: RoiResultRoute,
   BlogIndexRoute: BlogIndexRoute,
   RoiIndexRoute: RoiIndexRoute,
@@ -334,3 +355,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
