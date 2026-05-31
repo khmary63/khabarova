@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { getSiteSettings } from "@/lib/site-settings.functions";
+import { SECTOR_SLUGS } from "@/lib/roi";
 
 const BASE_URL = "https://neyromarket.com";
 
@@ -16,7 +17,12 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/b2b", changefreq: "monthly", priority: "0.8" },
           { path: "/contacts", changefreq: "monthly", priority: "0.6" },
           { path: "/privacy", changefreq: "yearly", priority: "0.3" },
+          { path: "/roi", changefreq: "monthly", priority: "0.8" },
         ];
+
+        SECTOR_SLUGS.filter((s) => s !== "obshchiy").forEach((s) => {
+          entries.push({ path: `/roi/${s}`, changefreq: "monthly", priority: "0.7" });
+        });
         if (settings.apps) {
           entries.push({ path: "/apps", changefreq: "monthly", priority: "0.7" });
         }
