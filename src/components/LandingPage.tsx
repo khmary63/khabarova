@@ -1,6 +1,7 @@
 import { Hero } from "@/components/sections/Hero";
 import { Pains } from "@/components/sections/Pains";
 import { Services } from "@/components/sections/Services";
+import { Audience } from "@/components/sections/Audience";
 import { Cases } from "@/components/sections/Cases";
 import { Demo } from "@/components/sections/Demo";
 import { About } from "@/components/sections/About";
@@ -24,6 +25,7 @@ export function LandingPage({ config }: { config: VariantConfig }) {
         <Hero config={config} onOpenChat={openEurekaChat} />
         <Pains config={config} />
         <Services />
+        <Audience />
         <Cases config={config} />
         <Demo onOpenChat={openEurekaChat} />
         <About />
