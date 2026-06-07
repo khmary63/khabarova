@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { Link, useLoaderData } from "@tanstack/react-router";
-import { Phone } from "lucide-react";
+import { Phone, Menu, X } from "lucide-react";
 import { SITE } from "@/lib/site";
 import { SocialIcons } from "@/components/SocialIcons";
 import logo from "@/assets/logo.png";
 
 export function SiteHeader() {
+  const [mobileOpen, setMobileOpen] = useState(false);
   const rootData = useLoaderData({ from: "__root__" }) as
     | { apps?: boolean; blog?: boolean; reviews?: boolean }
     | undefined;
@@ -13,6 +15,8 @@ export function SiteHeader() {
     blog: rootData?.blog ?? true,
     reviews: rootData?.reviews ?? true,
   };
+  const closeMobile = () => setMobileOpen(false);
+
 
 
   return (
