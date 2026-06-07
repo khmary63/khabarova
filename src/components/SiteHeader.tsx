@@ -22,10 +22,10 @@ export function SiteHeader() {
           <a
             href={SITE.phoneHref}
             data-track="header_phone"
-            className="inline-flex items-center gap-1.5 font-medium text-foreground transition hover:text-primary"
+            className="inline-flex items-center gap-1.5 whitespace-nowrap font-medium text-foreground transition hover:text-primary"
           >
-            <Phone className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
-            {SITE.phone}
+            <Phone className="h-3.5 w-3.5 shrink-0 text-primary" strokeWidth={2} />
+            <span className="whitespace-nowrap">{SITE.phone}</span>
           </a>
           <div className="inline-flex items-center gap-3">
             <div className="hidden items-center gap-2 sm:inline-flex">
