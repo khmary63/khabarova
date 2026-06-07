@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { Link, useLoaderData } from "@tanstack/react-router";
-import { Phone } from "lucide-react";
+import { Phone, Menu, X } from "lucide-react";
 import { SITE } from "@/lib/site";
 import { SocialIcons } from "@/components/SocialIcons";
 import logo from "@/assets/logo.png";
 
 export function SiteHeader() {
+  const [mobileOpen, setMobileOpen] = useState(false);
   const rootData = useLoaderData({ from: "__root__" }) as
     | { apps?: boolean; blog?: boolean; reviews?: boolean }
     | undefined;
@@ -13,6 +15,8 @@ export function SiteHeader() {
     blog: rootData?.blog ?? true,
     reviews: rootData?.reviews ?? true,
   };
+  const closeMobile = () => setMobileOpen(false);
+
 
 
   return (
@@ -66,7 +70,37 @@ export function SiteHeader() {
         >
           Бесплатный ИИ-аудит
         </a>
+        <button
+          type="button"
+          aria-label={mobileOpen ? "Закрыть меню" : "Открыть меню"}
+          aria-expanded={mobileOpen}
+          onClick={() => setMobileOpen((v) => !v)}
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border/60 text-foreground transition hover:bg-surface/60 md:hidden"
+        >
+          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
       </div>
+      {mobileOpen && (
+        <nav className="container-page flex flex-col gap-1 border-t border-border/40 py-3 text-sm md:hidden">
+          <a href="/#cases" onClick={closeMobile} className="rounded-lg px-2 py-2 text-muted-foreground transition hover:bg-surface/60 hover:text-foreground">Кейсы</a>
+          <a href="/#demo" onClick={closeMobile} className="rounded-lg px-2 py-2 text-muted-foreground transition hover:bg-surface/60 hover:text-foreground">Демо</a>
+          <a href="/#about" onClick={closeMobile} className="rounded-lg px-2 py-2 text-muted-foreground transition hover:bg-surface/60 hover:text-foreground">О Марии</a>
+          <Link to="/roi" onClick={closeMobile} className="rounded-lg px-2 py-2 text-muted-foreground transition hover:bg-surface/60 hover:text-foreground" activeProps={{ className: "text-foreground" }}>Калькулятор ROI</Link>
+          {settings.apps && (
+            <Link to="/apps" onClick={closeMobile} className="rounded-lg px-2 py-2 text-muted-foreground transition hover:bg-surface/60 hover:text-foreground" activeProps={{ className: "text-foreground" }}>Приложения</Link>
+          )}
+          {settings.blog && (
+            <Link to="/blog" onClick={closeMobile} className="rounded-lg px-2 py-2 text-muted-foreground transition hover:bg-surface/60 hover:text-foreground" activeProps={{ className: "text-foreground" }}>Блог</Link>
+          )}
+          {settings.reviews && (
+            <Link to="/reviews" onClick={closeMobile} className="rounded-lg px-2 py-2 text-muted-foreground transition hover:bg-surface/60 hover:text-foreground" activeProps={{ className: "text-foreground" }}>Отзывы</Link>
+          )}
+          <Link to="/contacts" onClick={closeMobile} className="rounded-lg px-2 py-2 text-muted-foreground transition hover:bg-surface/60 hover:text-foreground" activeProps={{ className: "text-foreground" }}>Контакты</Link>
+          <a href="#lead" onClick={closeMobile} data-track="header_lead_audit" className="mt-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-2 text-center font-medium text-foreground transition hover:bg-primary/20">
+            Бесплатный ИИ-аудит
+          </a>
+        </nav>
+      )}
     </header>
   );
 }
