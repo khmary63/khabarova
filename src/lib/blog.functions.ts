@@ -346,15 +346,16 @@ ${data.content}
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
+          "Lovable-API-Key": apiKey,
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-pro",
+          model: "google/gemini-3-flash-preview",
           messages: [
             { role: "system", content: "Ты опытный SEO-редактор. Возвращаешь только валидный JSON." },
             { role: "user", content: prompt },
           ],
           response_format: { type: "json_object" },
+          max_tokens: 60000,
         }),
       });
       if (!res.ok) {
@@ -365,14 +366,24 @@ ${data.content}
         return { ok: false as const, error: `Ошибка AI (${res.status})` };
       }
       const json = await res.json();
+      const finishReason: string = json?.choices?.[0]?.finish_reason ?? "";
       const raw: string = json?.choices?.[0]?.message?.content ?? "";
-      const cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
+      if (finishReason === "length") {
+        console.error("[optimizeForSeo] truncated response, finish_reason=length, len=", raw.length);
+        return { ok: false as const, error: "Статья слишком длинная — ответ AI обрезался. Сократите текст и попробуйте снова." };
+      }
+      let cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
+      const firstBrace = cleaned.indexOf("{");
+      const lastBrace = cleaned.lastIndexOf("}");
+      if (firstBrace >= 0 && lastBrace > firstBrace) {
+        cleaned = cleaned.slice(firstBrace, lastBrace + 1);
+      }
       let parsed: { title?: string; excerpt?: string; tags?: string[]; content?: string };
       try {
         parsed = JSON.parse(cleaned);
       } catch (e) {
-        console.error("[optimizeForSeo] JSON parse failed", e, cleaned.slice(0, 500));
-        return { ok: false as const, error: "AI вернул неверный формат" };
+        console.error("[optimizeForSeo] JSON parse failed", e, "finish_reason=", finishReason, cleaned.slice(0, 500));
+        return { ok: false as const, error: "AI вернул неверный формат, попробуйте ещё раз" };
       }
       return {
         ok: true as const,
