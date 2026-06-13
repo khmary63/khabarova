@@ -311,7 +311,19 @@ export const optimizeForSeo = createServerFn({ method: "POST" })
     const host = request.headers.get("host")?.trim() || "";
     const forwardedHost = request.headers.get("x-forwarded-host")?.trim() || "";
     const initialRunId = getLovableAiGatewayRunId(request);
-    const gateway = createLovableAiGatewayProvider(apiKey, initialRunId);
+    const rawForwardedFor = request.headers.get("x-forwarded-for")?.trim() || "";
+    const proxyIp = request.headers.get("cf-connecting-ip")?.trim()
+      || request.headers.get("x-real-ip")?.trim()
+      || "";
+    const clientIp = rawForwardedFor
+      .split(",")
+      .map((value) => value.trim())
+      .find(Boolean)
+      || proxyIp;
+    const gateway = createLovableAiGatewayProvider(apiKey, {
+      initialRunId,
+      clientIp,
+    });
     const prompt = `Ты SEO + GEO редактор. Оптимизируй статью блога одновременно под классические поисковики (Google, Яндекс) И под генеративные поисковики/ИИ-ответы (ChatGPT, Perplexity, Google AI Overviews, Яндекс Нейро). Язык — русский.
 
 Что такое GEO-оптимизация (Generative Engine Optimization):
@@ -391,6 +403,9 @@ ${data.content}
         status,
         host,
         forwardedHost,
+        rawForwardedFor,
+        proxyIp,
+        clientIp,
         runId: gateway.getRunId(),
         message: error.message,
         bodyText,
