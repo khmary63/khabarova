@@ -2,8 +2,34 @@ import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
 const LOVABLE_AIG_RUN_ID_HEADER = "X-Lovable-AIG-Run-ID";
 
-export function createLovableAiGatewayProvider(lovableApiKey: string, initialRunId?: string) {
-  let runId = initialRunId?.trim() || undefined;
+const STRIPPED_PROXY_HEADERS = [
+  "host",
+  "forwarded",
+  "x-forwarded-host",
+  "x-forwarded-proto",
+  "x-forwarded-port",
+  "x-forwarded-server",
+  "cf-connecting-ip",
+  "true-client-ip",
+  "x-real-ip",
+];
+
+type LovableAiGatewayOptions = {
+  initialRunId?: string;
+  clientIp?: string;
+};
+
+export function createLovableAiGatewayProvider(
+  lovableApiKey: string,
+  initialRunIdOrOptions?: string | LovableAiGatewayOptions,
+) {
+  const options =
+    typeof initialRunIdOrOptions === "string"
+      ? { initialRunId: initialRunIdOrOptions }
+      : (initialRunIdOrOptions ?? {});
+
+  const clientIp = options.clientIp?.trim() || undefined;
+  let runId = options.initialRunId?.trim() || undefined;
   let resolveRunId: (value: string | undefined) => void = () => {};
   let runIdResolved = false;
   const runIdReady = new Promise<string | undefined>((resolve) => {
@@ -31,6 +57,12 @@ export function createLovableAiGatewayProvider(lovableApiKey: string, initialRun
     },
     fetch: async (input, init) => {
       const headers = new Headers(init?.headers);
+      for (const headerName of STRIPPED_PROXY_HEADERS) {
+        headers.delete(headerName);
+      }
+      if (clientIp) {
+        headers.set("X-Forwarded-For", clientIp);
+      }
       if (runId && !headers.has(LOVABLE_AIG_RUN_ID_HEADER)) {
         headers.set(LOVABLE_AIG_RUN_ID_HEADER, runId);
       }
