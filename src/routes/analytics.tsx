@@ -255,6 +255,61 @@ function PagesTable({ data }: { data: { path: string; views: number; clicks: num
   );
 }
 
+function ClicksBreakdown({
+  byPage,
+  total,
+}: {
+  byPage: { path: string; views: number; clicks: number; conversion: number }[];
+  total: number;
+}) {
+  const blog = byPage
+    .filter((p) => p.path === "/blog" || p.path.startsWith("/blog/"))
+    .reduce((s, p) => s + p.clicks, 0);
+  const apps = byPage
+    .filter((p) => p.path === "/apps" || p.path.startsWith("/apps/"))
+    .reduce((s, p) => s + p.clicks, 0);
+
+  const bars = [
+    { label: "Блог", value: blog, color: "bg-primary/70" },
+    { label: "Приложения", value: apps, color: "bg-success/80" },
+    { label: "Всего", value: total, color: "bg-foreground/60" },
+  ];
+  const max = Math.max(1, ...bars.map((b) => b.value));
+
+  if (total === 0) return <p className="text-sm text-muted-foreground">Пока нет кликов за период.</p>;
+
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-4 sm:grid-cols-3">
+        {bars.map((b) => (
+          <div key={b.label} className="rounded-xl border border-border bg-background p-4">
+            <div className="text-xs uppercase tracking-widest text-muted-foreground">{b.label}</div>
+            <div className="mt-1 font-display text-2xl font-semibold">
+              {b.value.toLocaleString("ru-RU")}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="space-y-3">
+        {bars.map((b) => (
+          <div key={b.label} className="flex items-center gap-3">
+            <div className="w-24 shrink-0 text-sm text-muted-foreground">{b.label}</div>
+            <div className="h-6 flex-1 overflow-hidden rounded-full bg-border/40">
+              <div
+                className={`h-full rounded-full ${b.color}`}
+                style={{ width: `${(b.value / max) * 100}%` }}
+              />
+            </div>
+            <div className="w-12 shrink-0 text-right text-sm font-semibold">{b.value}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
+
 function ClicksTable({ data }: { data: { path: string; label: string; clicks: number }[] }) {
   if (!data.length) return <p className="text-sm text-muted-foreground">Пока никто не кликал.</p>;
   return (
