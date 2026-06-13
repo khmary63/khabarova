@@ -1,6 +1,9 @@
+import { generateText } from "ai";
 import { createServerFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { createLovableAiGatewayProvider, getLovableAiGatewayRunId } from "@/lib/lovable-ai-gateway.server";
 import { postBlogToTelegram } from "@/lib/telegram.server";
 
 
@@ -304,6 +307,11 @@ export const optimizeForSeo = createServerFn({ method: "POST" })
     if (!apiKey) {
       return { ok: false as const, error: "LOVABLE_API_KEY не настроен" };
     }
+    const request = getRequest();
+    const host = request.headers.get("host")?.trim() || "";
+    const forwardedHost = request.headers.get("x-forwarded-host")?.trim() || "";
+    const initialRunId = getLovableAiGatewayRunId(request);
+    const gateway = createLovableAiGatewayProvider(apiKey, initialRunId);
     const prompt = `Ты SEO + GEO редактор. Оптимизируй статью блога одновременно под классические поисковики (Google, Яндекс) И под генеративные поисковики/ИИ-ответы (ChatGPT, Perplexity, Google AI Overviews, Яндекс Нейро). Язык — русский.
 
 Что такое GEO-оптимизация (Generative Engine Optimization):
@@ -342,32 +350,13 @@ ${data.content}
 
 
     try {
-      const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Lovable-API-Key": apiKey,
-        },
-        body: JSON.stringify({
-          model: "google/gemini-3-flash-preview",
-          messages: [
-            { role: "system", content: "Ты опытный SEO-редактор. Возвращаешь только валидный JSON." },
-            { role: "user", content: prompt },
-          ],
-          response_format: { type: "json_object" },
-          max_tokens: 60000,
-        }),
+      const result = await generateText({
+        model: gateway("google/gemini-3-flash-preview"),
+        system: "Ты опытный SEO-редактор. Возвращаешь только валидный JSON.",
+        prompt,
       });
-      if (!res.ok) {
-        const txt = await res.text();
-        console.error("[optimizeForSeo] gateway error", res.status, txt);
-        if (res.status === 429) return { ok: false as const, error: "Слишком много запросов, попробуйте позже" };
-        if (res.status === 402) return { ok: false as const, error: "Закончились кредиты Lovable AI" };
-        return { ok: false as const, error: `Ошибка AI (${res.status})` };
-      }
-      const json = await res.json();
-      const finishReason: string = json?.choices?.[0]?.finish_reason ?? "";
-      const raw: string = json?.choices?.[0]?.message?.content ?? "";
+      const finishReason = result.finishReason ?? "";
+      const raw = result.text ?? "";
       if (finishReason === "length") {
         console.error("[optimizeForSeo] truncated response, finish_reason=length, len=", raw.length);
         return { ok: false as const, error: "Статья слишком длинная — ответ AI обрезался. Сократите текст и попробуйте снова." };
@@ -395,7 +384,20 @@ ${data.content}
         content: (parsed.content || "").toString().slice(0, 100000),
       };
     } catch (e) {
-      console.error("[optimizeForSeo]", e);
+      const error = e as Error & { statusCode?: number; cause?: { statusCode?: number; responseBody?: string; bodyText?: string } };
+      const status = error.statusCode ?? error.cause?.statusCode;
+      const bodyText = error.cause?.responseBody ?? error.cause?.bodyText;
+      console.error("[optimizeForSeo] request failed", {
+        status,
+        host,
+        forwardedHost,
+        runId: gateway.getRunId(),
+        message: error.message,
+        bodyText,
+      });
+      if (status === 429) return { ok: false as const, error: "Слишком много запросов, попробуйте позже" };
+      if (status === 402) return { ok: false as const, error: "Закончились кредиты Lovable AI" };
+      if (status === 403) return { ok: false as const, error: "AI-шлюз отклонил запрос (403)" };
       return { ok: false as const, error: "Сетевая ошибка" };
     }
   });
