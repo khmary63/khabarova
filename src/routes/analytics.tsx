@@ -145,8 +145,8 @@ function AnalyticsPage() {
                   <Stat label="Уникальных сессий" value={summary.totals.sessions} />
                 </div>
 
-                <Section title="Клики: блог / приложения / всего">
-                  <ClicksBreakdown byPage={summary.byPage} total={summary.totals.clicks} />
+                <Section title="Клики: блог / приложения">
+                  <ClicksBreakdown byPage={summary.byPage} totals={summary.totals} />
                 </Section>
 
                 <Section title="По дням">
