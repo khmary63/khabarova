@@ -145,6 +145,10 @@ function AnalyticsPage() {
                   <Stat label="Уникальных сессий" value={summary.totals.sessions} />
                 </div>
 
+                <Section title="Клики: блог / приложения / всего">
+                  <ClicksBreakdown byPage={summary.byPage} total={summary.totals.clicks} />
+                </Section>
+
                 <Section title="По дням">
                   <DailyChart data={summary.byDay} />
                 </Section>
