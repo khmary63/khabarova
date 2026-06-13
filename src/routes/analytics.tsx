@@ -145,8 +145,8 @@ function AnalyticsPage() {
                   <Stat label="Уникальных сессий" value={summary.totals.sessions} />
                 </div>
 
-                <Section title="Клики: блог / приложения / всего">
-                  <ClicksBreakdown byPage={summary.byPage} total={summary.totals.clicks} />
+                <Section title="Клики: блог / приложения">
+                  <ClicksBreakdown byPage={summary.byPage} totals={summary.totals} />
                 </Section>
 
                 <Section title="По дням">
@@ -257,11 +257,19 @@ function PagesTable({ data }: { data: { path: string; views: number; clicks: num
 
 function ClicksBreakdown({
   byPage,
-  total,
+  totals,
 }: {
   byPage: { path: string; views: number; clicks: number; conversion: number }[];
-  total: number;
+  totals: { views: number; clicks: number; sessions: number };
 }) {
+  const bases = [
+    { key: "views" as const, label: "Общее количество", value: totals.views },
+    { key: "clicks" as const, label: "Клики по плашкам", value: totals.clicks },
+    { key: "sessions" as const, label: "Уникальные сессии", value: totals.sessions },
+  ];
+  const [base, setBase] = useState<"views" | "clicks" | "sessions">("clicks");
+  const baseValue = bases.find((b) => b.key === base)!.value;
+
   const blog = byPage
     .filter((p) => p.path === "/blog" || p.path.startsWith("/blog/"))
     .reduce((s, p) => s + p.clicks, 0);
@@ -272,14 +280,29 @@ function ClicksBreakdown({
   const bars = [
     { label: "Блог", value: blog, color: "bg-primary/70" },
     { label: "Приложения", value: apps, color: "bg-success/80" },
-    { label: "Всего", value: total, color: "bg-foreground/60" },
+    { label: bases.find((b) => b.key === base)!.label, value: baseValue, color: "bg-foreground/60" },
   ];
   const max = Math.max(1, ...bars.map((b) => b.value));
-
-  if (total === 0) return <p className="text-sm text-muted-foreground">Пока нет кликов за период.</p>;
+  const pct = (v: number) => (baseValue > 0 ? Math.round((v / baseValue) * 100) : 0);
 
   return (
     <div className="space-y-4">
+      <div className="flex flex-wrap gap-2">
+        {bases.map((b) => (
+          <button
+            key={b.key}
+            onClick={() => setBase(b.key)}
+            className={`rounded-full border px-4 py-1.5 text-sm transition ${
+              base === b.key
+                ? "border-primary bg-primary/10 text-foreground"
+                : "border-border bg-surface text-muted-foreground hover:border-primary/40"
+            }`}
+          >
+            {b.label}: {b.value.toLocaleString("ru-RU")}
+          </button>
+        ))}
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-3">
         {bars.map((b) => (
           <div key={b.label} className="rounded-xl border border-border bg-background p-4">
@@ -291,7 +314,7 @@ function ClicksBreakdown({
         ))}
       </div>
       <div className="space-y-3">
-        {bars.map((b) => (
+        {bars.map((b, i) => (
           <div key={b.label} className="flex items-center gap-3">
             <div className="w-24 shrink-0 text-sm text-muted-foreground">{b.label}</div>
             <div className="h-6 flex-1 overflow-hidden rounded-full bg-border/40">
@@ -300,7 +323,10 @@ function ClicksBreakdown({
                 style={{ width: `${(b.value / max) * 100}%` }}
               />
             </div>
-            <div className="w-12 shrink-0 text-right text-sm font-semibold">{b.value}</div>
+            <div className="w-20 shrink-0 text-right text-sm font-semibold">
+              {b.value.toLocaleString("ru-RU")}
+              {i < 2 && <span className="ml-1 text-muted-foreground">({pct(b.value)}%)</span>}
+            </div>
           </div>
         ))}
       </div>
