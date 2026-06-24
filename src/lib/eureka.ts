@@ -1,14 +1,13 @@
-// Управление виджетом Eureka (внешний чат-ассистент).
-// Сам виджет монтируется в src/routes/__root.tsx.
-export function openEurekaChat() {
+// Управление аналитикой ИИ-чата (виджет NOYA AI).
+// Сам виджет монтируется в src/routes/__root.tsx (custom element <noya-chat>),
+// а открытие происходит по атрибуту data-noya-open на кнопке.
+export function trackAiChatOpen() {
   if (typeof window === "undefined") return;
-  window.postMessage("open-na-widget", "*");
-  // Yandex.Metrika goal
   try {
     (window as unknown as { ym?: (id: number, action: string, goal: string) => void }).ym?.(
       107882480,
       "reachGoal",
-      "eureka_open",
+      "ai_chat_open",
     );
   } catch {
     // ignore
