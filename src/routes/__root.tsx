@@ -137,22 +137,17 @@ function RootShell({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
-        {/* Eureka chat widget */}
+        {/* NOYA AI chat widget */}
         {(() => {
-          const EurekaWidget = "eureka-chat-widget" as unknown as React.ElementType;
+          const NoyaWidget = "noya-chat" as unknown as React.ElementType;
           return (
-            <EurekaWidget
-              api-key="0c6d47e9-9b16-4eaf-9f40-79b4007c9575"
+            <NoyaWidget
+              api-key="wgt_983a60b33787c40964bad74e8da4f0891371a921aff82c29"
               lang="ru"
-              open-by-window-message="true"
             />
           );
         })()}
-        <script
-          type="module"
-          crossOrigin=""
-          src="https://eureca-ai.web.app/widget.js?t=1779020584328"
-        />
+        <script type="module" crossOrigin="" src="https://noya-ai.ru/widget.js" />
         {/* Yandex.Metrika counter */}
         <script
           dangerouslySetInnerHTML={{
