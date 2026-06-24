@@ -177,12 +177,6 @@ function RootShell({ children }: { children: React.ReactNode }) {
           </div>
         </noscript>
 
-        {/* YClients online booking widget */}
-        <script
-          type="text/javascript"
-          src="https://w2097894.yclients.com/widgetJS"
-          charSet="UTF-8"
-        />
 
         <Scripts />
       </body>
