@@ -1,6 +1,6 @@
 import type { DetailedHTMLProps, HTMLAttributes } from "react";
 
-type EurekaWidgetProps = DetailedHTMLProps<
+type NoyaWidgetProps = DetailedHTMLProps<
   HTMLAttributes<HTMLElement> & {
     "api-key"?: string;
     lang?: string;
@@ -11,7 +11,7 @@ type EurekaWidgetProps = DetailedHTMLProps<
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      "eureka-chat-widget": EurekaWidgetProps;
+      "noya-chat": NoyaWidgetProps;
     }
   }
 }
@@ -19,7 +19,7 @@ declare global {
 declare module "react" {
   namespace JSX {
     interface IntrinsicElements {
-      "eureka-chat-widget": EurekaWidgetProps;
+      "noya-chat": NoyaWidgetProps;
     }
   }
 }
