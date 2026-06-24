@@ -187,6 +187,22 @@ function RootComponent() {
       <Outlet />
       <AnalyticsTracker />
       <Toaster theme="dark" position="top-center" richColors />
+      {/* Hidden trigger so openEurekaChat() can still open the NOYA chat */}
+      <button
+        type="button"
+        data-noya-open
+        aria-hidden="true"
+        tabIndex={-1}
+        style={{
+          position: "fixed",
+          left: -9999,
+          top: 0,
+          width: 1,
+          height: 1,
+          opacity: 0,
+          pointerEvents: "none",
+        }}
+      />
     </QueryClientProvider>
   );
 }

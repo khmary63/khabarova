@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { EurekaChatLauncher } from "@/components/EurekaChatLauncher";
+
 import { SITE } from "@/lib/site";
 import { ArrowRight } from "lucide-react";
 import { getSiteSettings } from "@/lib/site-settings.functions";
@@ -448,7 +448,7 @@ function AppsPage() {
       </main>
 
       <SiteFooter />
-      <EurekaChatLauncher />
+      
     </div>
   );
 }
