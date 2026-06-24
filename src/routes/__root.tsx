@@ -116,7 +116,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       // Preconnect to third-party origins for analytics/chat widgets — speeds up first request
       { rel: "preconnect", href: "https://mc.yandex.ru", crossOrigin: "anonymous" },
       { rel: "preconnect", href: "https://mytopf.com", crossOrigin: "anonymous" },
-      { rel: "preconnect", href: "https://eureca-ai.web.app", crossOrigin: "anonymous" },
+      { rel: "preconnect", href: "https://noya-ai.ru", crossOrigin: "anonymous" },
       
       { rel: "dns-prefetch", href: "https://mc.yandex.ru" },
       { rel: "dns-prefetch", href: "https://mytopf.com" },
