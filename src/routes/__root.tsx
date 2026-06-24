@@ -120,7 +120,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       
       { rel: "dns-prefetch", href: "https://mc.yandex.ru" },
       { rel: "dns-prefetch", href: "https://mytopf.com" },
-      { rel: "dns-prefetch", href: "https://w2097894.yclients.com" },
+      
     ],
   }),
   shellComponent: RootShell,
