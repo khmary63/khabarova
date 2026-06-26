@@ -294,6 +294,7 @@ const seoSchema = z.object({
   excerpt: z.string().trim().max(1000).default(""),
   content: z.string().min(1).max(100000),
   tags: z.array(z.string().trim().min(1).max(50)).max(20).default([]),
+  mode: z.enum(["seo", "seo_geo"]).default("seo_geo"),
 });
 
 export const optimizeForSeo = createServerFn({ method: "POST" })
