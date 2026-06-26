@@ -175,36 +175,42 @@ export type Database = {
           description: string
           id: string
           image_url: string
+          images: Json
+          layout: string
           published: boolean
           sort_order: number
           tag: string
           title: string
           updated_at: string
-          url: string
+          url: string | null
         }
         Insert: {
           created_at?: string
           description?: string
           id?: string
           image_url: string
+          images?: Json
+          layout?: string
           published?: boolean
           sort_order?: number
           tag?: string
           title: string
           updated_at?: string
-          url: string
+          url?: string | null
         }
         Update: {
           created_at?: string
           description?: string
           id?: string
           image_url?: string
+          images?: Json
+          layout?: string
           published?: boolean
           sort_order?: number
           tag?: string
           title?: string
           updated_at?: string
-          url?: string
+          url?: string | null
         }
         Relationships: []
       }
