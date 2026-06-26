@@ -5,8 +5,52 @@ marked.setOptions({ gfm: true, breaks: true });
 // Posts are authored only by admins (token-gated upsertPost), so we trust the
 // markdown source and skip DOMPurify — isomorphic-dompurify fails to initialize
 // in the Cloudflare Workers runtime (no DOM), which broke SSR for /blog/$slug.
+
+/**
+ * Приводит markdown статей к единому виду, чтобы статьи без SEO/GEO-прогона
+ * форматировались так же, как оптимизированные:
+ *  - строки-«псевдозаголовки» из сплошного жирного текста (**Заголовок**)
+ *    превращаются в настоящие заголовки `###`;
+ *  - убираются декоративные горизонтальные разделители (`---`, `***`, `___`),
+ *    которые в неоптимизированных статьях создают эффект «простыни».
+ * Содержимое блоков кода (```), естественно, не трогается.
+ */
+export function normalizeMarkdown(md: string): string {
+  if (!md) return "";
+  const lines = md.split(/\r?\n/);
+  const out: string[] = [];
+  let inFence = false;
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (/^(```|~~~)/.test(trimmed)) {
+      inFence = !inFence;
+      out.push(line);
+      continue;
+    }
+    if (inFence) {
+      out.push(line);
+      continue;
+    }
+    // Декоративные разделители — убираем для единообразия
+    if (/^(-{3,}|\*{3,}|_{3,})$/.test(trimmed)) {
+      continue;
+    }
+    // Строка целиком в **жирном** (опц. с двоеточием) → настоящий заголовок
+    const boldHeading = trimmed.match(/^\*\*(.+?)\*\*:?$/);
+    if (boldHeading && !/^\s*[-*+]\s/.test(line) && !/^\s*\d+\.\s/.test(line)) {
+      const text = boldHeading[1].trim().replace(/\*\*/g, "");
+      if (text.length > 0 && text.length <= 120) {
+        out.push(`### ${text}`);
+        continue;
+      }
+    }
+    out.push(line);
+  }
+  return out.join("\n");
+}
+
 export function renderMarkdown(md: string): string {
-  return marked.parse(md ?? "", { async: false }) as string;
+  return marked.parse(normalizeMarkdown(md ?? ""), { async: false }) as string;
 }
 
 /**
