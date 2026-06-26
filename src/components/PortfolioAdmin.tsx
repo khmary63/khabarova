@@ -15,6 +15,7 @@ export function PortfolioAdmin({ token }: { token: string }) {
   const [projects, setProjects] = useState<PortfolioProject[]>([]);
   const [editing, setEditing] = useState<EditDraft | null>(null);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const listFn = useServerFn(adminListPortfolio);
   const saveFn = useServerFn(upsertPortfolio);
@@ -65,12 +66,9 @@ export function PortfolioAdmin({ token }: { token: string }) {
       toast.error("Укажите название проекта");
       return;
     }
-    if (!editing.url?.trim()) {
-      toast.error("Укажите ссылку на проект");
-      return;
-    }
-    if (!editing.image_url?.trim()) {
-      toast.error("Загрузите эскиз проекта");
+    const images = (editing.images || []).filter(Boolean);
+    if (images.length === 0) {
+      toast.error("Загрузите хотя бы одно изображение");
       return;
     }
     setLoading(true);
@@ -80,9 +78,11 @@ export function PortfolioAdmin({ token }: { token: string }) {
         id: editing.id,
         title: editing.title,
         description: editing.description || "",
-        url: editing.url,
+        url: editing.url || "",
         tag: editing.tag || "",
-        image_url: editing.image_url,
+        image_url: images[0],
+        images,
+        layout: editing.layout === "mobile" ? "mobile" : "web",
         sort_order: Number(editing.sort_order) || 0,
         published: editing.published ?? true,
       },
@@ -108,13 +108,30 @@ export function PortfolioAdmin({ token }: { token: string }) {
     void refresh();
   }
 
+  function moveImage(idx: number, dir: number) {
+    setEditing((prev) => {
+      if (!prev) return prev;
+      const arr = [...(prev.images || [])];
+      const j = idx + dir;
+      if (j < 0 || j >= arr.length) return prev;
+      [arr[idx], arr[j]] = [arr[j], arr[idx]];
+      return { ...prev, images: arr };
+    });
+  }
+
+  function removeImage(idx: number) {
+    setEditing((prev) =>
+      prev ? { ...prev, images: (prev.images || []).filter((_, i) => i !== idx) } : prev,
+    );
+  }
+
   return (
     <section className="mb-8 rounded-2xl border border-border bg-surface p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="font-display text-base font-semibold">Портфолио проектов</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Карточки, которые показываются на странице «Магия вайбкодинга». Всего: {projects.length}.
+            Карточки с фото-галереями на странице «Магия вайбкодинга». Всего: {projects.length}.
           </p>
         </div>
         <button
@@ -126,6 +143,8 @@ export function PortfolioAdmin({ token }: { token: string }) {
               url: "",
               tag: "",
               image_url: "",
+              images: [],
+              layout: "web",
               sort_order: (projects.at(-1)?.sort_order ?? 0) + 10,
               published: true,
             })
@@ -150,7 +169,7 @@ export function PortfolioAdmin({ token }: { token: string }) {
                 className="h-12 w-20 shrink-0 rounded object-cover"
               />
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <span
                     className={`h-2 w-2 rounded-full ${
                       p.published ? "bg-emerald-500" : "bg-muted-foreground"
@@ -163,14 +182,9 @@ export function PortfolioAdmin({ token }: { token: string }) {
                     </span>
                   ) : null}
                 </div>
-                <a
-                  href={p.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="block truncate text-xs text-muted-foreground hover:text-primary"
-                >
-                  {p.url}
-                </a>
+                <div className="text-xs text-muted-foreground">
+                  {p.layout === "mobile" ? "Мобильное" : "Веб"} · {p.images.length} фото
+                </div>
               </div>
               <div className="flex shrink-0 gap-2">
                 <button
@@ -220,15 +234,17 @@ export function PortfolioAdmin({ token }: { token: string }) {
           </label>
 
           <label className="block text-sm">
-            <span className="mb-1 block text-xs text-muted-foreground">Ссылка на проект</span>
-            <input
-              type="url"
-              required
-              placeholder="https://example.com"
-              value={editing.url || ""}
-              onChange={(e) => setEditing({ ...editing, url: e.target.value })}
+            <span className="mb-1 block text-xs text-muted-foreground">Формат отображения</span>
+            <select
+              value={editing.layout === "mobile" ? "mobile" : "web"}
+              onChange={(e) =>
+                setEditing({ ...editing, layout: e.target.value as "web" | "mobile" })
+              }
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
-            />
+            >
+              <option value="web">Веб-сайт (горизонтальные кадры)</option>
+              <option value="mobile">Мобильное приложение (вертикальные кадры)</option>
+            </select>
           </label>
 
           <label className="block text-sm">
@@ -243,48 +259,96 @@ export function PortfolioAdmin({ token }: { token: string }) {
           </label>
 
           <div className="space-y-2">
-            <span className="block text-xs text-muted-foreground">Эскиз главной страницы</span>
-            {editing.image_url ? (
-              <div className="flex items-start gap-3 rounded-lg border border-border bg-background p-2">
-                <img
-                  src={editing.image_url}
-                  alt="preview"
-                  className="h-20 w-32 rounded object-cover"
-                />
-                <button
-                  type="button"
-                  onClick={() => setEditing({ ...editing, image_url: "" })}
-                  className="text-xs text-muted-foreground hover:text-destructive"
-                >
-                  Удалить
-                </button>
-              </div>
+            <span className="block text-xs text-muted-foreground">
+              Галерея (первое фото — обложка карточки). Можно загрузить несколько.
+            </span>
+            {(editing.images || []).length > 0 ? (
+              <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                {(editing.images || []).map((src, i) => (
+                  <li
+                    key={src + i}
+                    className="relative overflow-hidden rounded-lg border border-border bg-background"
+                  >
+                    <img src={src} alt={`Кадр ${i + 1}`} className="h-24 w-full object-cover" />
+                    {i === 0 ? (
+                      <span className="absolute left-1 top-1 rounded bg-primary px-1.5 py-0.5 text-[9px] font-bold text-primary-foreground">
+                        Обложка
+                      </span>
+                    ) : null}
+                    <div className="flex items-center justify-between bg-background/90 px-1.5 py-1">
+                      <div className="flex gap-1">
+                        <button
+                          type="button"
+                          onClick={() => moveImage(i, -1)}
+                          disabled={i === 0}
+                          className="rounded px-1 text-xs disabled:opacity-30"
+                        >
+                          ←
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => moveImage(i, 1)}
+                          disabled={i === (editing.images || []).length - 1}
+                          className="rounded px-1 text-xs disabled:opacity-30"
+                        >
+                          →
+                        </button>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeImage(i)}
+                        className="rounded px-1 text-xs text-destructive"
+                      >
+                        Удалить
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             ) : null}
             <div className="flex flex-wrap items-center gap-2">
               <label className="cursor-pointer rounded-md border border-border bg-background px-3 py-1.5 text-xs hover:border-primary/40">
-                Загрузить файл
+                {uploading ? "Загрузка…" : "Загрузить фото"}
                 <input
                   type="file"
                   accept="image/*"
+                  multiple
                   hidden
+                  disabled={uploading}
                   onChange={async (e) => {
-                    const f = e.target.files?.[0];
+                    const files = Array.from(e.target.files || []);
                     e.target.value = "";
-                    if (!f) return;
-                    const url = await uploadImage(f);
-                    if (url) {
-                      setEditing((prev) => (prev ? { ...prev, image_url: url } : prev));
-                      toast.success("Картинка загружена");
+                    if (files.length === 0) return;
+                    setUploading(true);
+                    for (const f of files) {
+                      const url = await uploadImage(f);
+                      if (url) {
+                        setEditing((prev) =>
+                          prev ? { ...prev, images: [...(prev.images || []), url] } : prev,
+                        );
+                      }
                     }
+                    setUploading(false);
+                    toast.success("Готово");
                   }}
                 />
               </label>
-              <span className="text-xs text-muted-foreground">или ссылка:</span>
+              <span className="text-xs text-muted-foreground">или добавить ссылкой:</span>
               <input
                 type="url"
-                value={editing.image_url || ""}
-                onChange={(e) => setEditing({ ...editing, image_url: e.target.value })}
                 placeholder="https://..."
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    const val = (e.target as HTMLInputElement).value.trim();
+                    if (val) {
+                      setEditing((prev) =>
+                        prev ? { ...prev, images: [...(prev.images || []), val] } : prev,
+                      );
+                      (e.target as HTMLInputElement).value = "";
+                    }
+                  }
+                }}
                 className="flex-1 rounded-md border border-border bg-background px-3 py-1.5 text-xs"
               />
             </div>

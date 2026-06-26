@@ -6,6 +6,7 @@ import { SITE } from "@/lib/site";
 import { ArrowRight } from "lucide-react";
 import { getSiteSettings } from "@/lib/site-settings.functions";
 import { listPortfolio, type PortfolioProject } from "@/lib/portfolio.functions";
+import { PortfolioGallery } from "@/components/PortfolioGallery";
 import { SITE_URL, breadcrumbSchema, serviceSchema } from "@/lib/seo";
 import crosspostImage from "@/assets/portfolio/crosspost.png";
 import virusImage from "@/assets/portfolio/virus.png";
@@ -341,63 +342,30 @@ function AppsPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {portfolio.map((p) => {
-              let host = "";
-              try {
-                host = new globalThis.URL(p.url).hostname.replace(/^www\./, "");
-              } catch {
-                host = p.url;
-              }
-              return (
-                <article
-                  key={p.url}
-                  className="group relative flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/5 transition-all duration-500 hover:border-primary/50"
-                >
-                  <a
-                    href={p.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="relative block aspect-[4/3] overflow-hidden bg-neutral-900"
-                    aria-label={`Открыть ${p.title}`}
-                  >
-                    <img
-                      src={p.image_url}
-                      alt={`Эскиз главной страницы ${p.title}`}
-                      className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                    <span className="absolute left-4 top-4 rounded-full bg-black/60 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur">
-                      {p.tag}
-                    </span>
-                  </a>
-                  <div className="flex flex-1 flex-col gap-4 p-6">
-                    <div className="space-y-1">
-                      <h3 className="font-display text-xl font-bold text-foreground transition-colors group-hover:text-primary">
-                        {p.title}
-                      </h3>
-                      <div className="text-xs text-muted-foreground">{host}</div>
-                    </div>
-                    <p className="text-sm leading-relaxed text-muted-foreground">
-                      {p.description}
-                    </p>
-                    <div className="mt-auto pt-2">
-                      <a
-                        href={p.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg transition-all hover:scale-105 active:scale-95"
-                      >
-                        Открыть
-                        <ArrowRight className="h-4 w-4" />
-                      </a>
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
+            {portfolio.map((p) => (
+              <article
+                key={p.id}
+                className="group relative flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-4 transition-all duration-500 hover:border-primary/50"
+              >
+                <PortfolioGallery
+                  images={p.images}
+                  layout={p.layout}
+                  title={p.title}
+                  tag={p.tag}
+                />
+                <div className="flex flex-1 flex-col gap-3 px-2 pb-2 pt-5">
+                  <h3 className="font-display text-xl font-bold text-foreground transition-colors group-hover:text-primary">
+                    {p.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {p.description}
+                  </p>
+                </div>
+              </article>
+            ))}
           </div>
         </section>
+
 
 
         {/* CTA */}
