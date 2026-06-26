@@ -99,7 +99,7 @@ function AdminPage() {
   const settingsFn = useServerFn(getSiteSettings);
   const updateSettingFn = useServerFn(updateSiteSetting);
 
-  const [seoLoading, setSeoLoading] = useState(false);
+  const [seoLoading, setSeoLoading] = useState<"seo" | "seo_geo" | null>(null);
   const [seoOptimized, setSeoOptimized] = useState(false);
 
   const turndown = useMemo(() => {
@@ -247,7 +247,7 @@ function AdminPage() {
     setSeoOptimized(post.published); // уже опубликована — считаем оптимизированной
   }
 
-  async function handleSeoOptimize() {
+  async function handleSeoOptimize(mode: "seo" | "seo_geo") {
     if (!editing) return;
     const html = editing.contentHtml || "";
     const markdown = html.trim() ? turndown.turndown(html) : "";
@@ -259,7 +259,7 @@ function AdminPage() {
       toast.error("Сначала укажите заголовок");
       return;
     }
-    setSeoLoading(true);
+    setSeoLoading(mode);
     const res = await seoFn({
       data: {
         token,
@@ -267,9 +267,10 @@ function AdminPage() {
         excerpt: editing.excerpt || "",
         content: markdown,
         tags: editing.tags || [],
+        mode,
       },
     });
-    setSeoLoading(false);
+    setSeoLoading(null);
     if (!res.ok) {
       toast.error(res.error || "Не удалось оптимизировать");
       return;
@@ -287,7 +288,11 @@ function AdminPage() {
         : prev,
     );
     setSeoOptimized(true);
-    toast.success("SEO + GEO оптимизация готова. Проверьте и публикуйте.");
+    toast.success(
+      mode === "seo"
+        ? "SEO-оптимизация готова. Проверьте и публикуйте."
+        : "SEO + GEO оптимизация готова. Проверьте и публикуйте.",
+    );
   }
 
   async function handleSave(e: FormEvent) {
@@ -904,22 +909,28 @@ function AdminPage() {
 
 
             <div className="rounded-2xl border border-border bg-surface p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h3 className="text-sm font-semibold">SEO + GEO оптимизация</h3>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {seoOptimized
-                      ? "✓ Текст оптимизирован под поисковики и ИИ-ответы (ChatGPT, Perplexity, AI Overviews)."
-                      : "ИИ перепишет заголовок, описание, теги и текст: добавит TL;DR, структуру под цитирование и FAQ-секцию. Подходит и для Google/Яндекс, и для генеративных поисковиков."}
-                  </p>
-                </div>
+              <h3 className="text-sm font-semibold">ИИ-оптимизация</h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {seoOptimized
+                  ? "✓ Текст оптимизирован. Проверьте результат и публикуйте."
+                  : "Выберите режим: «Только SEO» бережно структурирует текст под Google/Яндекс без TL;DR и FAQ; «SEO + GEO» дополнительно добавит TL;DR и FAQ-секцию под ИИ-ответы (ChatGPT, Perplexity, AI Overviews)."}
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
                 <button
                   type="button"
-                  onClick={handleSeoOptimize}
-                  disabled={seoLoading}
+                  onClick={() => handleSeoOptimize("seo")}
+                  disabled={seoLoading !== null}
+                  className="shrink-0 rounded-full border border-border bg-background px-4 py-2 text-xs font-medium disabled:opacity-50"
+                >
+                  {seoLoading === "seo" ? "Оптимизация…" : "Только SEO"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSeoOptimize("seo_geo")}
+                  disabled={seoLoading !== null}
                   className="shrink-0 rounded-full bg-foreground px-4 py-2 text-xs font-medium text-background disabled:opacity-50"
                 >
-                  {seoLoading ? "Оптимизация…" : seoOptimized ? "Оптимизировать ещё раз" : "SEO + GEO оптимизация"}
+                  {seoLoading === "seo_geo" ? "Оптимизация…" : "SEO + GEO"}
                 </button>
               </div>
             </div>
