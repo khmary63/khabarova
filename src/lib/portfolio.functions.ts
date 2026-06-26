@@ -2,21 +2,45 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
+export type PortfolioLayout = "web" | "mobile";
+
 export type PortfolioProject = {
   id: string;
   title: string;
   description: string;
-  url: string;
+  url: string | null;
   tag: string;
   image_url: string;
+  images: string[];
+  layout: PortfolioLayout;
   sort_order: number;
   published: boolean;
 };
 
+function normalizeProject(row: Record<string, unknown>): PortfolioProject {
+  const rawImages = Array.isArray(row.images) ? (row.images as unknown[]) : [];
+  const images = rawImages.filter((u): u is string => typeof u === "string" && u.length > 0);
+  if (images.length === 0 && typeof row.image_url === "string" && row.image_url) {
+    images.push(row.image_url);
+  }
+  return {
+    id: String(row.id),
+    title: String(row.title ?? ""),
+    description: String(row.description ?? ""),
+    url: (row.url as string | null) ?? null,
+    tag: String(row.tag ?? ""),
+    image_url: String(row.image_url ?? images[0] ?? ""),
+    images,
+    layout: row.layout === "mobile" ? "mobile" : "web",
+    sort_order: Number(row.sort_order ?? 0),
+    published: Boolean(row.published),
+  };
+}
+
 export const listPortfolio = createServerFn({ method: "GET" }).handler(async () => {
   const { data, error } = await supabaseAdmin
     .from("portfolio_projects")
-    .select("id, title, description, url, tag, image_url, sort_order, published")
+    .select("id, title, description, url, tag, image_url, images, layout, sort_order, published")
     .eq("published", true)
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: false })
@@ -25,7 +49,7 @@ export const listPortfolio = createServerFn({ method: "GET" }).handler(async () 
     console.error("[listPortfolio]", error);
     return { projects: [] as PortfolioProject[] };
   }
-  return { projects: (data ?? []) as PortfolioProject[] };
+  return { projects: (data ?? []).map((r) => normalizeProject(r as Record<string, unknown>)) };
 });
 
 export const adminListPortfolio = createServerFn({ method: "POST" })
