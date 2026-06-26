@@ -99,7 +99,7 @@ function AdminPage() {
   const settingsFn = useServerFn(getSiteSettings);
   const updateSettingFn = useServerFn(updateSiteSetting);
 
-  const [seoLoading, setSeoLoading] = useState(false);
+  const [seoLoading, setSeoLoading] = useState<"seo" | "seo_geo" | null>(null);
   const [seoOptimized, setSeoOptimized] = useState(false);
 
   const turndown = useMemo(() => {
