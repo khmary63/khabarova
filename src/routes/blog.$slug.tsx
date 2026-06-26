@@ -4,6 +4,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 
 import { getPostBySlug } from "@/lib/blog.functions";
 import { getSiteSettings } from "@/lib/site-settings.functions";
+import { optimizedImage } from "@/lib/image";
 import { renderMarkdown, extractFaq, wordCount } from "@/lib/markdown";
 import { LeadMagnetForm } from "@/components/sections/LeadMagnetForm";
 
