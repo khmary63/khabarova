@@ -147,11 +147,13 @@ function PostPage() {
             )}
           </header>
           {post.cover_image_url && (
-            <img
-              src={optimizedImage(post.cover_image_url, { width: 1200, quality: 75 })}
-              alt={post.title}
-              className="mt-8 aspect-[16/9] w-full rounded-2xl border border-border object-cover"
-            />
+            <div className="mt-8 flex items-center justify-center overflow-hidden rounded-2xl border border-border bg-background">
+              <img
+                src={optimizedImage(post.cover_image_url, { width: 1200, quality: 75 })}
+                alt={post.title}
+                className="max-h-[520px] w-full object-contain"
+              />
+            </div>
           )}
           <div
             className="prose-blog mt-10"
