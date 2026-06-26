@@ -4,6 +4,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 
 import { listPosts, CATEGORY_LABELS, type PostCategory } from "@/lib/blog.functions";
 import { getSiteSettings } from "@/lib/site-settings.functions";
+import { optimizedImage } from "@/lib/image";
 import { z } from "zod";
 
 const searchSchema = z.object({
