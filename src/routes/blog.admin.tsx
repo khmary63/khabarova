@@ -247,7 +247,7 @@ function AdminPage() {
     setSeoOptimized(post.published); // уже опубликована — считаем оптимизированной
   }
 
-  async function handleSeoOptimize() {
+  async function handleSeoOptimize(mode: "seo" | "seo_geo") {
     if (!editing) return;
     const html = editing.contentHtml || "";
     const markdown = html.trim() ? turndown.turndown(html) : "";
@@ -259,7 +259,7 @@ function AdminPage() {
       toast.error("Сначала укажите заголовок");
       return;
     }
-    setSeoLoading(true);
+    setSeoLoading(mode);
     const res = await seoFn({
       data: {
         token,
@@ -267,9 +267,10 @@ function AdminPage() {
         excerpt: editing.excerpt || "",
         content: markdown,
         tags: editing.tags || [],
+        mode,
       },
     });
-    setSeoLoading(false);
+    setSeoLoading(null);
     if (!res.ok) {
       toast.error(res.error || "Не удалось оптимизировать");
       return;
@@ -287,7 +288,11 @@ function AdminPage() {
         : prev,
     );
     setSeoOptimized(true);
-    toast.success("SEO + GEO оптимизация готова. Проверьте и публикуйте.");
+    toast.success(
+      mode === "seo"
+        ? "SEO-оптимизация готова. Проверьте и публикуйте."
+        : "SEO + GEO оптимизация готова. Проверьте и публикуйте.",
+    );
   }
 
   async function handleSave(e: FormEvent) {
