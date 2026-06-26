@@ -147,7 +147,7 @@ function BlogIndex() {
                       />
                     </div>
                   ) : (
-                    <div className="aspect-[16/9] bg-gradient-to-br from-primary/20 via-primary/5 to-transparent" />
+                    <div className="aspect-[4/3] bg-gradient-to-br from-primary/20 via-primary/5 to-transparent" />
                   )}
                   <div className="flex flex-1 flex-col gap-3 p-5">
                     <div className="flex flex-wrap gap-1.5">
