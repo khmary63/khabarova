@@ -148,7 +148,7 @@ function PostPage() {
           </header>
           {post.cover_image_url && (
             <img
-              src={post.cover_image_url}
+              src={optimizedImage(post.cover_image_url, { width: 1200, quality: 75 })}
               alt={post.title}
               className="mt-8 aspect-[16/9] w-full rounded-2xl border border-border object-cover"
             />
