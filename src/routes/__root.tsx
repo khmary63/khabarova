@@ -94,7 +94,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         property: "og:description",
         content:
-          "Внедряем ИИ-сотрудников в отделы продаж. Кейсы, методология, бесплатный ИИ-аудит за 15 минут.",
+          "Внедряем ИИ-сотрудников в отделы продаж. Кейсы, методология, бесплатный ИИ-аудит за 30 минут.",
       },
       { property: "og:type", content: "website" },
       { property: "og:locale", content: "ru_RU" },
