@@ -6,6 +6,7 @@ const STRIPPED_PROXY_HEADERS = [
   "host",
   "forwarded",
   "x-forwarded-host",
+  "x-forwarded-for",
   "x-forwarded-proto",
   "x-forwarded-port",
   "x-forwarded-server",
@@ -16,7 +17,6 @@ const STRIPPED_PROXY_HEADERS = [
 
 type LovableAiGatewayOptions = {
   initialRunId?: string;
-  clientIp?: string;
 };
 
 export function createLovableAiGatewayProvider(
@@ -28,7 +28,6 @@ export function createLovableAiGatewayProvider(
       ? { initialRunId: initialRunIdOrOptions }
       : (initialRunIdOrOptions ?? {});
 
-  const clientIp = options.clientIp?.trim() || undefined;
   let runId = options.initialRunId?.trim() || undefined;
   let resolveRunId: (value: string | undefined) => void = () => {};
   let runIdResolved = false;
@@ -59,9 +58,6 @@ export function createLovableAiGatewayProvider(
       const headers = new Headers(init?.headers);
       for (const headerName of STRIPPED_PROXY_HEADERS) {
         headers.delete(headerName);
-      }
-      if (clientIp) {
-        headers.set("X-Forwarded-For", clientIp);
       }
       if (runId && !headers.has(LOVABLE_AIG_RUN_ID_HEADER)) {
         headers.set(LOVABLE_AIG_RUN_ID_HEADER, runId);
