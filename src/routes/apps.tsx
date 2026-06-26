@@ -6,6 +6,7 @@ import { SITE } from "@/lib/site";
 import { ArrowRight } from "lucide-react";
 import { getSiteSettings } from "@/lib/site-settings.functions";
 import { listPortfolio, type PortfolioProject } from "@/lib/portfolio.functions";
+import { PortfolioGallery } from "@/components/PortfolioGallery";
 import { SITE_URL, breadcrumbSchema, serviceSchema } from "@/lib/seo";
 import crosspostImage from "@/assets/portfolio/crosspost.png";
 import virusImage from "@/assets/portfolio/virus.png";
