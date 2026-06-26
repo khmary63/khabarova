@@ -138,11 +138,11 @@ function BlogIndex() {
                   className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface transition hover:border-primary/50"
                 >
                   {p.cover_image_url ? (
-                    <div className="flex aspect-[4/3] items-center justify-center overflow-hidden bg-background">
+                    <div className="overflow-hidden bg-background">
                       <img
                         src={optimizedImage(p.cover_image_url, { width: 800, quality: 70 })}
                         alt={p.title}
-                        className="h-full w-full object-contain transition group-hover:scale-105"
+                        className="block h-auto w-full object-contain transition group-hover:scale-105"
                         loading="lazy"
                       />
                     </div>
