@@ -16,5 +16,5 @@ export function optimizedImage(
   if (!url.includes(marker)) return url;
   const rendered = url.replace(marker, "/storage/v1/render/image/public/");
   const sep = rendered.includes("?") ? "&" : "?";
-  return `${rendered}${sep}width=${width}&quality=${quality}`;
+  return `${rendered}${sep}width=${width}&quality=${quality}&resize=contain`;
 }
