@@ -4,6 +4,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 
 import { listPosts, CATEGORY_LABELS, type PostCategory } from "@/lib/blog.functions";
 import { getSiteSettings } from "@/lib/site-settings.functions";
+import { optimizedImage } from "@/lib/image";
 import { z } from "zod";
 
 const searchSchema = z.object({
@@ -139,7 +140,7 @@ function BlogIndex() {
                   {p.cover_image_url ? (
                     <div className="aspect-[16/9] overflow-hidden bg-background">
                       <img
-                        src={p.cover_image_url}
+                        src={optimizedImage(p.cover_image_url, { width: 800, quality: 70 })}
                         alt={p.title}
                         className="h-full w-full object-cover transition group-hover:scale-105"
                         loading="lazy"
