@@ -72,11 +72,33 @@ export function RichEditor({ valueHtml, onChangeHtml, onUploadImage }: Props) {
     }
   }
 
+  async function handleGalleryFiles(files: File[]) {
+    const imageFiles = files.filter((f) => f.type.startsWith("image/"));
+    if (imageFiles.length === 0) return;
+    setUploading(true);
+    try {
+      const images: GridImage[] = [];
+      for (const file of imageFiles) {
+        const url = await onUploadImage(file);
+        images.push({ src: url, alt: file.name });
+      }
+      if (images.length > 0) {
+        editor?.chain().focus().setImageGrid(images).run();
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setUploading(false);
+    }
+  }
+
   return (
     <div className="rounded-lg">
       <Toolbar
         editor={editor}
+        uploading={uploading}
         onPickImage={() => fileInputRef.current?.click()}
+        onPickGallery={() => galleryInputRef.current?.click()}
       />
       <EditorContent editor={editor} />
       <input
@@ -90,11 +112,33 @@ export function RichEditor({ valueHtml, onChangeHtml, onUploadImage }: Props) {
           e.target.value = "";
         }}
       />
+      <input
+        ref={galleryInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        hidden
+        onChange={async (e) => {
+          const files = Array.from(e.target.files ?? []);
+          if (files.length) await handleGalleryFiles(files);
+          e.target.value = "";
+        }}
+      />
     </div>
   );
 }
 
-function Toolbar({ editor, onPickImage }: { editor: Editor; onPickImage: () => void }) {
+function Toolbar({
+  editor,
+  onPickImage,
+  onPickGallery,
+  uploading,
+}: {
+  editor: Editor;
+  onPickImage: () => void;
+  onPickGallery: () => void;
+  uploading: boolean;
+}) {
   const btn =
     "inline-flex h-8 w-8 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground";
   const activeCls = "bg-muted text-foreground";
