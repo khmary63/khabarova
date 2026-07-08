@@ -2,7 +2,8 @@ import { useEditor, EditorContent, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { ImageGrid, type GridImage } from "@/components/editor/ImageGrid";
 import {
   Bold,
   Italic,
@@ -13,6 +14,7 @@ import {
   Quote,
   Link as LinkIcon,
   Image as ImageIcon,
+  Images as ImagesIcon,
   Undo2,
   Redo2,
   Code,
@@ -26,11 +28,14 @@ type Props = {
 
 export function RichEditor({ valueHtml, onChangeHtml, onUploadImage }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
 
   const editor = useEditor({
     extensions: [
       StarterKit.configure({ heading: { levels: [2, 3] } }),
       Image.configure({ HTMLAttributes: { class: "rounded-lg" } }),
+      ImageGrid,
       Link.configure({ openOnClick: false, autolink: true, HTMLAttributes: { rel: "noopener noreferrer" } }),
     ],
     content: valueHtml || "",
