@@ -2,7 +2,8 @@ import { useEditor, EditorContent, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { ImageGrid, type GridImage } from "@/components/editor/ImageGrid";
 import {
   Bold,
   Italic,
@@ -13,6 +14,7 @@ import {
   Quote,
   Link as LinkIcon,
   Image as ImageIcon,
+  Images as ImagesIcon,
   Undo2,
   Redo2,
   Code,
@@ -26,11 +28,14 @@ type Props = {
 
 export function RichEditor({ valueHtml, onChangeHtml, onUploadImage }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
 
   const editor = useEditor({
     extensions: [
       StarterKit.configure({ heading: { levels: [2, 3] } }),
       Image.configure({ HTMLAttributes: { class: "rounded-lg" } }),
+      ImageGrid,
       Link.configure({ openOnClick: false, autolink: true, HTMLAttributes: { rel: "noopener noreferrer" } }),
     ],
     content: valueHtml || "",
@@ -67,11 +72,33 @@ export function RichEditor({ valueHtml, onChangeHtml, onUploadImage }: Props) {
     }
   }
 
+  async function handleGalleryFiles(files: File[]) {
+    const imageFiles = files.filter((f) => f.type.startsWith("image/"));
+    if (imageFiles.length === 0) return;
+    setUploading(true);
+    try {
+      const images: GridImage[] = [];
+      for (const file of imageFiles) {
+        const url = await onUploadImage(file);
+        images.push({ src: url, alt: file.name });
+      }
+      if (images.length > 0) {
+        editor?.chain().focus().setImageGrid(images).run();
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setUploading(false);
+    }
+  }
+
   return (
     <div className="rounded-lg">
       <Toolbar
         editor={editor}
+        uploading={uploading}
         onPickImage={() => fileInputRef.current?.click()}
+        onPickGallery={() => galleryInputRef.current?.click()}
       />
       <EditorContent editor={editor} />
       <input
@@ -85,11 +112,33 @@ export function RichEditor({ valueHtml, onChangeHtml, onUploadImage }: Props) {
           e.target.value = "";
         }}
       />
+      <input
+        ref={galleryInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        hidden
+        onChange={async (e) => {
+          const files = Array.from(e.target.files ?? []);
+          if (files.length) await handleGalleryFiles(files);
+          e.target.value = "";
+        }}
+      />
     </div>
   );
 }
 
-function Toolbar({ editor, onPickImage }: { editor: Editor; onPickImage: () => void }) {
+function Toolbar({
+  editor,
+  onPickImage,
+  onPickGallery,
+  uploading,
+}: {
+  editor: Editor;
+  onPickImage: () => void;
+  onPickGallery: () => void;
+  uploading: boolean;
+}) {
   const btn =
     "inline-flex h-8 w-8 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground";
   const activeCls = "bg-muted text-foreground";
@@ -139,8 +188,14 @@ function Toolbar({ editor, onPickImage }: { editor: Editor; onPickImage: () => v
       >
         <LinkIcon className="h-4 w-4" />
       </ToolBtn>
-      <ToolBtn label="Картинка" onClick={onPickImage}>
+      <ToolBtn label="Картинка (одна, во всю ширину)" onClick={onPickImage}>
         <ImageIcon className="h-4 w-4" />
+      </ToolBtn>
+      <ToolBtn
+        label={uploading ? "Загрузка…" : "Галерея (несколько фото сеткой)"}
+        onClick={onPickGallery}
+      >
+        <ImagesIcon className={`h-4 w-4 ${uploading ? "animate-pulse" : ""}`} />
       </ToolBtn>
       <div className="mx-1 h-5 w-px bg-border" />
       <ToolBtn label="Отменить" onClick={() => editor.chain().focus().undo().run()}>

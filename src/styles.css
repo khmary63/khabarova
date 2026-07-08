@@ -176,5 +176,43 @@
   .prose-blog pre { background: hsl(var(--muted)); padding: 1rem; border-radius: 0.75rem; overflow-x: auto; }
   .prose-blog pre code { background: transparent; padding: 0; }
   .prose-blog img { border-radius: 0.75rem; border: 1px solid hsl(var(--border)); }
+  /* Одиночные изображения не должны занимать всю высоту экрана */
+  .prose-blog > p > img,
+  .prose-blog > img { display: block; margin-inline: auto; max-height: 560px; width: auto; max-width: 100%; object-fit: contain; }
+  /* Галерея: адаптивная сетка по ширине страницы */
+  .prose-blog .img-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--img-grid-cols, 3), minmax(0, 1fr));
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+  .prose-blog .img-grid img {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    margin: 0;
+    border-radius: 0.6rem;
+  }
+  @media (max-width: 640px) {
+    .prose-blog .img-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .prose-blog .img-grid[data-cols="1"] { grid-template-columns: 1fr; }
+  }
   .prose-blog hr { border-color: hsl(var(--border)); }
+
+  /* Отображение галереи внутри редактора (TipTap использует классы .prose) */
+  .ProseMirror .img-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--img-grid-cols, 3), minmax(0, 1fr));
+    gap: 0.5rem;
+    margin: 1rem 0;
+  }
+  .ProseMirror .img-grid img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    margin: 0;
+    border-radius: 0.5rem;
+  }
+  .ProseMirror .img-grid.ProseMirror-selectednode { outline: 2px solid hsl(var(--primary)); outline-offset: 3px; }
 }
