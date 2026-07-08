@@ -49,9 +49,29 @@ export function normalizeMarkdown(md: string): string {
   return out.join("\n");
 }
 
-export function renderMarkdown(md: string): string {
-  return marked.parse(normalizeMarkdown(md ?? ""), { async: false }) as string;
+/**
+ * Схлопывает подряд идущие «одиночные» изображения (каждое в своём `<p>`)
+ * в адаптивную сетку-галерею по ширине страницы. Это выравнивает старые
+ * статьи, где картинки были вставлены по одной и вставали столбиком, под тот
+ * же вид, что даёт новый блок-галерея в редакторе.
+ */
+function groupConsecutiveImages(html: string): string {
+  return html.replace(
+    /(?:<p>\s*<img[^>]*>\s*<\/p>\s*){2,}/g,
+    (block) => {
+      const imgs = block.match(/<img[^>]*>/g) || [];
+      const count = imgs.length;
+      const cols = count === 1 ? 1 : count === 2 || count === 4 ? 2 : 3;
+      return `<div class="img-grid" data-cols="${cols}" style="--img-grid-cols:${cols}">${imgs.join("")}</div>`;
+    },
+  );
 }
+
+export function renderMarkdown(md: string): string {
+  const html = marked.parse(normalizeMarkdown(md ?? ""), { async: false }) as string;
+  return groupConsecutiveImages(html);
+}
+
 
 /**
  * Извлекает FAQ-пары из markdown-секции, начинающейся с заголовка
