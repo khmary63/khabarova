@@ -105,6 +105,13 @@ function AdminPage() {
   const turndown = useMemo(() => {
     const td = new TurndownService({ headingStyle: "atx", bulletListMarker: "-", codeBlockStyle: "fenced" });
     td.keep(["u", "sup", "sub"]);
+    // Блок-галерея хранится как raw HTML, чтобы сетка изображений пережила
+    // конвертацию в markdown и обратно (marked пропускает HTML как есть).
+    td.addRule("imageGrid", {
+      filter: (node) =>
+        node.nodeName === "DIV" && (node as HTMLElement).hasAttribute("data-img-grid"),
+      replacement: (_content, node) => `\n\n${(node as HTMLElement).outerHTML}\n\n`,
+    });
     return td;
   }, []);
 
