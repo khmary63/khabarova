@@ -105,13 +105,16 @@ export function RichEditor({ valueHtml, onChangeHtml, onUploadImage }: Props) {
         ref={fileInputRef}
         type="file"
         accept="image/*"
+        multiple
         hidden
         onChange={async (e) => {
-          const f = e.target.files?.[0];
-          if (f) await handleImageFile(f);
+          const files = Array.from(e.target.files ?? []);
+          if (files.length === 1) await handleImageFile(files[0]);
+          else if (files.length > 1) await handleGalleryFiles(files);
           e.target.value = "";
         }}
       />
+
       <input
         ref={galleryInputRef}
         type="file"
