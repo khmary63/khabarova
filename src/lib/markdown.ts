@@ -50,18 +50,20 @@ export function normalizeMarkdown(md: string): string {
 }
 
 /**
- * Схлопывает подряд идущие «одиночные» изображения (каждое в своём `<p>`)
- * в адаптивную сетку-галерею по ширине страницы. Это выравнивает старые
- * статьи, где картинки были вставлены по одной и вставали столбиком, под тот
- * же вид, что даёт новый блок-галерея в редакторе.
+ * Схлопывает подряд идущие «картиночные» абзацы (в которых нет ничего, кроме
+ * `<img>` и переносов) в одну адаптивную сетку-галерею по ширине страницы.
+ * Обрабатывает и случай, когда несколько изображений оказались в одном абзаце,
+ * и случай, когда каждое изображение в своём абзаце — итог одинаковый: единая
+ * сетка. Это выравнивает старые статьи под вид нового блока-галереи.
  */
 function groupConsecutiveImages(html: string): string {
   return html.replace(
-    /(?:<p>\s*<img[^>]*>\s*<\/p>\s*){2,}/g,
+    /(?:<p>(?:\s*(?:<img[^>]*>|<br\s*\/?>)\s*)+<\/p>\s*)+/g,
     (block) => {
       const imgs = block.match(/<img[^>]*>/g) || [];
+      if (imgs.length < 2) return block;
       const count = imgs.length;
-      const cols = count === 1 ? 1 : count === 2 || count === 4 ? 2 : 3;
+      const cols = count === 2 ? 2 : count === 4 ? 2 : 3;
       return `<div class="img-grid" data-cols="${cols}" style="--img-grid-cols:${cols}">${imgs.join("")}</div>`;
     },
   );
@@ -71,6 +73,7 @@ export function renderMarkdown(md: string): string {
   const html = marked.parse(normalizeMarkdown(md ?? ""), { async: false }) as string;
   return groupConsecutiveImages(html);
 }
+
 
 
 /**

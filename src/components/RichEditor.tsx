@@ -105,13 +105,16 @@ export function RichEditor({ valueHtml, onChangeHtml, onUploadImage }: Props) {
         ref={fileInputRef}
         type="file"
         accept="image/*"
+        multiple
         hidden
         onChange={async (e) => {
-          const f = e.target.files?.[0];
-          if (f) await handleImageFile(f);
+          const files = Array.from(e.target.files ?? []);
+          if (files.length === 1) await handleImageFile(files[0]);
+          else if (files.length > 1) await handleGalleryFiles(files);
           e.target.value = "";
         }}
       />
+
       <input
         ref={galleryInputRef}
         type="file"
@@ -188,7 +191,7 @@ function Toolbar({
       >
         <LinkIcon className="h-4 w-4" />
       </ToolBtn>
-      <ToolBtn label="Картинка (одна, во всю ширину)" onClick={onPickImage}>
+      <ToolBtn label="Картинки (одна во всю ширину, несколько — сеткой)" onClick={onPickImage}>
         <ImageIcon className="h-4 w-4" />
       </ToolBtn>
       <ToolBtn
