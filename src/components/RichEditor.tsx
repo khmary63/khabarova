@@ -188,8 +188,14 @@ function Toolbar({
       >
         <LinkIcon className="h-4 w-4" />
       </ToolBtn>
-      <ToolBtn label="Картинка" onClick={onPickImage}>
+      <ToolBtn label="Картинка (одна, во всю ширину)" onClick={onPickImage}>
         <ImageIcon className="h-4 w-4" />
+      </ToolBtn>
+      <ToolBtn
+        label={uploading ? "Загрузка…" : "Галерея (несколько фото сеткой)"}
+        onClick={onPickGallery}
+      >
+        <ImagesIcon className={`h-4 w-4 ${uploading ? "animate-pulse" : ""}`} />
       </ToolBtn>
       <div className="mx-1 h-5 w-px bg-border" />
       <ToolBtn label="Отменить" onClick={() => editor.chain().focus().undo().run()}>
