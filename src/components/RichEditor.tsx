@@ -191,7 +191,7 @@ function Toolbar({
       >
         <LinkIcon className="h-4 w-4" />
       </ToolBtn>
-      <ToolBtn label="Картинка (одна, во всю ширину)" onClick={onPickImage}>
+      <ToolBtn label="Картинки (одна во всю ширину, несколько — сеткой)" onClick={onPickImage}>
         <ImageIcon className="h-4 w-4" />
       </ToolBtn>
       <ToolBtn
