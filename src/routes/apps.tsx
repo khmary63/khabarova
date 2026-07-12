@@ -8,7 +8,6 @@ import { getSiteSettings } from "@/lib/site-settings.functions";
 import { listPortfolio, type PortfolioProject } from "@/lib/portfolio.functions";
 import { PortfolioGallery } from "@/components/PortfolioGallery";
 import { SITE_URL, breadcrumbSchema, serviceSchema } from "@/lib/seo";
-import crosspostImage from "@/assets/portfolio/crosspost.png";
 import virusImage from "@/assets/portfolio/virus.png";
 
 const URL = `${SITE_URL}/apps`;
@@ -77,17 +76,6 @@ type AppItem = {
 };
 
 const apps: AppItem[] = [
-  {
-    title: "КроссПост",
-    description:
-      "Автоматизируйте свой контент-маркетинг! Наш сервис поможет вам публиковать посты во всех соцсетях одновременно. Экономьте время, увеличивайте охват.\nСоздавайте посты с помощью AI, оформляйте в стильных шаблонах и публикуйте сразу в Telegram, ВКонтакте и Макс. Планируйте контент на недели вперёд.",
-    tag: "SaaS · Контент-маркетинг",
-    href: "https://crosspost.neyromarket.com/",
-    status: "live",
-    badge: "Бесплатно / по подписке",
-    image: crosspostImage,
-    external: true,
-  },
   {
     title: "Контент-завод V.I.R.U.S.",
     description:
