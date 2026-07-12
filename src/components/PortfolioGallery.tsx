@@ -79,7 +79,7 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
               loop
               autoPlay
               playsInline
-              preload="metadata"
+              preload="auto"
             />
           ) : (
             <img
