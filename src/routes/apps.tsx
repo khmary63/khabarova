@@ -3,12 +3,10 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
 import { SITE } from "@/lib/site";
-import { ArrowRight } from "lucide-react";
 import { getSiteSettings } from "@/lib/site-settings.functions";
 import { listPortfolio, type PortfolioProject } from "@/lib/portfolio.functions";
 import { PortfolioGallery } from "@/components/PortfolioGallery";
 import { SITE_URL, breadcrumbSchema, serviceSchema } from "@/lib/seo";
-import virusImage from "@/assets/portfolio/virus.png";
 
 const URL = `${SITE_URL}/apps`;
 
