@@ -64,30 +64,8 @@ export const Route = createFileRoute("/apps")({
   component: AppsPage,
 });
 
-type AppItem = {
-  title: string;
-  description: string;
-  tag: string;
-  href?: string;
-  status: "live" | "soon";
-  badge?: string;
-  image?: string;
-  external?: boolean;
-};
 
-const apps: AppItem[] = [
-  {
-    title: "Контент-завод V.I.R.U.S.",
-    description:
-      "Генерация вирусных Reels и Shorts по маркетинговой методике «V.I.R.U.S.».\nОт поиска идеи и тренда до публикации — в один клик. Автопостинг в YouTube Shorts и VK Клипы.\nНе нужно тратить часы времени на съёмки и монтаж коротких видео. Делайте это в несколько кликов с помощью контент-завода.",
-    tag: "SaaS · Reels & Shorts",
-    href: "https://virus.neyromarket.com/",
-    status: "live",
-    badge: "По подписке",
-    image: virusImage,
-    external: true,
-  },
-];
+
 
 type Service = {
   title: string;
