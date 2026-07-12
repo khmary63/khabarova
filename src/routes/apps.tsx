@@ -123,8 +123,31 @@ const services: Service[] = [
 
 
 
+function ProjectCard({ project: p }: { project: PortfolioProject }) {
+  return (
+    <article className="group relative flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-4 transition-all duration-500 hover:border-primary/50">
+      <PortfolioGallery
+        images={p.images}
+        layout={p.layout}
+        title={p.title}
+        tag={p.tag}
+      />
+      <div className="flex flex-1 flex-col gap-3 px-2 pb-2 pt-5">
+        <h3 className="font-display text-xl font-bold text-foreground transition-colors group-hover:text-primary">
+          {p.title}
+        </h3>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          {p.description}
+        </p>
+      </div>
+    </article>
+  );
+}
+
 function AppsPage() {
   const { portfolio } = Route.useLoaderData() as { portfolio: PortfolioProject[] };
+  const webProjects = portfolio.filter((p) => p.layout !== "mobile");
+  const mobileProjects = portfolio.filter((p) => p.layout === "mobile");
   return (
 
     <div className="relative min-h-screen overflow-hidden bg-background">
