@@ -87,7 +87,7 @@ export function SiteHeader() {
           <a href="/#about" onClick={closeMobile} className="rounded-lg px-2 py-2 text-muted-foreground transition hover:bg-surface/60 hover:text-foreground">О Марии</a>
           <Link to="/roi" onClick={closeMobile} className="rounded-lg px-2 py-2 text-muted-foreground transition hover:bg-surface/60 hover:text-foreground" activeProps={{ className: "text-foreground" }}>Калькулятор ROI</Link>
           {settings.apps && (
-            <Link to="/apps" onClick={closeMobile} className="rounded-lg px-2 py-2 text-muted-foreground transition hover:bg-surface/60 hover:text-foreground" activeProps={{ className: "text-foreground" }}>Приложения</Link>
+            <Link to="/apps" onClick={closeMobile} className="rounded-lg px-2 py-2 text-muted-foreground transition hover:bg-surface/60 hover:text-foreground" activeProps={{ className: "text-foreground" }}>Портфолио</Link>
           )}
           {settings.blog && (
             <Link to="/blog" onClick={closeMobile} className="rounded-lg px-2 py-2 text-muted-foreground transition hover:bg-surface/60 hover:text-foreground" activeProps={{ className: "text-foreground" }}>Блог</Link>
