@@ -264,7 +264,7 @@ function AppsPage() {
               <h3 className="font-display text-xl font-semibold tracking-tight text-foreground md:text-2xl">
                 Мобильные приложения
               </h3>
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:max-w-2/3">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:mx-auto lg:max-w-4xl">
                 {mobileProjects.map((p) => (
                   <ProjectCard key={p.id} project={p} />
                 ))}
