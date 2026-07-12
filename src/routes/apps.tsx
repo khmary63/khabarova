@@ -123,8 +123,31 @@ const services: Service[] = [
 
 
 
+function ProjectCard({ project: p }: { project: PortfolioProject }) {
+  return (
+    <article className="group relative flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-4 transition-all duration-500 hover:border-primary/50">
+      <PortfolioGallery
+        images={p.images}
+        layout={p.layout}
+        title={p.title}
+        tag={p.tag}
+      />
+      <div className="flex flex-1 flex-col gap-3 px-2 pb-2 pt-5">
+        <h3 className="font-display text-xl font-bold text-foreground transition-colors group-hover:text-primary">
+          {p.title}
+        </h3>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          {p.description}
+        </p>
+      </div>
+    </article>
+  );
+}
+
 function AppsPage() {
   const { portfolio } = Route.useLoaderData() as { portfolio: PortfolioProject[] };
+  const webProjects = portfolio.filter((p) => p.layout !== "mobile");
+  const mobileProjects = portfolio.filter((p) => p.layout === "mobile");
   return (
 
     <div className="relative min-h-screen overflow-hidden bg-background">
@@ -231,28 +254,23 @@ function AppsPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {portfolio.map((p) => (
-              <article
-                key={p.id}
-                className="group relative flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-4 transition-all duration-500 hover:border-primary/50"
-              >
-                <PortfolioGallery
-                  images={p.images}
-                  layout={p.layout}
-                  title={p.title}
-                  tag={p.tag}
-                />
-                <div className="flex flex-1 flex-col gap-3 px-2 pb-2 pt-5">
-                  <h3 className="font-display text-xl font-bold text-foreground transition-colors group-hover:text-primary">
-                    {p.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    {p.description}
-                  </p>
-                </div>
-              </article>
+            {webProjects.map((p) => (
+              <ProjectCard key={p.id} project={p} />
             ))}
           </div>
+
+          {mobileProjects.length > 0 && (
+            <div className="space-y-6 pt-6">
+              <h3 className="font-display text-xl font-semibold tracking-tight text-foreground md:text-2xl">
+                Мобильные приложения
+              </h3>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:mx-auto lg:max-w-4xl">
+                {mobileProjects.map((p) => (
+                  <ProjectCard key={p.id} project={p} />
+                ))}
+              </div>
+            </div>
+          )}
         </section>
 
 
