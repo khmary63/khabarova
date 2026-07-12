@@ -17,6 +17,7 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
   const count = list.length;
   const isMobile = layout === "mobile";
   const aspect = isMobile ? "aspect-[9/16]" : "aspect-[16/10]";
+  const isVideo = (u: string) => /\.(mp4|webm|mov|m4v)(\?|$)/i.test(u);
 
   const go = useCallback(
     (dir: number) => {
