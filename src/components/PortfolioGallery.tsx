@@ -17,6 +17,7 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
   const count = list.length;
   const isMobile = layout === "mobile";
   const aspect = isMobile ? "aspect-[9/16]" : "aspect-[16/10]";
+  const isVideo = (u: string) => /\.(mp4|webm|mov|m4v)(\?|$)/i.test(u);
 
   const go = useCallback(
     (dir: number) => {
@@ -70,12 +71,24 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
           className={`relative block ${aspect} w-full overflow-hidden rounded-2xl bg-neutral-900`}
           aria-label={`Открыть галерею: ${title}`}
         >
-          <img
-            src={list[index]}
-            alt={`${title} — экран ${index + 1}`}
-            className={`h-full w-full ${isMobile ? "object-contain" : "object-cover object-top"} transition-transform duration-500 group-hover/gal:scale-[1.02]`}
-            loading="lazy"
-          />
+          {isVideo(list[index]) ? (
+            <video
+              src={list[index]}
+              className={`h-full w-full ${isMobile ? "object-contain" : "object-cover object-top"}`}
+              muted
+              loop
+              autoPlay
+              playsInline
+              preload="metadata"
+            />
+          ) : (
+            <img
+              src={list[index]}
+              alt={`${title} — экран ${index + 1}`}
+              className={`h-full w-full ${isMobile ? "object-contain" : "object-cover object-top"} transition-transform duration-500 group-hover/gal:scale-[1.02]`}
+              loading="lazy"
+            />
+          )}
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
           {tag && (
             <span className="absolute left-3 top-3 rounded-full bg-black/60 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur">
@@ -163,12 +176,30 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
           >
             {isMobile ? (
               <div className="relative rounded-[2.2rem] border-[6px] border-neutral-800 bg-black shadow-2xl">
-                <img
-                  src={list[index]}
-                  alt={`${title} — экран ${index + 1}`}
-                  className="max-h-[82vh] w-auto rounded-[1.7rem] object-contain"
-                />
+                {isVideo(list[index]) ? (
+                  <video
+                    src={list[index]}
+                    className="max-h-[82vh] w-auto rounded-[1.7rem] object-contain"
+                    controls
+                    autoPlay
+                    playsInline
+                  />
+                ) : (
+                  <img
+                    src={list[index]}
+                    alt={`${title} — экран ${index + 1}`}
+                    className="max-h-[82vh] w-auto rounded-[1.7rem] object-contain"
+                  />
+                )}
               </div>
+            ) : isVideo(list[index]) ? (
+              <video
+                src={list[index]}
+                className="max-h-[85vh] max-w-[92vw] rounded-xl object-contain shadow-2xl"
+                controls
+                autoPlay
+                playsInline
+              />
             ) : (
               <img
                 src={list[index]}
