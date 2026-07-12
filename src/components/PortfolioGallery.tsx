@@ -176,12 +176,30 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
           >
             {isMobile ? (
               <div className="relative rounded-[2.2rem] border-[6px] border-neutral-800 bg-black shadow-2xl">
-                <img
-                  src={list[index]}
-                  alt={`${title} — экран ${index + 1}`}
-                  className="max-h-[82vh] w-auto rounded-[1.7rem] object-contain"
-                />
+                {isVideo(list[index]) ? (
+                  <video
+                    src={list[index]}
+                    className="max-h-[82vh] w-auto rounded-[1.7rem] object-contain"
+                    controls
+                    autoPlay
+                    playsInline
+                  />
+                ) : (
+                  <img
+                    src={list[index]}
+                    alt={`${title} — экран ${index + 1}`}
+                    className="max-h-[82vh] w-auto rounded-[1.7rem] object-contain"
+                  />
+                )}
               </div>
+            ) : isVideo(list[index]) ? (
+              <video
+                src={list[index]}
+                className="max-h-[85vh] max-w-[92vw] rounded-xl object-contain shadow-2xl"
+                controls
+                autoPlay
+                playsInline
+              />
             ) : (
               <img
                 src={list[index]}
