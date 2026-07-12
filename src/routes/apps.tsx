@@ -260,15 +260,10 @@ function AppsPage() {
           </div>
 
           {mobileProjects.length > 0 && (
-            <div className="space-y-6 pt-6">
-              <h3 className="font-display text-xl font-semibold tracking-tight text-foreground md:text-2xl">
-                Мобильные приложения
-              </h3>
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:mx-auto lg:max-w-4xl">
-                {mobileProjects.map((p) => (
-                  <ProjectCard key={p.id} project={p} />
-                ))}
-              </div>
+            <div className="grid grid-cols-1 gap-6 pt-6 sm:grid-cols-2 lg:mx-auto lg:max-w-4xl">
+              {mobileProjects.map((p) => (
+                <ProjectCard key={p.id} project={p} />
+              ))}
             </div>
           )}
         </section>
