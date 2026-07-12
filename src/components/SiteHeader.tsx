@@ -53,7 +53,7 @@ export function SiteHeader() {
           <a href="/#about" className="transition hover:text-foreground">О Марии</a>
           <Link to="/roi" className="transition hover:text-foreground" activeProps={{ className: "text-foreground" }}>Калькулятор ROI</Link>
           {settings.apps && (
-            <Link to="/apps" className="transition hover:text-foreground" activeProps={{ className: "text-foreground" }}>Приложения</Link>
+            <Link to="/apps" className="transition hover:text-foreground" activeProps={{ className: "text-foreground" }}>Портфолио</Link>
           )}
           {settings.blog && (
             <Link to="/blog" className="transition hover:text-foreground" activeProps={{ className: "text-foreground" }}>Блог</Link>
