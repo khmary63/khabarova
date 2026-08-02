@@ -1,20 +1,30 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Play, X } from "lucide-react";
 
+// A valid YouTube video id is exactly 11 chars of [A-Za-z0-9_-]. We only ever
+// embed a value that passes this check, so an arbitrary/malformed string can
+// never be interpolated into the youtube-nocookie iframe URL.
+const YOUTUBE_ID_RE = /^[A-Za-z0-9_-]{11}$/;
+
 function getYouTubeVideoId(url: string) {
+  let candidate: string | null = null;
   try {
     const parsed = new URL(url);
     const host = parsed.hostname.replace(/^www\./, "");
-    if (host === "youtu.be") return parsed.pathname.split("/").filter(Boolean)[0] || null;
-    if (host === "youtube.com" || host === "m.youtube.com") {
-      if (parsed.pathname === "/watch") return parsed.searchParams.get("v");
-      const match = parsed.pathname.match(/^\/(?:shorts|embed)\/([^/?#]+)/);
-      return match?.[1] || null;
+    if (host === "youtu.be") {
+      candidate = parsed.pathname.split("/").filter(Boolean)[0] || null;
+    } else if (host === "youtube.com" || host === "m.youtube.com") {
+      if (parsed.pathname === "/watch") {
+        candidate = parsed.searchParams.get("v");
+      } else {
+        const match = parsed.pathname.match(/^\/(?:shorts|embed)\/([^/?#]+)/);
+        candidate = match?.[1] || null;
+      }
     }
   } catch {
     return null;
   }
-  return null;
+  return candidate && YOUTUBE_ID_RE.test(candidate) ? candidate : null;
 }
 
 function isDirectVideo(url: string) {
