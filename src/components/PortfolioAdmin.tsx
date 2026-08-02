@@ -9,7 +9,18 @@ import {
   type PortfolioProject,
 } from "@/lib/portfolio.functions";
 
-type EditDraft = Partial<PortfolioProject> & { id?: string };
+type EditDraft = Partial<PortfolioProject> & { id?: string; video_url?: string };
+
+function isPortfolioVideo(url: string) {
+  if (/\.(mp4|webm|mov|m4v)(\?|$)/i.test(url)) return true;
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.replace(/^www\./, "");
+    return host === "youtu.be" || host === "youtube.com" || host === "m.youtube.com";
+  } catch {
+    return false;
+  }
+}
 
 export function PortfolioAdmin({ token }: { token: string }) {
   const [projects, setProjects] = useState<PortfolioProject[]>([]);
@@ -67,10 +78,12 @@ export function PortfolioAdmin({ token }: { token: string }) {
       return;
     }
     const images = (editing.images || []).filter(Boolean);
-    if (images.length === 0) {
-      toast.error("Загрузите хотя бы одно изображение");
+    const videoUrl = editing.video_url?.trim() || "";
+    if (images.length === 0 && !videoUrl) {
+      toast.error("Добавьте хотя бы одно фото или ссылку на видео");
       return;
     }
+    const media = videoUrl ? [videoUrl, ...images] : images;
     setLoading(true);
     const res = await saveFn({
       data: {
@@ -80,8 +93,8 @@ export function PortfolioAdmin({ token }: { token: string }) {
         description: editing.description || "",
         url: editing.url || "",
         tag: editing.tag || "",
-        image_url: images[0],
-        images,
+        image_url: images[0] || videoUrl,
+        images: media,
         layout: editing.layout === "mobile" ? "mobile" : "web",
         sort_order: Number(editing.sort_order) || 0,
         published: editing.published ?? true,
@@ -144,6 +157,7 @@ export function PortfolioAdmin({ token }: { token: string }) {
               tag: "",
               image_url: "",
               images: [],
+              video_url: "",
               layout: "web",
               sort_order: (projects.at(-1)?.sort_order ?? 0) + 10,
               published: true,
@@ -163,11 +177,17 @@ export function PortfolioAdmin({ token }: { token: string }) {
         <ul className="mt-4 divide-y divide-border rounded-lg border border-border">
           {projects.map((p) => (
             <li key={p.id} className="flex items-center gap-3 p-3">
-              <img
-                src={p.image_url}
-                alt={p.title}
-                className="h-12 w-20 shrink-0 rounded object-cover"
-              />
+              {p.images.find((url) => !isPortfolioVideo(url)) ? (
+                <img
+                  src={p.images.find((url) => !isPortfolioVideo(url))}
+                  alt={p.title}
+                  className="h-12 w-20 shrink-0 rounded object-cover"
+                />
+              ) : (
+                <div className="flex h-12 w-20 shrink-0 items-center justify-center rounded bg-neutral-900 text-[10px] font-medium text-white">
+                  Видео
+                </div>
+              )}
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <span
@@ -183,12 +203,20 @@ export function PortfolioAdmin({ token }: { token: string }) {
                   ) : null}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {p.layout === "mobile" ? "Мобильное" : "Веб"} · {p.images.length} фото
+                  {p.layout === "mobile" ? "Мобильное" : "Веб"} ·{" "}
+                  {p.images.filter((url) => !isPortfolioVideo(url)).length} фото
+                  {p.images.some(isPortfolioVideo) ? " · видео" : ""}
                 </div>
               </div>
               <div className="flex shrink-0 gap-2">
                 <button
-                  onClick={() => setEditing(p)}
+                  onClick={() =>
+                    setEditing({
+                      ...p,
+                      video_url: p.images.find(isPortfolioVideo) || "",
+                      images: p.images.filter((url) => !isPortfolioVideo(url)),
+                    })
+                  }
                   className="rounded-md border border-border px-3 py-1.5 text-xs"
                 >
                   Изменить
@@ -258,9 +286,25 @@ export function PortfolioAdmin({ token }: { token: string }) {
             />
           </label>
 
+          <label className="block text-sm">
+            <span className="mb-1 block text-xs text-muted-foreground">
+              Ссылка на видео
+            </span>
+            <input
+              type="url"
+              placeholder="https://www.youtube.com/shorts/..."
+              value={editing.video_url || ""}
+              onChange={(e) => setEditing({ ...editing, video_url: e.target.value })}
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+            />
+            <span className="mt-1 block text-[11px] text-muted-foreground">
+              Поддерживаются YouTube, YouTube Shorts и прямые ссылки на MP4/WebM.
+            </span>
+          </label>
+
           <div className="space-y-2">
             <span className="block text-xs text-muted-foreground">
-              Галерея (первое фото — обложка карточки). Можно загрузить несколько.
+              Фотографии (первое фото — обложка карточки). Можно загрузить несколько.
             </span>
             {(editing.images || []).length > 0 ? (
               <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
