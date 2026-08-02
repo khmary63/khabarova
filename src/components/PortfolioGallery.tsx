@@ -1,5 +1,25 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play, X } from "lucide-react";
+
+function getYouTubeVideoId(url: string) {
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.replace(/^www\./, "");
+    if (host === "youtu.be") return parsed.pathname.split("/").filter(Boolean)[0] || null;
+    if (host === "youtube.com" || host === "m.youtube.com") {
+      if (parsed.pathname === "/watch") return parsed.searchParams.get("v");
+      const match = parsed.pathname.match(/^\/(?:shorts|embed)\/([^/?#]+)/);
+      return match?.[1] || null;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function isDirectVideo(url: string) {
+  return /\.(mp4|webm|mov|m4v)(\?|$)/i.test(url);
+}
 
 type Props = {
   images: string[];
@@ -17,7 +37,6 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
   const count = list.length;
   const isMobile = layout === "mobile";
   const aspect = isMobile ? "aspect-[9/16]" : "aspect-[16/10]";
-  const isVideo = (u: string) => /\.(mp4|webm|mov|m4v)(\?|$)/i.test(u);
 
   const go = useCallback(
     (dir: number) => {
@@ -71,7 +90,19 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
           className={`relative block ${aspect} w-full overflow-hidden rounded-2xl bg-neutral-900`}
           aria-label={`Открыть галерею: ${title}`}
         >
-          {isVideo(list[index]) ? (
+          {getYouTubeVideoId(list[index]) ? (
+            <>
+              <img
+                src={`https://i.ytimg.com/vi/${getYouTubeVideoId(list[index])}/hqdefault.jpg`}
+                alt={`${title} — видео`}
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
+              <span className="pointer-events-none absolute left-1/2 top-1/2 z-10 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/70 text-white backdrop-blur">
+                <Play className="ml-1 h-7 w-7 fill-current" />
+              </span>
+            </>
+          ) : isDirectVideo(list[index]) ? (
             <video
               src={list[index]}
               className={`h-full w-full ${isMobile ? "object-contain" : "object-cover object-top"}`}
@@ -79,7 +110,7 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
               loop
               autoPlay
               playsInline
-              preload="auto"
+              preload="metadata"
             />
           ) : (
             <img
@@ -174,9 +205,23 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
           >
-            {isMobile ? (
+            {getYouTubeVideoId(list[index]) ? (
+              <div
+                className={`w-[min(92vw,900px)] overflow-hidden rounded-xl bg-black shadow-2xl ${
+                  isMobile ? "aspect-[9/16] max-h-[85vh] max-w-[48vh]" : "aspect-video"
+                }`}
+              >
+                <iframe
+                  src={`https://www.youtube-nocookie.com/embed/${getYouTubeVideoId(list[index])}?autoplay=1&rel=0`}
+                  title={`${title} — видео`}
+                  className="h-full w-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              </div>
+            ) : isMobile ? (
               <div className="relative rounded-[2.2rem] border-[6px] border-neutral-800 bg-black shadow-2xl">
-                {isVideo(list[index]) ? (
+                {isDirectVideo(list[index]) ? (
                   <video
                     src={list[index]}
                     className="max-h-[82vh] w-auto rounded-[1.7rem] object-contain"
@@ -192,7 +237,7 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
                   />
                 )}
               </div>
-            ) : isVideo(list[index]) ? (
+            ) : isDirectVideo(list[index]) ? (
               <video
                 src={list[index]}
                 className="max-h-[85vh] max-w-[92vw] rounded-xl object-contain shadow-2xl"
