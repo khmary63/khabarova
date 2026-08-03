@@ -93,36 +93,45 @@ claude
 При первом запуске откроется браузер — войдите тем же аккаунтом, которым пользуетесь на
 claude.ai. Дальше учётные данные сохранятся.
 
-### Перенос SSH-ключа из Termius
+### Настройка SSH-ключа
 
-Termius хранит ключи в своём хранилище, а Claude Code пользуется системным SSH — это
-встроенный в Windows 10/11 OpenSSH, который читает ключи из `C:\Users\<вы>\.ssh`. Ключ
-нужно один раз перенести туда.
+Claude Code пользуется системным SSH — встроенным в Windows 10/11 OpenSSH, который читает
+ключи из `C:\Users\<вы>\.ssh`. Аутентификация по ключу нужна не только для удобства: при
+входе по паролю каждая команда требовала бы ручного ввода, и автоматическая работа с
+сервером стала бы невозможной.
 
-1. В Termius: **Keychain** → выбрать ключ → **Export** → сохранить приватный ключ.
-2. Переложить его в `.ssh` и закрыть доступ всем, кроме вас.
-
-В Windows права выставляются не через `chmod`, а через `icacls`. Если этого не сделать, SSH
-откажется использовать ключ с ошибкой `UNPROTECTED PRIVATE KEY FILE`:
+Создайте ключ:
 
 ```powershell
 mkdir "$env:USERPROFILE\.ssh" -Force
-Move-Item "$env:USERPROFILE\Downloads\<имя_файла_ключа>" "$env:USERPROFILE\.ssh\vps_key"
+ssh-keygen -t ed25519 -C "khabarova-vps" -f "$env:USERPROFILE\.ssh\vps_key"
+```
 
-# убрать наследуемые разрешения и оставить доступ только текущему пользователю
+На запрос passphrase нажмите Enter дважды, оставив её пустой — иначе пароль от ключа будет
+спрашиваться при каждом подключении. Защиту в этом случае обеспечивают права доступа к
+файлу.
+
+В Windows права выставляются через `icacls`, а не `chmod`. Без этого SSH отказывается
+использовать ключ с ошибкой `UNPROTECTED PRIVATE KEY FILE`:
+
+```powershell
 icacls "$env:USERPROFILE\.ssh\vps_key" /inheritance:r
 icacls "$env:USERPROFILE\.ssh\vps_key" /grant:r "$($env:USERNAME):(R)"
 ```
 
-Если ключа в Termius нет и вы заходите по паролю — проще сгенерировать новый и положить его
-на сервер:
+Скопируйте публичный ключ на сервер — пароль понадобится последний раз:
 
 ```powershell
-ssh-keygen -t ed25519 -C "khabarova-vps" -f "$env:USERPROFILE\.ssh\vps_key"
-
-# в Windows нет ssh-copy-id, публичный ключ добавляется вручную
-type "$env:USERPROFILE\.ssh\vps_key.pub" | ssh <user>@<ip-сервера> "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+scp "$env:USERPROFILE\.ssh\vps_key.pub" <user>@<ip-сервера>:/tmp/id.pub
+ssh <user>@<ip-сервера> "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat /tmp/id.pub >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys && rm /tmp/id.pub"
 ```
+
+Передавать ключ через `type ... | ssh` не стоит: PowerShell подставляет в конвейер переводы
+строк в формате Windows, ключ на сервере оказывается битым, а причина неочевидна. `scp`
+копирует файл без изменений.
+
+Если ключ уже есть в Termius (Keychain → ключ → Export), генерацию можно пропустить:
+положите приватный ключ в `%USERPROFILE%\.ssh\vps_key` и выставьте права через `icacls`.
 
 ### Настройка алиаса
 
