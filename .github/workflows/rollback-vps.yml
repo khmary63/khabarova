@@ -1,0 +1,41 @@
+name: Rollback on VPS
+
+# Мгновенный откат на предыдущий (или указанный) релиз: переключение
+# симлинка current и перезапуск контейнера. Сборка не запускается —
+# используются уже лежащие на сервере каталоги releases/.
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: "Имя релиза (пусто = предыдущий). Список: ls /var/www/factory.neyromarket.com/releases"
+        required: false
+        default: ""
+
+concurrency:
+  group: deploy-vps
+  cancel-in-progress: false
+
+jobs:
+  rollback:
+    runs-on: [self-hosted, vps]
+    timeout-minutes: 10
+    # Откат — операция владельца репозитория.
+    if: github.actor == github.repository_owner
+    steps:
+      - name: Checkout scripts
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts
+
+      - name: Rollback
+        run: bash scripts/release.sh rollback "${{ inputs.release }}"
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Откат ${{ job.status }}"
+            echo ""
+            echo "- Текущий релиз: \`$(readlink /var/www/factory.neyromarket.com/current 2>/dev/null || echo '?')\`"
+          } >> "$GITHUB_STEP_SUMMARY"

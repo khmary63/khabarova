@@ -1,0 +1,15 @@
+# Блок для /opt/neyromarket/deploy/Caddyfile — заменяет текущий статический
+# блок factory.neyromarket.com (root /srv/factory + file_server).
+#
+# Приложение стало SSR-сервером (TanStack Start, серверные функции с Supabase),
+# статикой его раздавать больше нельзя — данные ходят через /_serverFn/*.
+# Caddy проксирует на контейнер factory-app из docker-compose.factory.yml,
+# оба контейнера должны быть в одной docker-сети.
+#
+# После правки: docker exec deploy-caddy-1 caddy validate --config /etc/caddy/Caddyfile
+# и docker exec deploy-caddy-1 caddy reload --config /etc/caddy/Caddyfile
+
+factory.neyromarket.com {
+	encode zstd gzip
+	reverse_proxy factory-app:3000
+}

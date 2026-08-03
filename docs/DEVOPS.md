@@ -165,119 +165,150 @@ Claude Code спрашивает подтверждение на каждую к
 
 ---
 
-## Часть 2. Деплой через self-hosted runner на VPS
+## Часть 2. Автодеплой: GitHub Actions + self-hosted runner
 
-### Зачем
+### Архитектура
 
-Сервер не принимает входящие подключения из зарубежных сетей, но сам ходит в интернет без
-ограничений. Runner использует именно это: он устанавливается на VPS и сам опрашивает
-GitHub. Когда появляется задача, он выполняет её локально, на сервере. Никаких входящих
-портов открывать не нужно.
+Приложение — TanStack Start с серверными функциями (портфолио, блог, бронирование, чат и
+аналитика ходят в Supabase с ключом сервис-роли). Ему нужен Node-сервер; статикой такой
+код раздавать нельзя. Поэтому на сервере оно работает как контейнер `factory-app` за
+Caddy — по той же схеме, что и остальные приложения этого VPS.
 
-Побочный плюс: у сервера появляется нормальный автодеплой, а не ручная сборка по SSH.
+Конвейер:
 
-### Установка runner на сервер
+1. **Сборка** — на runner'ах GitHub (`ubuntu-latest`): `VPS_BUILD=1 bun run build` даёт
+   `.output` с Node-сервером (пресет `node-server` вместо Cloudflare). VPS в сборке не
+   участвует и памяти на неё не тратит.
+2. **Выкладка** — self-hosted runner на VPS скачивает артефакт и запускает
+   `scripts/release.sh`: новый каталог в `releases/`, атомарное переключение симлинка
+   `current`, перезапуск контейнера, health-check. Если проверка провалилась — автооткат
+   на предыдущий релиз.
+3. **Откат** — workflow `rollback-vps.yml` переключает симлинк на любой из хранимых
+   релизов (последние 5) без пересборки.
 
-Все команды выполняются на VPS. Токен для регистрации берётся в репозитории:
-**Settings → Actions → Runners → New self-hosted runner** — он одноразовый и живёт около
-часа.
+Runner на VPS решает и проблему сетевой изоляции: сервер сам опрашивает GitHub по
+исходящему соединению, входящие подключения из-за рубежа ему не нужны.
+
+Файлы:
+
+| Файл | Назначение |
+| --- | --- |
+| `.github/workflows/deploy-vps.yml` | сборка + деплой при пуше в `main` |
+| `.github/workflows/rollback-vps.yml` | ручной откат |
+| `.github/workflows/remote-exec.yml` | ручное выполнение команды на сервере |
+| `scripts/release.sh` | релизы/откаты на сервере |
+| `deploy/docker-compose.factory.yml` | контейнер приложения (на сервер: `/opt/factory/docker-compose.yml`) |
+| `deploy/factory.env.example` | шаблон секретов (на сервер: `/opt/factory/.env`) |
+| `deploy/Caddyfile.factory.snippet` | блок Caddy вместо статической раздачи |
+
+### Разовая настройка сервера
+
+Эти шаги удобно поручить локальному Claude Code («выполни настройку сервера по
+docs/DEVOPS.md, часть 2») — он сделает их по SSH и проверит каждый.
+
+**1. Пользователь `gha` и права.**
 
 ```bash
 sudo useradd -m -s /bin/bash gha || true
-sudo -iu gha
+sudo usermod -aG docker gha                     # перезапуск контейнера при деплое
+sudo mkdir -p /var/www/factory.neyromarket.com/releases
+sudo chown -R gha:gha /var/www/factory.neyromarket.com
+```
 
+Полный sudo пользователю `gha` не нужен: релизы — это запись в свой каталог плюс
+`docker compose` через членство в группе `docker`.
+
+**2. Каталог `/opt/factory`.**
+
+```bash
+sudo mkdir -p /opt/factory
+sudo cp deploy/docker-compose.factory.yml /opt/factory/docker-compose.yml
+sudo cp deploy/factory.env.example /opt/factory/.env
+sudo chown -R gha:gha /opt/factory
+sudo chmod 600 /opt/factory/.env
+```
+
+В `/opt/factory/.env` вписать `SUPABASE_SERVICE_ROLE_KEY` (Supabase Dashboard → Settings →
+API → `service_role`). В git этот ключ не попадает.
+
+В компоузе проверить имя внешней сети — оно должно совпадать с сетью Caddy:
+
+```bash
+docker inspect deploy-caddy-1 -f '{{range $k,$v := .NetworkSettings.Networks}}{{$k}}{{end}}'
+```
+
+Если вывод не `deploy_default` — поправить `networks.caddy-net.name` в
+`/opt/factory/docker-compose.yml`.
+
+**3. Runner.** Токен: **Settings → Actions → Runners → New self-hosted runner**
+(одноразовый, живёт около часа).
+
+```bash
+sudo -iu gha
 mkdir -p ~/actions-runner && cd ~/actions-runner
 curl -o runner.tar.gz -L https://github.com/actions/runner/releases/download/v2.328.0/actions-runner-linux-x64-2.328.0.tar.gz
 tar xzf runner.tar.gz
-
 ./config.sh --url https://github.com/khmary63/khabarova \
-            --token <ТОКЕН_ИЗ_НАСТРОЕК> \
-            --name khabarova-vps \
-            --labels vps \
-            --unattended
-```
+            --token <ТОКЕН> --name khabarova-vps --labels vps --unattended
+exit
 
-Метка `vps` обязательна — по ней workflow находят этот сервер.
-
-Дальше runner ставится как systemd-сервис, чтобы поднимался после перезагрузки:
-
-```bash
-exit                                   # вернуться к пользователю с sudo
 cd /home/gha/actions-runner
 sudo ./svc.sh install gha
 sudo ./svc.sh start
-sudo ./svc.sh status
 ```
 
-В **Settings → Actions → Runners** статус должен смениться на `Idle`.
+Метка `vps` обязательна — по ней workflow находят сервер. Статус в
+**Settings → Actions → Runners** должен стать `Idle`.
 
-### Права на деплой
-
-Пользователю `gha` нужно право писать в каталог приложения и перезапускать сервис. Без
-полного sudo это делается так:
+**4. Первый деплой и переключение Caddy.** Запустить **Actions → Deploy to VPS →
+Run workflow**. Когда релиз выложится и контейнер ответит на
+`http://127.0.0.1:3002/`, заменить в `/opt/neyromarket/deploy/Caddyfile` статический блок
+`factory.neyromarket.com` на содержимое `deploy/Caddyfile.factory.snippet` и применить:
 
 ```bash
-sudo chown -R gha:gha /var/www/khabarova     # каталог приложения
-
-sudo tee /etc/sudoers.d/gha-deploy >/dev/null <<'EOF'
-gha ALL=(root) NOPASSWD: /bin/systemctl restart khabarova, /bin/systemctl status khabarova, /bin/systemctl reload nginx
-EOF
-sudo chmod 440 /etc/sudoers.d/gha-deploy
+docker exec deploy-caddy-1 caddy validate --config /etc/caddy/Caddyfile
+docker exec deploy-caddy-1 caddy reload --config /etc/caddy/Caddyfile
+curl -fsS -o /dev/null -w '%{http_code}\n' https://factory.neyromarket.com/
 ```
 
-Список команд намеренно ограничен: runner исполняет то, что приходит из репозитория,
-поэтому неограниченный sudo давать не стоит.
+Старый статический каталог остаётся на месте — если что-то пойдёт не так, возврат
+прежнего блока Caddyfile мгновенно вернёт старую версию сайта.
 
-### Переменные репозитория
+**5. Прибраться (по желанию).** Системный nginx давно проиграл порты Caddy и висит в
+`failed` — `sudo systemctl disable --now nginx` уберёт шум из мониторинга. Старые
+`*.tar` ручных деплоев в `/root` и `/tmp` можно удалить.
 
-**Settings → Secrets and variables → Actions → Variables:**
+### Как пользоваться
 
-| Переменная    | Смысл                                  | Пример              |
-| ------------- | -------------------------------------- | ------------------- |
-| `DEPLOY_PATH` | каталог приложения на сервере          | `/var/www/khabarova` |
-| `SERVICE_NAME`| имя systemd-сервиса для перезапуска    | `khabarova`         |
-
-Если `SERVICE_NAME` не задать, шаг перезапуска будет пропущен — удобно, когда сервер
-раздаёт статику через nginx и перезапускать нечего.
-
-Секреты приложения (ключи, пароли БД) кладутся в **Secrets** и пробрасываются в
-`scripts/deploy.sh` через `env:` в workflow — в репозиторий они не попадают.
-
-### Как это работает
-
-- **`deploy-vps.yml`** — запускается при пуше в `main` и вручную. Выполняет
-  `scripts/deploy.sh` на сервере.
-- **`remote-exec.yml`** — запускается только вручную, выполняет произвольную команду на
-  сервере и показывает вывод в логах Actions. Это и есть «удалённый терминал» для случаев,
-  когда SSH недоступен.
-
-Запуск вручную: вкладка **Actions** → нужный workflow → **Run workflow**.
+- **Деплой**: пуш в `main` — всё остальное произойдёт само. Вручную: **Actions →
+  Deploy to VPS → Run workflow** (можно указать ветку).
+- **Откат**: **Actions → Rollback on VPS → Run workflow**; пустое поле = предыдущий
+  релиз, либо имя из `ls /var/www/factory.neyromarket.com/releases`.
+- **Команда на сервере без SSH**: **Actions → Remote exec on VPS** — вывод в логе запуска.
+  Работает и из облачного Claude Code: он может запускать workflow и читать логи через
+  GitHub, то есть администрировать сервер, когда прямой SSH недоступен.
 
 ### Безопасность
 
-`remote-exec.yml` выполняет на сервере то, что введено в поле запуска, поэтому:
+- `remote-exec.yml` и `rollback-vps.yml` запускаются только вручную и только владельцем
+  репозитория (`github.actor == github.repository_owner`).
+- Runner работает от `gha`: без sudo, из привилегий — только группа `docker` и свой
+  каталог релизов.
+- Секрет сервис-роли Supabase живёт только в `/opt/factory/.env` на сервере (chmod 600).
+- Если репозиторий станет публичным, `remote-exec` стоит удалить или закрыть через
+  GitHub Environment с ручным подтверждением.
 
-- workflow проверяет, что запуск инициирован владельцем репозитория;
-- запускается только вручную, никаких автоматических триггеров;
-- работает от пользователя `gha` с ограниченным sudo.
+### Типовые проблемы
 
-Если репозиторий станет публичным или в нём появятся внешние контрибьюторы, `remote-exec`
-лучше удалить или закрыть через GitHub Environment с ручным подтверждением.
+**Runner `Offline`.** `sudo systemctl status 'actions.runner.*'` на сервере; чаще всего —
+упавший после перезагрузки сервис или заблокированный исходящий HTTPS.
 
----
+**`403` при `bun install` в сборке.** Прямой признак, что шаг подмены реестра в
+`deploy-vps.yml` не отработал: в `bun.lock` зашит приватный npm-кэш Lovable, доступный
+только из их песочницы.
 
-## Типовые проблемы
+**Health-check провалился, деплой красный.** Смотреть лог шага Release — там последние
+50 строк лога контейнера. Сайт при этом жив: скрипт сам откатился на предыдущий релиз.
 
-**Runner в статусе `Offline`.** Проверить сервис: `sudo systemctl status actions.runner.*`.
-Чаще всего это упавший процесс после перезагрузки или заблокированный исходящий HTTPS.
-
-**`Permission denied` при деплое.** Каталог `DEPLOY_PATH` не принадлежит пользователю
-`gha` — см. `chown` выше.
-
-**`bun: command not found` в логах.** Скрипт деплоя ставит bun сам при первом запуске в
-`~/.bun/bin`. Если runner был установлен раньше, достаточно перезапустить его, чтобы он
-подхватил обновлённый `PATH`.
-
-**Сборка падает по памяти.** На VPS с 1–2 ГБ RAM сборке фронтенда может не хватать памяти.
-Лечится swap-файлом на 2 ГБ или сборкой в GitHub Actions с последующей выкладкой артефакта
-на сервер.
+**`permission denied` к docker.sock.** Пользователь `gha` не в группе `docker`, либо
+runner-сервис запущен до добавления в группу — `sudo ./svc.sh stop && sudo ./svc.sh start`.

@@ -1,5 +1,10 @@
 name: Deploy to VPS
 
+# Сборка идёт на runner'ах GitHub (VPS не тратит память на Vite),
+# на сервер попадает только готовый артефакт .output. Выкладка атомарная:
+# релиз в новый каталог, переключение симлинка current, перезапуск
+# контейнера, health-check с автооткатом — см. scripts/release.sh.
+
 on:
   push:
     branches: [main]
@@ -15,25 +20,67 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    # Метка `vps` указывает на self-hosted runner, установленный на сервере.
-    runs-on: [self-hosted, vps]
-    timeout-minutes: 30
-
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.ref || github.ref }}
 
-      - name: Deploy
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Redirect lockfile registry to npmjs
+        # В bun.lock зашит приватный npm-кэш Lovable (*.pkg.dev), извне он
+        # отдаёт 403. Пакеты и их контрольные суммы те же, что в публичном
+        # npm, поэтому подмена адреса безопасна. Правка не коммитится.
+        run: sed -i -E 's#https://[a-z0-9-]+-npm\.pkg\.dev/lovable-core-prod/sandbox-npm-cache#https://registry.npmjs.org#g' bun.lock
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build (node-server preset)
+        run: VPS_BUILD=1 bun run build
+
+      - name: Verify build output
+        run: |
+          test -f .output/server/index.mjs || { echo "Нет .output/server/index.mjs"; exit 1; }
+          test -d .output/public || { echo "Нет .output/public"; exit 1; }
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-build
+          path: .output
+          retention-days: 7
+          if-no-files-found: error
+
+  deploy:
+    needs: build
+    # Метка `vps` указывает на self-hosted runner, установленный на сервере.
+    runs-on: [self-hosted, vps]
+    timeout-minutes: 15
+    steps:
+      - name: Checkout scripts
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          sparse-checkout: scripts
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-build
+          path: /tmp/app-build
+
+      - name: Release
         env:
-          DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
-          SERVICE_NAME: ${{ vars.SERVICE_NAME }}
-          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_PROJECT_ID: ${{ vars.VITE_SUPABASE_PROJECT_ID }}
-          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
-        run: bash scripts/deploy.sh
+          GITHUB_SHA: ${{ github.sha }}
+        run: bash scripts/release.sh deploy /tmp/app-build
 
       - name: Summary
         if: always()
@@ -42,6 +89,6 @@ jobs:
             echo "### Деплой ${{ job.status }}"
             echo ""
             echo "- Коммит: \`${{ github.sha }}\`"
-            echo "- Каталог: \`${{ vars.DEPLOY_PATH }}\`"
-            echo "- Сервис: \`${{ vars.SERVICE_NAME || 'не задан' }}\`"
+            echo "- Релиз: см. шаг Release"
+            echo "- Текущий: \`$(readlink /var/www/factory.neyromarket.com/current 2>/dev/null || echo '?')\`"
           } >> "$GITHUB_STEP_SUMMARY"

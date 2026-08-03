@@ -1,0 +1,35 @@
+# Контейнер приложения factory.neyromarket.com (этот репозиторий).
+# Кладётся на сервер как /opt/factory/docker-compose.yml.
+#
+# Требования:
+#   /var/www/factory.neyromarket.com/current -> releases/<...> (создаёт release.sh)
+#   /opt/factory/.env — секреты рантайма (см. factory.env.example)
+#
+# Имя внешней сети должно совпадать с сетью, в которой живёт deploy-caddy-1.
+# Проверить на сервере:
+#   docker inspect deploy-caddy-1 -f '{{range $k,$v := .NetworkSettings.Networks}}{{$k}}{{end}}'
+
+services:
+  factory-app:
+    image: node:22-alpine
+    container_name: factory-app
+    restart: unless-stopped
+    working_dir: /app/current
+    command: ["node", "server/index.mjs"]
+    env_file: /opt/factory/.env
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOST: 0.0.0.0
+    volumes:
+      - /var/www/factory.neyromarket.com:/app:ro
+    ports:
+      # Только для health-check с хоста; наружу трафик идёт через Caddy.
+      - "127.0.0.1:3002:3000"
+    networks:
+      - caddy-net
+
+networks:
+  caddy-net:
+    external: true
+    name: deploy_default
