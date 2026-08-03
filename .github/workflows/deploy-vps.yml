@@ -1,0 +1,47 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Ветка или коммит для деплоя"
+        required: false
+        default: "main"
+
+concurrency:
+  group: deploy-vps
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # Метка `vps` указывает на self-hosted runner, установленный на сервере.
+    runs-on: [self-hosted, vps]
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+
+      - name: Deploy
+        env:
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+          SERVICE_NAME: ${{ vars.SERVICE_NAME }}
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PROJECT_ID: ${{ vars.VITE_SUPABASE_PROJECT_ID }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+        run: bash scripts/deploy.sh
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Деплой ${{ job.status }}"
+            echo ""
+            echo "- Коммит: \`${{ github.sha }}\`"
+            echo "- Каталог: \`${{ vars.DEPLOY_PATH }}\`"
+            echo "- Сервис: \`${{ vars.SERVICE_NAME || 'не задан' }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"

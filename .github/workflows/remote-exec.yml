@@ -1,0 +1,69 @@
+name: Remote exec on VPS
+
+# Удалённый терминал для случаев, когда прямой SSH до сервера недоступен.
+# Команда выполняется на self-hosted runner, вывод виден в логах запуска.
+# Запуск только вручную и только владельцем репозитория.
+
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: "Команда для выполнения на сервере"
+        required: true
+        default: "uptime && df -h && free -m"
+      working_directory:
+        description: "Рабочий каталог (по умолчанию — каталог приложения)"
+        required: false
+        default: ""
+
+concurrency:
+  group: remote-exec
+  cancel-in-progress: false
+
+jobs:
+  exec:
+    runs-on: [self-hosted, vps]
+    timeout-minutes: 15
+    # Выполнять произвольные команды на сервере может только владелец репозитория.
+    if: github.actor == github.repository_owner
+
+    steps:
+      - name: Run
+        env:
+          COMMAND: ${{ inputs.command }}
+          WORKDIR: ${{ inputs.working_directory || vars.DEPLOY_PATH }}
+        run: |
+          set -o pipefail
+
+          if [ -n "$WORKDIR" ] && [ -d "$WORKDIR" ]; then
+            cd "$WORKDIR"
+          fi
+
+          echo "::group::Контекст"
+          echo "host:  $(hostname)"
+          echo "user:  $(whoami)"
+          echo "pwd:   $(pwd)"
+          echo "::endgroup::"
+
+          echo "::group::Команда"
+          printf '%s\n' "$COMMAND"
+          echo "::endgroup::"
+
+          # Команда передаётся через переменную окружения, а не подстановкой в скрипт,
+          # чтобы кавычки и спецсимволы не ломали синтаксис.
+          set +e
+          bash -c "$COMMAND" 2>&1 | tee /tmp/remote-exec-output.txt
+          status=${PIPESTATUS[0]}
+          set -e
+
+          {
+            echo "### Remote exec"
+            echo ""
+            echo "Код возврата: \`$status\`"
+            echo ""
+            echo '```'
+            tail -c 60000 /tmp/remote-exec-output.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          exit $status
