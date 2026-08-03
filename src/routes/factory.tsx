@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { FactoryLanding } from "@/components/FactoryLanding";
 
-// Лендинг «Контент-завод». На домене factory.neyromarket.com корень сайта
-// переписывается на этот роут в src/server.ts, поэтому лендинг открывается
-// и как factory.neyromarket.com/, и как /factory на любом домене.
+// Лендинг «Контент-завод». Корень домена factory.neyromarket.com редиректит
+// на этот роут в src/server.ts, поэтому лендинг открывается и по старым
+// ссылкам на factory.neyromarket.com/, и как /factory на любом домене.
 
 const TITLE = "Контент-завод на ИИ под ключ | НейроМаркет";
 const DESCRIPTION =
@@ -17,10 +17,10 @@ export const Route = createFileRoute("/factory")({
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://factory.neyromarket.com/" },
+      { property: "og:url", content: "https://factory.neyromarket.com/factory" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "https://factory.neyromarket.com/" }],
+    links: [{ rel: "canonical", href: "https://factory.neyromarket.com/factory" }],
   }),
   component: FactoryLanding,
 });

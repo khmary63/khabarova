@@ -75,16 +75,16 @@ export default {
         url.pathname = "/";
         return Response.redirect(url.toString(), 301);
       }
-      // На поддомене factory корень сайта — лендинг «Контент-завод», а не
-      // главная основного сайта. Внутренняя переадресация, URL в браузере
-      // остаётся factory.neyromarket.com/.
-      let handledRequest = request;
+      // На поддомене factory корень сайта — лендинг «Контент-завод». Именно
+      // редирект, а не внутренняя подмена ответа: клиентский роутер ориентируется
+      // на URL в браузере, и при подмене он перерисовывал бы страницу в главную
+      // основного сайта поверх отрендеренного лендинга.
       if (url.hostname.startsWith("factory.") && url.pathname === "/") {
         url.pathname = "/factory";
-        handledRequest = new Request(url.toString(), request);
+        return Response.redirect(url.toString(), 302);
       }
       const handler = await getServerEntry();
-      const response = await handler.fetch(handledRequest, env, ctx);
+      const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
     } catch (error) {
       console.error(error);
