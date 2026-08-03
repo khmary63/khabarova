@@ -13,6 +13,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as MsbRouteImport } from './routes/msb'
+import { Route as FactoryRouteImport } from './routes/factory'
 import { Route as ContactsRouteImport } from './routes/contacts'
 import { Route as B2bRouteImport } from './routes/b2b'
 import { Route as AppsRouteImport } from './routes/apps'
@@ -43,6 +44,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const MsbRoute = MsbRouteImport.update({
   id: '/msb',
   path: '/msb',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FactoryRoute = FactoryRouteImport.update({
+  id: '/factory',
+  path: '/factory',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactsRoute = ContactsRouteImport.update({
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/apps': typeof AppsRoute
   '/b2b': typeof B2bRoute
   '/contacts': typeof ContactsRoute
+  '/factory': typeof FactoryRoute
   '/msb': typeof MsbRoute
   '/privacy': typeof PrivacyRoute
   '/reviews': typeof ReviewsRoute
@@ -124,6 +131,7 @@ export interface FileRoutesByTo {
   '/apps': typeof AppsRoute
   '/b2b': typeof B2bRoute
   '/contacts': typeof ContactsRoute
+  '/factory': typeof FactoryRoute
   '/msb': typeof MsbRoute
   '/privacy': typeof PrivacyRoute
   '/reviews': typeof ReviewsRoute
@@ -142,6 +150,7 @@ export interface FileRoutesById {
   '/apps': typeof AppsRoute
   '/b2b': typeof B2bRoute
   '/contacts': typeof ContactsRoute
+  '/factory': typeof FactoryRoute
   '/msb': typeof MsbRoute
   '/privacy': typeof PrivacyRoute
   '/reviews': typeof ReviewsRoute
@@ -161,6 +170,7 @@ export interface FileRouteTypes {
     | '/apps'
     | '/b2b'
     | '/contacts'
+    | '/factory'
     | '/msb'
     | '/privacy'
     | '/reviews'
@@ -178,6 +188,7 @@ export interface FileRouteTypes {
     | '/apps'
     | '/b2b'
     | '/contacts'
+    | '/factory'
     | '/msb'
     | '/privacy'
     | '/reviews'
@@ -195,6 +206,7 @@ export interface FileRouteTypes {
     | '/apps'
     | '/b2b'
     | '/contacts'
+    | '/factory'
     | '/msb'
     | '/privacy'
     | '/reviews'
@@ -213,6 +225,7 @@ export interface RootRouteChildren {
   AppsRoute: typeof AppsRoute
   B2bRoute: typeof B2bRoute
   ContactsRoute: typeof ContactsRoute
+  FactoryRoute: typeof FactoryRoute
   MsbRoute: typeof MsbRoute
   PrivacyRoute: typeof PrivacyRoute
   ReviewsRoute: typeof ReviewsRoute
@@ -253,6 +266,13 @@ declare module '@tanstack/react-router' {
       path: '/msb'
       fullPath: '/msb'
       preLoaderRoute: typeof MsbRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/factory': {
+      id: '/factory'
+      path: '/factory'
+      fullPath: '/factory'
+      preLoaderRoute: typeof FactoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contacts': {
@@ -341,6 +361,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppsRoute: AppsRoute,
   B2bRoute: B2bRoute,
   ContactsRoute: ContactsRoute,
+  FactoryRoute: FactoryRoute,
   MsbRoute: MsbRoute,
   PrivacyRoute: PrivacyRoute,
   ReviewsRoute: ReviewsRoute,
