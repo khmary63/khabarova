@@ -18,51 +18,84 @@ Claude Code в облаке (claude.ai/code) работает в изолиро�
 запущенный на вашем компьютере, использует вашу сеть и ваши SSH-ключи — для сервера это
 обычное подключение с вашего IP, ничем не отличающееся от Termius.
 
-### Установка
+### Установка (Windows)
 
-Нужен Node.js 18 или новее.
+Node.js и npm не нужны — у Claude Code есть нативный установщик. В **PowerShell**:
 
-```bash
-node --version            # если команды нет — поставьте Node.js с nodejs.org
-npm install -g @anthropic-ai/claude-code
+```powershell
+irm https://claude.ai/install.ps1 | iex
+```
+
+Если появится ошибка `'irm' is not recognized` — открыт не PowerShell, а CMD. Признак:
+в PowerShell строка начинается с `PS C:\`, в CMD — просто `C:\`. Для CMD команда другая:
+
+```batch
+curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
+```
+
+После установки закройте и откройте окно терминала заново, иначе `PATH` не обновится:
+
+```powershell
 claude --version
 ```
 
-Первый запуск в папке проекта:
+Дополнительно стоит поставить [Git for Windows](https://git-scm.com/downloads/win). Без него
+Claude Code будет выполнять команды через PowerShell; с ним доступен полноценный bash, что
+заметно удобнее для работы с сервером и git.
+
+Нативная установка сама обновляется в фоне.
+
+### Установка (macOS, Linux)
 
 ```bash
-cd ~/projects/khabarova    # путь, где лежит клон репозитория
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+### Первый запуск
+
+```powershell
+cd C:\Users\<вы>\projects\khabarova    # папка с клоном репозитория
 claude
 ```
 
-При первом запуске Claude Code попросит авторизоваться — откроется браузер, входите тем же
-аккаунтом, которым пользуетесь на claude.ai.
+При первом запуске откроется браузер — войдите тем же аккаунтом, которым пользуетесь на
+claude.ai. Дальше учётные данные сохранятся.
 
 ### Перенос SSH-ключа из Termius
 
-Termius хранит ключи в своём хранилище, а Claude Code использует системный SSH
-(`~/.ssh`). Ключ нужно один раз оттуда достать.
+Termius хранит ключи в своём хранилище, а Claude Code пользуется системным SSH — это
+встроенный в Windows 10/11 OpenSSH, который читает ключи из `C:\Users\<вы>\.ssh`. Ключ
+нужно один раз перенести туда.
 
 1. В Termius: **Keychain** → выбрать ключ → **Export** → сохранить приватный ключ.
-2. Положить его в `~/.ssh/` и выставить права (иначе SSH откажется его использовать):
+2. Переложить его в `.ssh` и закрыть доступ всем, кроме вас.
 
-```bash
-mkdir -p ~/.ssh && chmod 700 ~/.ssh
-mv ~/Downloads/<имя_файла_ключа> ~/.ssh/vps_key
-chmod 600 ~/.ssh/vps_key
+В Windows права выставляются не через `chmod`, а через `icacls`. Если этого не сделать, SSH
+откажется использовать ключ с ошибкой `UNPROTECTED PRIVATE KEY FILE`:
+
+```powershell
+mkdir "$env:USERPROFILE\.ssh" -Force
+Move-Item "$env:USERPROFILE\Downloads\<имя_файла_ключа>" "$env:USERPROFILE\.ssh\vps_key"
+
+# убрать наследуемые разрешения и оставить доступ только текущему пользователю
+icacls "$env:USERPROFILE\.ssh\vps_key" /inheritance:r
+icacls "$env:USERPROFILE\.ssh\vps_key" /grant:r "$($env:USERNAME):(R)"
 ```
 
-Если ключа в Termius нет и вы заходите по паролю — проще сгенерировать новый ключ и
-положить его на сервер:
+Если ключа в Termius нет и вы заходите по паролю — проще сгенерировать новый и положить его
+на сервер:
 
-```bash
-ssh-keygen -t ed25519 -C "khabarova-vps" -f ~/.ssh/vps_key
-ssh-copy-id -i ~/.ssh/vps_key.pub <user>@<ip-сервера>
+```powershell
+ssh-keygen -t ed25519 -C "khabarova-vps" -f "$env:USERPROFILE\.ssh\vps_key"
+
+# в Windows нет ssh-copy-id, публичный ключ добавляется вручную
+type "$env:USERPROFILE\.ssh\vps_key.pub" | ssh <user>@<ip-сервера> "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
 ```
 
 ### Настройка алиаса
 
-Чтобы не писать каждый раз IP, пользователя и путь к ключу, добавьте хост в `~/.ssh/config`:
+Чтобы не писать каждый раз IP, пользователя и путь к ключу, создайте файл
+`C:\Users\<вы>\.ssh\config` (без расширения) с таким содержимым:
 
 ```
 Host vps
@@ -72,10 +105,12 @@ Host vps
     ServerAliveInterval 30
 ```
 
+Тильда `~` внутри этого файла работает и в Windows — OpenSSH раскрывает её в домашнюю папку.
+
 Проверка — должно подключиться без пароля:
 
-```bash
-ssh vps 'hostname && uptime'
+```powershell
+ssh vps "hostname && uptime"
 ```
 
 После этого в локальном Claude Code достаточно сказать «посмотри логи nginx на сервере» или
