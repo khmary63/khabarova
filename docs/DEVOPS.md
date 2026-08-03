@@ -45,6 +45,38 @@ Claude Code будет выполнять команды через PowerShell; 
 
 Нативная установка сама обновляется в фоне.
 
+### Если `claude` не распознаётся
+
+Установщик кладёт файл в `%USERPROFILE%\.local\bin\claude.exe`. Первым делом проверьте,
+появился ли он:
+
+```powershell
+Test-Path "$env:USERPROFILE\.local\bin\claude.exe"
+```
+
+**`True`** — установка прошла, но папки нет в `PATH`. Добавьте её в пользовательский `PATH`:
+
+```powershell
+$currentPath = [Environment]::GetEnvironmentVariable('PATH', 'User')
+[Environment]::SetEnvironmentVariable('PATH', "$currentPath;$env:USERPROFILE\.local\bin", 'User')
+```
+
+После этого закройте окно терминала и откройте новое — переменная окружения читается только
+при запуске процесса, в текущем окне изменение не появится.
+
+**`False`** — установщик не отработал. Проверьте, доходят ли запросы до сервера загрузки:
+
+```powershell
+curl.exe -sI https://downloads.claude.ai/claude-code-releases/latest
+```
+
+Здесь важно писать именно `curl.exe`: в PowerShell `curl` — это алиас для
+`Invoke-WebRequest`, который не понимает флаги `-sI`.
+
+Первая строка ответа должна быть `HTTP/1.1 200 OK`. Если там `403` или запрос не проходит
+вовсе, установку блокирует сеть — понадобится VPN на время скачивания. На работу самого
+Claude Code это потом не влияет: он обращается к `api.anthropic.com`.
+
 ### Установка (macOS, Linux)
 
 ```bash
