@@ -4,6 +4,7 @@
 // услугах, ценах и кейсах — чтобы попадать в цитаты.
 
 import { SITE, CASES } from "./site";
+import mariaPhoto from "@/assets/maria-about.jpg";
 
 export const SITE_URL = "https://neyromarket.com";
 
@@ -26,15 +27,17 @@ export const organizationSchema = () => ({
   url: SITE_URL,
   email: SITE.email,
   telephone: SITE.phone,
-  logo: absUrl("/favicon.png"),
+  logo: absUrl("/agency-brand.webp"),
   image: absUrl("/favicon.png"),
   founder: { "@id": PERSON_ID },
-  founderName: SITE.expert,
   areaServed: [
     { "@type": "Country", name: "Россия" },
     { "@type": "AdministrativeArea", name: "СНГ" },
   ],
   knowsAbout: [
+    "AI-креаторство и SMM",
+    "Создание сайтов и контент-заводов",
+    "Лидогенерация",
     "Внедрение ИИ-сотрудников в продажи",
     "ИИ-продавцы 24/7",
     "Нейроворонки",
@@ -61,11 +64,11 @@ export const personSchema = () => ({
   name: SITE.expert,
   givenName: "Мария",
   familyName: "Хабарова",
-  jobTitle: "Эксперт по внедрению ИИ-сотрудников в продажи",
+  jobTitle: "Основатель и руководитель агентства ИИ-решений НейроМаркет",
   description:
-    "Эксперт и основатель агентства НейроМаркет. Внедряет ИИ-продавцов, нейроворонки и автоматизацию отделов продаж в B2B и малом бизнесе. Самара, работает по всей России и СНГ.",
+    "Мария Хабарова — основатель и руководитель агентства ИИ-решений НейроМаркет. AI-креаторство, автоматизация бизнеса и лидогенерация для русскоязычных клиентов.",
   url: SITE_URL,
-  image: absUrl("/favicon.png"),
+  image: absUrl(mariaPhoto),
   worksFor: { "@id": ORG_ID },
   knowsAbout: [
     "ИИ-продавцы",

@@ -77,32 +77,44 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  loader: () => getSiteSettings(),
+  loader: async () => {
+    try {
+      return await getSiteSettings();
+    } catch {
+      return { apps: true, blog: true, reviews: true };
+    }
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "НейроМаркет — ИИ-сотрудники в продажи | Мария Хабарова" },
+      { title: "НейроМаркет — агентство ИИ-решений" },
       {
         name: "description",
         content:
-          "НейроМаркет — внедрение ИИ-сотрудников в отделы продаж. Эксперт Мария Хабарова. Первый результат за 7 дней.",
+          "AI-креаторство, автоматизация бизнеса и лидогенерация. Руководитель агентства — Мария Хабарова.",
       },
       { name: "author", content: "Мария Хабарова" },
       { property: "og:site_name", content: "НейроМаркет" },
-      { property: "og:title", content: "НейроМаркет — ИИ-сотрудники в продажи" },
+      { property: "og:title", content: "НейроМаркет — агентство ИИ-решений" },
       {
         property: "og:description",
         content:
-          "Внедряем ИИ-сотрудников в отделы продаж. Кейсы, методология, бесплатный ИИ-аудит за 30 минут.",
+          "Создаём контент и сайты, внедряем ИИ-сотрудников, привлекаем клиентов. Бесплатная консультация 30 минут.",
       },
       { property: "og:type", content: "website" },
       { property: "og:locale", content: "ru_RU" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "google-site-verification", content: "cMNxxtMhitwNVAwwywctoyLUfZHOjXskqzV7MSlgkLc" },
       // GEO: разрешаем генеративным поисковикам брать полные сниппеты, крупные превью и видео.
-      { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
-      { name: "googlebot", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
+      {
+        name: "robots",
+        content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
+      },
+      {
+        name: "googlebot",
+        content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
+      },
       // Регион сайта — Самара (для Яндекс.Вебмастера и геопоиска)
       { name: "geo.region", content: "RU-SAM" },
       { name: "geo.placename", content: "Самара" },
@@ -117,10 +129,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://mc.yandex.ru", crossOrigin: "anonymous" },
       { rel: "preconnect", href: "https://mytopf.com", crossOrigin: "anonymous" },
       { rel: "preconnect", href: "https://noya-ai.ru", crossOrigin: "anonymous" },
-      
+
       { rel: "dns-prefetch", href: "https://mc.yandex.ru" },
       { rel: "dns-prefetch", href: "https://mytopf.com" },
-      
     ],
   }),
   shellComponent: RootShell,
@@ -141,10 +152,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
         {(() => {
           const NoyaWidget = "noya-chat" as unknown as React.ElementType;
           return (
-            <NoyaWidget
-              api-key="wgt_983a60b33787c40964bad74e8da4f0891371a921aff82c29"
-              lang="ru"
-            />
+            <NoyaWidget api-key="wgt_983a60b33787c40964bad74e8da4f0891371a921aff82c29" lang="ru" />
           );
         })()}
         <script type="module" crossOrigin="" src="https://noya-ai.ru/widget.js" />
@@ -156,7 +164,11 @@ function RootShell({ children }: { children: React.ReactNode }) {
         />
         <noscript>
           <div>
-            <img src="https://mc.yandex.ru/watch/107882480" style={{ position: "absolute", left: "-9999px" }} alt="" />
+            <img
+              src="https://mc.yandex.ru/watch/107882480"
+              style={{ position: "absolute", left: "-9999px" }}
+              alt=""
+            />
           </div>
         </noscript>
 
@@ -168,10 +180,13 @@ function RootShell({ children }: { children: React.ReactNode }) {
         />
         <noscript>
           <div>
-            <img src="https://mytopf.com/counter?id=3766746;js=na" style={{ position: "absolute", left: "-9999px" }} alt="mytopf.com" />
+            <img
+              src="https://mytopf.com/counter?id=3766746;js=na"
+              style={{ position: "absolute", left: "-9999px" }}
+              alt="mytopf.com"
+            />
           </div>
         </noscript>
-
 
         <Scripts />
       </body>
