@@ -67,7 +67,7 @@ export function agencyHead(direction?: Direction) {
             ]
           : [{ name: "Главная", path: "/" }],
       ),
-      ...(!direction || direction === "automation" ? [caseStudiesItemList()] : []),
+      ...(direction === "automation" ? [caseStudiesItemList()] : []),
     ].map((schema) => ({
       type: "application/ld+json",
       children: JSON.stringify(schema).replace(/</g, "\\u003c"),
