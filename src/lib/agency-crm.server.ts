@@ -1,5 +1,6 @@
 import { directionById } from "./agency";
 import type { AgencyLeadInput } from "./agency-lead-schema";
+import { notifyLeadToMax } from "./max.server";
 // Fixed destination: never accept a webhook URL or token from public input.
 const CRM_ENDPOINT = "https://crm.neyromarket.com/api/webhook/leads";
 const completed = new Map<string, { time: number; promise: Promise<void> }>();
@@ -30,6 +31,34 @@ export function toCrmPayload(data: AgencyLeadInput) {
       .join("\n"),
   };
 }
+/** Instant heads-up for Maria. Best effort: the lead is already safe in the CRM. */
+function notifyMax(data: AgencyLeadInput) {
+  const d = directionById(data.direction);
+  const extra = [
+    `Направление: ${d.label}`,
+    data.intent === "launch" ? "Хочет обсудить запуск" : "Нужна консультация",
+    data.company && `Бизнес: ${data.company}`,
+    data.task && `Задача: ${data.task}`,
+    data.timeline && `Срок: ${data.timeline}`,
+    `Страница: ${data.page}`,
+    ...Object.entries(data.campaign)
+      .filter(([, v]) => v)
+      .map(([k, v]) => `${k}: ${v}`),
+  ]
+    .filter(Boolean)
+    .join("
+");
+  void notifyLeadToMax({
+    name: data.name,
+    phone: data.phone,
+    source: "Новая форма сайта",
+    extra,
+  })
+    .then((r) => {
+      if (!r.ok) console.warn("[agency-lead] max notification failed");
+    })
+    .catch(() => console.warn("[agency-lead] max notification threw"));
+}
 export async function deliverAgencyLead(data: AgencyLeadInput) {
   if (data.website) throw new Error("invalid_request");
   const token = process.env.CRM_WEBHOOK_TOKEN;
@@ -52,6 +81,7 @@ export async function deliverAgencyLead(data: AgencyLeadInput) {
     });
     const body = await response.json().catch(() => null);
     if (!response.ok || body?.ok !== true) throw new Error("crm_delivery_failed");
+    notifyMax(data);
   })();
   completed.set(data.requestId, { time: now, promise });
   try {
