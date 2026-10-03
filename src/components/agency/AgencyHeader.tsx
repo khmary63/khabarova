@@ -3,9 +3,6 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { SITE } from "@/lib/site";
 const links = [
-  ["/#directions", "Направления"],
-  ["/#cases", "Кейсы"],
-  ["/#about", "О Марии"],
   ["/roi", "Калькулятор ROI"],
   ["/apps", "Портфолио"],
   ["/blog", "Блог"],
