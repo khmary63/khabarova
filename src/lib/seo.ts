@@ -119,9 +119,9 @@ export const webPageSchema = (opts: {
   about: { "@id": ORG_ID },
   primaryImageOfPage: {
     "@type": "ImageObject",
-    url: absUrl("/og-main.png"),
-    width: 1730,
-    height: 909,
+    url: absUrl("/og-agency.jpg"),
+    width: 1200,
+    height: 630,
   },
   dateModified: "2026-07-27",
 });
