@@ -1416,9 +1416,9 @@
   html {
     scroll-behavior: auto;
   }
-  .agency *,
-  .agency *:before,
-  .agency *:after {
+  .agency :not(.nm-motion-on, .nm-motion-on *),
+  .agency :not(.nm-motion-on, .nm-motion-on *):before,
+  .agency :not(.nm-motion-on, .nm-motion-on *):after {
     animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
