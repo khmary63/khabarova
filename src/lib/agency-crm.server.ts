@@ -46,8 +46,7 @@ function notifyMax(data: AgencyLeadInput) {
       .map(([k, v]) => `${k}: ${v}`),
   ]
     .filter(Boolean)
-    .join("
-");
+    .join("\n");
   void notifyLeadToMax({
     name: data.name,
     phone: data.phone,
