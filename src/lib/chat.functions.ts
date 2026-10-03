@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { getAiChatCompletionsUrl, getAiConfig } from "@/lib/ai.server";
-import { notifyLeadToTelegram } from "@/lib/telegram.server";
+import { notifyLeadToMax } from "@/lib/max.server";
 import { getUpcomingSlots } from "./yclients.server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { createBookRecord, resolveServiceAndStaff } from "./yclients.server";
@@ -85,7 +85,7 @@ async function callTool(name: string, args: Record<string, unknown>): Promise<un
         name: clientName, phone, datetime, yclients_record_id: rec.id,
         status: "confirmed", source: "ai_chat", ai_summary: summary ?? null,
       });
-      await notifyLeadToTelegram({
+      await notifyLeadToMax({
         name: clientName,
         phone,
         source: "ai_chat",
@@ -99,7 +99,7 @@ async function callTool(name: string, args: Record<string, unknown>): Promise<un
         name: clientName, phone, datetime, status: "failed",
         source: "ai_chat", ai_summary: summary ?? null, error_message: msg.slice(0, 1000),
       });
-      await notifyLeadToTelegram({
+      await notifyLeadToMax({
         name: clientName,
         phone,
         source: "ai_chat",

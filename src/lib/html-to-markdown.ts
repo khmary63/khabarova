@@ -1,6 +1,8 @@
 /** Client-only HTML → Markdown. Avoid top-level turndown import (breaks Node ESM / Nitro). */
 
-type TurndownCtor = typeof import("turndown").default;
+import type TurndownService from "turndown";
+
+type TurndownCtor = typeof TurndownService;
 
 let turndownPromise: Promise<InstanceType<TurndownCtor>> | null = null;
 

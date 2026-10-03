@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { notifyLeadToTelegram } from "@/lib/telegram.server";
+import { notifyLeadToMax } from "@/lib/max.server";
 import { createBookRecord, getUpcomingSlots, resolveServiceAndStaff } from "./yclients.server";
 
 export const getSlots = createServerFn({ method: "GET" }).handler(async () => {
@@ -45,7 +45,7 @@ export const createBooking = createServerFn({ method: "POST" })
         source: data.source,
         ai_summary: data.aiSummary ?? null,
       });
-      await notifyLeadToTelegram({
+      await notifyLeadToMax({
         name: data.name,
         phone: data.phone,
         source: data.source,
@@ -65,7 +65,7 @@ export const createBooking = createServerFn({ method: "POST" })
         ai_summary: data.aiSummary ?? null,
         error_message: msg.slice(0, 1000),
       });
-      await notifyLeadToTelegram({
+      await notifyLeadToMax({
         name: data.name,
         phone: data.phone,
         source: data.source,

@@ -193,7 +193,7 @@ export const upsertPost = createServerFn({ method: "POST" })
         .catch((e) => console.error("[upsertPost] telegram post threw", e));
     }
 
-    return { ok: true as const, slug: row.slug as string, telegram: { posted: false } };
+    return { ok: true as const, slug: row.slug as string, telegram: { posted: false } as { posted: boolean; error?: string } };
 
   });
 
