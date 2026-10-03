@@ -1,6 +1,9 @@
 import atom from "@/assets/partners/atom.png";
 import academy from "@/assets/partners/academy.jpg";
 import okhota from "@/assets/partners/okhota.webp";
+import neuroagents from "@/assets/partners/neuroagents.png";
+import boreychuk from "@/assets/partners/boreychuk.webp";
+import polishuk from "@/assets/partners/polishuk.webp";
 import { trackAgency } from "@/lib/agency-tracking";
 
 type Card = {
@@ -9,6 +12,8 @@ type Card = {
   href: string;
   logo?: string;
   light?: boolean;
+  /** Portrait: fill the tile instead of fitting a logo. */
+  photo?: boolean;
   /** Link carries a referral code. */
   referral?: boolean;
 };
@@ -32,17 +37,23 @@ const partners: Card[] = [
     name: "Neuroagents",
     note: "IT-проект",
     href: "https://noya-ai.ru/?ref=NK9PE9EA",
+    logo: neuroagents,
+    light: true,
     referral: true,
   },
   {
     name: "Дмитрий Борейчук",
     note: "Маркетолог, предприниматель, основатель Wake up Marketing",
     href: "https://wake-up-marketing.ru/",
+    logo: boreychuk,
+    photo: true,
   },
   {
     name: "Михаил Полищук",
     note: "Блогер, автор образовательных продуктов в нише AI-контента",
     href: "https://www.youtube.com/@polishuk01",
+    logo: polishuk,
+    photo: true,
   },
 ];
 const clients: Card[] = [
@@ -64,8 +75,8 @@ function Item({ c }: { c: Card }) {
       onClick={() => trackAgency("agency_partner_open", { partner: c.name })}
     >
       {c.logo ? (
-        <span className={`nm-trust-logo${c.light ? " is-light" : ""}`}>
-          <img src={c.logo} alt="" loading="lazy" />
+        <span className={`nm-trust-logo${c.light ? " is-light" : ""}${c.photo ? " is-photo" : ""}`}>
+          <img src={c.logo} alt={c.photo ? c.name : ""} loading="lazy" />
         </span>
       ) : (
         <span className="nm-trust-logo nm-trust-initial" aria-hidden="true">

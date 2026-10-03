@@ -342,7 +342,6 @@ export function MultiLanding({ direction }: { direction?: Direction }) {
               task={homeBrief.task}
               timeline={homeBrief.timeline}
             />
-            <AgencyCases />
             <AgencyTrust />
             <AgencyMagnet />
             <AgencyProcess />
