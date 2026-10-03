@@ -1,5 +1,8 @@
 User-agent: *
 Allow: /
 Disallow: /blog/admin
+Disallow: /analytics
+Disallow: /roi/result
 
+Host: neyromarket.com
 Sitemap: https://neyromarket.com/sitemap.xml

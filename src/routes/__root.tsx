@@ -89,6 +89,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "НейроМаркет — внедрение ИИ-сотрудников в отделы продаж. Эксперт Мария Хабарова. Первый результат за 7 дней.",
       },
       { name: "author", content: "Мария Хабарова" },
+      { name: "application-name", content: "НейроМаркет" },
+      { name: "theme-color", content: "#050611" },
       { property: "og:site_name", content: "НейроМаркет" },
       { property: "og:title", content: "НейроМаркет — ИИ-сотрудники в продажи" },
       {
@@ -98,7 +100,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { property: "og:locale", content: "ru_RU" },
+      { property: "og:image", content: "https://neyromarket.com/og-main.png" },
+      { property: "og:image:secure_url", content: "https://neyromarket.com/og-main.png" },
+      { property: "og:image:type", content: "image/png" },
+      { property: "og:image:width", content: "1730" },
+      { property: "og:image:height", content: "909" },
+      {
+        property: "og:image:alt",
+        content: "НейроМаркет — ИИ-сотрудники для продаж 24/7, Мария Хабарова",
+      },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "НейроМаркет — ИИ-сотрудники для продаж 24/7" },
+      {
+        name: "twitter:description",
+        content: "Внедрение ИИ-сотрудников в продажи под ключ. Эксперт Мария Хабарова.",
+      },
+      { name: "twitter:image", content: "https://neyromarket.com/og-main.png" },
+      {
+        name: "twitter:image:alt",
+        content: "НейроМаркет — ИИ-сотрудники для продаж 24/7",
+      },
       { name: "google-site-verification", content: "cMNxxtMhitwNVAwwywctoyLUfZHOjXskqzV7MSlgkLc" },
       // GEO: разрешаем генеративным поисковикам брать полные сниппеты, крупные превью и видео.
       { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
@@ -113,6 +134,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
       { rel: "icon", type: "image/png", href: "/favicon.png" },
       { rel: "apple-touch-icon", href: "/favicon.png" },
+      { rel: "manifest", href: "/site.webmanifest" },
       // Preconnect to third-party origins for analytics/chat widgets — speeds up first request
       { rel: "preconnect", href: "https://mc.yandex.ru", crossOrigin: "anonymous" },
       { rel: "preconnect", href: "https://mytopf.com", crossOrigin: "anonymous" },
@@ -151,7 +173,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
         {/* Yandex.Metrika counter */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");ym(107882480,"init",{ssr:true,webvisor:true,clickmap:true,ecommerce:"dataLayer",accurateTrackBounce:true,trackLinks:true});`,
+            __html: `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,"script","https://mc.yandex.ru/metrika/tag.js?id=107882480","ym");ym(107882480,"init",{ssr:true,webvisor:true,clickmap:true,ecommerce:"dataLayer",referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true});`,
           }}
         />
         <noscript>

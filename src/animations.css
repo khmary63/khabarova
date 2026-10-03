@@ -1,0 +1,139 @@
+/*
+ * Motion layer for the public landing page.
+ * Everything is scoped to .landing-motion so inner pages and the admin UI
+ * remain untouched.
+ */
+
+.landing-motion {
+  isolation: isolate;
+  overflow: clip;
+}
+
+.landing-motion main > section {
+  position: relative;
+}
+
+.landing-motion main > section::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: min(38rem, 70vw);
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: radial-gradient(circle, color-mix(in oklab, var(--primary) 11%, transparent), transparent 68%);
+  filter: blur(18px);
+  opacity: .5;
+  pointer-events: none;
+  animation: nm-drift 12s ease-in-out infinite alternate;
+}
+
+.landing-motion main > section:nth-child(3n + 1)::before {
+  top: 4%;
+  left: -18rem;
+}
+
+.landing-motion main > section:nth-child(3n + 2)::before {
+  right: -18rem;
+  bottom: 0;
+  animation-delay: -4s;
+}
+
+.landing-motion main > section:nth-child(3n)::before {
+  top: 12%;
+  left: 42%;
+  animation-delay: -8s;
+}
+
+.landing-motion main > section:first-child img {
+  transform: scale(1.025);
+  animation: nm-hero-breathe 8s ease-in-out infinite alternate;
+}
+
+.landing-motion main > section:first-child .absolute.inset-x-5.bottom-5 > div {
+  animation: nm-float 5.5s ease-in-out infinite;
+}
+
+.landing-motion main :is(a, button).rounded-full {
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-motion main :is(a, button).rounded-full::after {
+  content: "";
+  position: absolute;
+  inset: -80% auto -80% -45%;
+  width: 28%;
+  transform: rotate(18deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.26), transparent);
+  transition: left .65s ease;
+  pointer-events: none;
+}
+
+.landing-motion main :is(a, button).rounded-full:hover::after {
+  left: 120%;
+}
+
+.landing-motion main :is(.rounded-xl, .rounded-2xl) {
+  transition:
+    transform .35s cubic-bezier(.2,.8,.2,1),
+    border-color .35s ease,
+    box-shadow .35s ease;
+}
+
+.landing-motion main :is(.rounded-xl, .rounded-2xl):hover {
+  border-color: color-mix(in oklab, var(--primary) 48%, var(--border));
+  box-shadow: 0 18px 48px -30px color-mix(in oklab, var(--primary) 55%, transparent);
+}
+
+@supports (animation-timeline: view()) {
+  .landing-motion main > section:not(:first-child) > :is(.container-page, div) {
+    animation: nm-section-reveal both cubic-bezier(.2,.75,.25,1);
+    animation-timeline: view();
+    animation-range: entry 8% cover 30%;
+  }
+}
+
+@keyframes nm-section-reveal {
+  from {
+    opacity: .18;
+    transform: translateY(28px) scale(.985);
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes nm-drift {
+  from { transform: translate3d(-2%, -2%, 0) scale(.92); }
+  to { transform: translate3d(7%, 5%, 0) scale(1.08); }
+}
+
+@keyframes nm-hero-breathe {
+  from { transform: scale(1.025) translate3d(0, 0, 0); }
+  to { transform: scale(1.075) translate3d(0, -1%, 0); }
+}
+
+@keyframes nm-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .landing-motion main :is(.rounded-xl, .rounded-2xl):hover {
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-motion *,
+  .landing-motion *::before,
+  .landing-motion *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

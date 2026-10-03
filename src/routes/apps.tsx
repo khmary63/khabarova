@@ -260,7 +260,7 @@ function AppsPage() {
           </div>
 
           {mobileProjects.length > 0 && (
-            <div className="grid grid-cols-1 gap-6 pt-6 sm:grid-cols-2 lg:mx-auto lg:max-w-4xl">
+            <div className="grid grid-cols-1 gap-6 pt-6 sm:grid-cols-2 lg:grid-cols-3">
               {mobileProjects.map((p) => (
                 <ProjectCard key={p.id} project={p} />
               ))}

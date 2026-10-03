@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { adminRequiresServiceRole } from "@/lib/supabase-admin.guard";
 
 // ---------- Public tracking ----------
 
@@ -75,6 +76,8 @@ export const getAnalytics = createServerFn({ method: "POST" })
     if (!expected || data.token !== expected) {
       return { ok: false, error: "Неверный пароль" };
     }
+    const blocked = adminRequiresServiceRole();
+    if (blocked) return blocked;
 
     const since = new Date(Date.now() - data.days * 24 * 60 * 60 * 1000).toISOString();
 

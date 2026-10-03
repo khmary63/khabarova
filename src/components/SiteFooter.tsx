@@ -34,6 +34,12 @@ export function SiteFooter({ hideLocation }: { hideLocation?: boolean }) {
         <div className="container-page flex flex-col items-start justify-between gap-2 py-5 text-xs text-muted-foreground md:flex-row md:items-center">
           <div>© {new Date().getFullYear()} {SITE.brand}. {SITE.expert}.</div>
           <div className="flex flex-wrap items-center gap-3">
+            <a
+              href="https://noya.neyromarket.com/"
+              className="hover:text-primary"
+            >
+              Создать ИИ-сотрудника в Noya
+            </a>
             <Link to="/privacy" className="hover:text-primary">Политика конфиденциальности</Link>
           </div>
         </div>

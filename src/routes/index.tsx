@@ -7,6 +7,7 @@ import {
   organizationSchema,
   personSchema,
   websiteSchema,
+  webPageSchema,
   breadcrumbSchema,
   faqSchema,
   serviceSchema,
@@ -33,6 +34,16 @@ export const Route = createFileRoute("/")({
       { type: "application/ld+json", children: JSON.stringify(organizationSchema()) },
       { type: "application/ld+json", children: JSON.stringify(personSchema()) },
       { type: "application/ld+json", children: JSON.stringify(websiteSchema()) },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(
+          webPageSchema({
+            name: cfg.meta.title,
+            description: cfg.meta.description,
+            path: "/",
+          }),
+        ),
+      },
       {
         type: "application/ld+json",
         children: JSON.stringify(

@@ -1,9 +1,9 @@
 import { generateText } from "ai";
 import { createServerFn } from "@tanstack/react-start";
-import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
+import { createAiProvider, getAiConfig } from "@/lib/ai.server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { createLovableAiGatewayProvider, getLovableAiGatewayRunId } from "@/lib/lovable-ai-gateway.server";
+import { adminRequiresServiceRole } from "@/lib/supabase-admin.guard";
 import { postBlogToTelegram } from "@/lib/telegram.server";
 
 
@@ -128,6 +128,8 @@ export const upsertPost = createServerFn({ method: "POST" })
     if (!expected || data.token !== expected) {
       return { ok: false as const, error: "Неверный пароль" };
     }
+    const blocked = adminRequiresServiceRole();
+    if (blocked) return blocked;
     const slug = (data.slug?.trim() || slugify(data.title)) || `post-${Date.now()}`;
 
     // Узнаём, публиковали ли мы уже эту статью в Telegram, чтобы не дублировать.
@@ -168,31 +170,30 @@ export const upsertPost = createServerFn({ method: "POST" })
       return { ok: false as const, error: error.message };
     }
 
-    // Автопостинг в Telegram-канал при первой публикации.
-    // Канал затем синхронизируется с Дзеном через их официального бота
-    // (https://dzen.ru/help/ru/channel/cross-platform.html).
-    let telegram: { posted: boolean; error?: string } = { posted: false };
+    // Автопостинг в Telegram не ждём — иначе сохранение зависает, пока
+    // api.telegram.org таймаутится на этом сервере.
     if (data.published && !alreadyPostedToTelegram) {
-      const tgRes = await postBlogToTelegram({
+      void postBlogToTelegram({
         title: data.title,
         excerpt: data.excerpt,
         slug: row.slug as string,
         tags: data.tags,
         coverImageUrl: data.cover_image_url || null,
-      });
-      if (tgRes.ok) {
-        await supabaseAdmin
-          .from("posts")
-          .update({ telegram_posted_at: new Date().toISOString() })
-          .eq("id", row.id);
-        telegram = { posted: true };
-      } else {
-        telegram = { posted: false, error: tgRes.error };
-        console.error("[upsertPost] telegram post failed", tgRes.error);
-      }
+      })
+        .then(async (tgRes) => {
+          if (tgRes.ok) {
+            await supabaseAdmin
+              .from("posts")
+              .update({ telegram_posted_at: new Date().toISOString() })
+              .eq("id", row.id);
+          } else {
+            console.error("[upsertPost] telegram post failed", tgRes.error);
+          }
+        })
+        .catch((e) => console.error("[upsertPost] telegram post threw", e));
     }
 
-    return { ok: true as const, slug: row.slug as string, telegram };
+    return { ok: true as const, slug: row.slug as string, telegram: { posted: false } };
 
   });
 
@@ -258,6 +259,8 @@ export const uploadBlogImage = createServerFn({ method: "POST" })
     if (!expected || data.token !== expected) {
       return { ok: false as const, error: "Неверный пароль" };
     }
+    const blocked = adminRequiresServiceRole();
+    if (blocked) return blocked;
     if (!data.contentType.startsWith("image/")) {
       return { ok: false as const, error: "Можно загружать только изображения" };
     }
@@ -304,17 +307,11 @@ export const optimizeForSeo = createServerFn({ method: "POST" })
     if (!expected || data.token !== expected) {
       return { ok: false as const, error: "Неверный пароль" };
     }
-    const apiKey = process.env.LOVABLE_API_KEY;
-    if (!apiKey) {
-      return { ok: false as const, error: "LOVABLE_API_KEY не настроен" };
+    const ai = getAiConfig();
+    const provider = createAiProvider();
+    if (!ai || !provider) {
+      return { ok: false as const, error: "AI_API_KEY не настроен" };
     }
-    const request = getRequest();
-    const host = request.headers.get("host")?.trim() || "";
-    const forwardedHost = request.headers.get("x-forwarded-host")?.trim() || "";
-    const initialRunId = getLovableAiGatewayRunId(request);
-    const gateway = createLovableAiGatewayProvider(apiKey, {
-      initialRunId,
-    });
     const seoOnly = data.mode === "seo";
 
     const geoPrompt = `Ты SEO + GEO редактор. Оптимизируй статью блога одновременно под классические поисковики (Google, Яндекс) И под генеративные поисковики/ИИ-ответы (ChatGPT, Perplexity, Google AI Overviews, Яндекс Нейро). Язык — русский.
@@ -370,7 +367,7 @@ ${data.content}
 
     try {
       const result = await generateText({
-        model: gateway("google/gemini-3-flash-preview"),
+        model: provider(ai.model),
         system: "Ты опытный SEO-редактор. Возвращаешь только валидный JSON.",
         prompt,
       });
@@ -408,14 +405,11 @@ ${data.content}
       const bodyText = error.cause?.responseBody ?? error.cause?.bodyText;
       console.error("[optimizeForSeo] request failed", {
         status,
-        host,
-        forwardedHost,
-        runId: gateway.getRunId(),
         message: error.message,
         bodyText,
       });
       if (status === 429) return { ok: false as const, error: "Слишком много запросов, попробуйте позже" };
-      if (status === 402) return { ok: false as const, error: "Закончились кредиты Lovable AI" };
+      if (status === 402) return { ok: false as const, error: "Закончились кредиты AI" };
       if (status === 403) return { ok: false as const, error: "AI-шлюз отклонил запрос (403)" };
       return { ok: false as const, error: "Сетевая ошибка" };
     }
@@ -430,6 +424,8 @@ export const republishToTelegram = createServerFn({ method: "POST" })
     if (!expected || data.token !== expected) {
       return { ok: false as const, error: "Неверный пароль" };
     }
+    const blocked = adminRequiresServiceRole();
+    if (blocked) return blocked;
     const { data: post, error } = await supabaseAdmin
       .from("posts")
       .select("id, slug, title, excerpt, tags, cover_image_url, published")
@@ -471,6 +467,8 @@ export const uploadLeadMagnetFile = createServerFn({ method: "POST" })
     if (!expected || data.token !== expected) {
       return { ok: false as const, error: "Неверный пароль" };
     }
+    const blocked = adminRequiresServiceRole();
+    if (blocked) return blocked;
     let bytes: Uint8Array;
     try {
       const bin = atob(data.base64);

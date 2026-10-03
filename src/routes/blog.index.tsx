@@ -52,7 +52,7 @@ export const Route = createFileRoute("/blog/")({
                 "@type": "BlogPosting",
                 headline: p.title,
                 description: p.excerpt,
-                url: `https://neyromarket.com/blog/${p.slug}`,
+                url: `https://neyromarket.com/blog/${encodeURIComponent(p.slug)}`,
                 datePublished: p.published_at,
                 author: { "@type": "Person", name: "Мария Хабарова" },
               })),

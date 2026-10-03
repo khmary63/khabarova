@@ -22,14 +22,27 @@ export const organizationSchema = () => ({
   "@type": "Organization",
   "@id": ORG_ID,
   name: SITE.brand,
+  legalName: "ИП Хабарова Мария Павловна",
   alternateName: ["НейроМаркет | ИИ для бизнеса", "Neyromarket"],
   url: SITE_URL,
   email: SITE.email,
   telephone: SITE.phone,
-  logo: absUrl("/favicon.png"),
-  image: absUrl("/favicon.png"),
+  logo: {
+    "@type": "ImageObject",
+    url: absUrl("/favicon.png"),
+    width: 512,
+    height: 512,
+  },
+  image: absUrl("/og-main.png"),
   founder: { "@id": PERSON_ID },
-  founderName: SITE.expert,
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: SITE.phone,
+    email: SITE.email,
+    contactType: "sales",
+    areaServed: "RU",
+    availableLanguage: "Russian",
+  },
   areaServed: [
     { "@type": "Country", name: "Россия" },
     { "@type": "AdministrativeArea", name: "СНГ" },
@@ -65,7 +78,7 @@ export const personSchema = () => ({
   description:
     "Эксперт и основатель агентства НейроМаркет. Внедряет ИИ-продавцов, нейроворонки и автоматизацию отделов продаж в B2B и малом бизнесе. Самара, работает по всей России и СНГ.",
   url: SITE_URL,
-  image: absUrl("/favicon.png"),
+  image: absUrl("/maria-habarova.jpg"),
   worksFor: { "@id": ORG_ID },
   knowsAbout: [
     "ИИ-продавцы",
@@ -89,6 +102,29 @@ export const websiteSchema = () => ({
   url: SITE_URL,
   inLanguage: "ru-RU",
   publisher: { "@id": ORG_ID },
+});
+
+export const webPageSchema = (opts: {
+  name: string;
+  description: string;
+  path: string;
+}) => ({
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${absUrl(opts.path)}#webpage`,
+  url: absUrl(opts.path),
+  name: opts.name,
+  description: opts.description,
+  inLanguage: "ru-RU",
+  isPartOf: { "@id": WEBSITE_ID },
+  about: { "@id": ORG_ID },
+  primaryImageOfPage: {
+    "@type": "ImageObject",
+    url: absUrl("/og-main.png"),
+    width: 1730,
+    height: 909,
+  },
+  dateModified: "2026-07-27",
 });
 
 export const breadcrumbSchema = (items: Array<{ name: string; path: string }>) => ({

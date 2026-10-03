@@ -4,6 +4,7 @@ import { getSiteSettings } from "@/lib/site-settings.functions";
 import { SECTOR_SLUGS } from "@/lib/roi";
 
 const BASE_URL = "https://neyromarket.com";
+const STATIC_LASTMOD = "2026-07-27";
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
@@ -12,25 +13,25 @@ export const Route = createFileRoute("/sitemap.xml")({
         const settings = await getSiteSettings();
 
         const entries: { path: string; lastmod?: string; changefreq?: string; priority?: string }[] = [
-          { path: "/", changefreq: "weekly", priority: "1.0" },
-          { path: "/msb", changefreq: "monthly", priority: "0.8" },
-          { path: "/b2b", changefreq: "monthly", priority: "0.8" },
-          { path: "/contacts", changefreq: "monthly", priority: "0.6" },
-          { path: "/privacy", changefreq: "yearly", priority: "0.3" },
-          { path: "/roi", changefreq: "monthly", priority: "0.8" },
+          { path: "/", lastmod: STATIC_LASTMOD, changefreq: "weekly", priority: "1.0" },
+          { path: "/msb", lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.8" },
+          { path: "/b2b", lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.8" },
+          { path: "/contacts", lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.6" },
+          { path: "/privacy", lastmod: STATIC_LASTMOD, changefreq: "yearly", priority: "0.3" },
+          { path: "/roi", lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.8" },
         ];
 
         SECTOR_SLUGS.filter((s) => s !== "obshchiy").forEach((s) => {
-          entries.push({ path: `/roi/${s}`, changefreq: "monthly", priority: "0.7" });
+          entries.push({ path: `/roi/${s}`, lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.7" });
         });
         if (settings.apps) {
-          entries.push({ path: "/apps", changefreq: "monthly", priority: "0.7" });
+          entries.push({ path: "/apps", lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.7" });
         }
         if (settings.reviews) {
-          entries.push({ path: "/reviews", changefreq: "monthly", priority: "0.7" });
+          entries.push({ path: "/reviews", lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.7" });
         }
         if (settings.blog) {
-          entries.push({ path: "/blog", changefreq: "daily", priority: "0.9" });
+          entries.push({ path: "/blog", lastmod: STATIC_LASTMOD, changefreq: "daily", priority: "0.9" });
 
           const { data: posts } = await supabaseAdmin
             .from("posts")
@@ -41,7 +42,7 @@ export const Route = createFileRoute("/sitemap.xml")({
 
           (posts ?? []).forEach((p) => {
             entries.push({
-              path: `/blog/${p.slug}`,
+              path: `/blog/${encodeURIComponent(p.slug)}`,
               lastmod: p.updated_at,
               changefreq: "monthly",
               priority: "0.7",

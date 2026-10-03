@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { notifyLeadToTelegram } from "@/lib/telegram.server";
 import { createBookRecord, getUpcomingSlots, resolveServiceAndStaff } from "./yclients.server";
 
 export const getSlots = createServerFn({ method: "GET" }).handler(async () => {
@@ -44,6 +45,12 @@ export const createBooking = createServerFn({ method: "POST" })
         source: data.source,
         ai_summary: data.aiSummary ?? null,
       });
+      await notifyLeadToTelegram({
+        name: data.name,
+        phone: data.phone,
+        source: data.source,
+        extra: `Запись: ${data.datetime}${data.comment ? `\nКомментарий: ${data.comment}` : ""}${data.aiSummary ? `\nИИ: ${data.aiSummary}` : ""}`,
+      });
       return { ok: true as const, recordId: rec.id, service: service.title, datetime: data.datetime };
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
@@ -57,6 +64,12 @@ export const createBooking = createServerFn({ method: "POST" })
         source: data.source,
         ai_summary: data.aiSummary ?? null,
         error_message: msg.slice(0, 1000),
+      });
+      await notifyLeadToTelegram({
+        name: data.name,
+        phone: data.phone,
+        source: data.source,
+        extra: `⚠️ YClients не сработал: ${msg.slice(0, 500)}`,
       });
       return { ok: false as const, error: msg, datetime: data.datetime };
     }

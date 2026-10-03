@@ -1,11 +1,14 @@
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { ArrowRight, Loader2, Check } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { leadSchema, submitLead } from "@/lib/leads";
+import { leadSchema } from "@/lib/leads";
+import { submitLeadFn } from "@/lib/leads.functions";
 import type { Variant } from "@/lib/site";
 
 export function LeadForm({ source }: { source: Variant }) {
+  const submitLead = useServerFn(submitLeadFn);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,7 +23,8 @@ export function LeadForm({ source }: { source: Variant }) {
     }
     setLoading(true);
     try {
-      await submitLead(parsed.data, source);
+      const res = await submitLead({ data: { name: parsed.data.name, phone: parsed.data.phone, source } });
+      if (!res.ok) throw new Error(res.error);
       setDone(true);
       toast.success("Заявка отправлена. Мария свяжется в ближайшие 30 минут.");
       // Yandex.Metrika goal

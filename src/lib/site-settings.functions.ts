@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { adminRequiresServiceRole } from "@/lib/supabase-admin.guard";
 
 export type SiteSettings = { apps: boolean; blog: boolean; reviews: boolean };
 
@@ -38,6 +39,8 @@ export const updateSiteSetting = createServerFn({ method: "POST" })
     if (!expected || data.token !== expected) {
       return { ok: false as const, error: "Неверный пароль" };
     }
+    const blocked = adminRequiresServiceRole();
+    if (blocked) return blocked;
     const { error } = await supabaseAdmin
       .from("site_settings")
       .upsert({ key: data.key, enabled: data.enabled }, { onConflict: "key" });
