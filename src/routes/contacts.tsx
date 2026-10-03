@@ -85,7 +85,7 @@ function ContactsPage() {
         <div className="text-xs uppercase tracking-widest text-muted-foreground">
           Контакты
         </div>
-        <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight md:text-4xl">
+        <h1 className="mt-3 font-display text-2xl font-semibold tracking-tight md:text-3xl">
           Связаться с нами
         </h1>
         <p className="mt-3 text-sm text-muted-foreground">

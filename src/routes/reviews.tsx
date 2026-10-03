@@ -141,7 +141,7 @@ function ReviewsPage() {
             <Star className="h-3 w-3 fill-current" />
             Отзывы клиентов
           </div>
-          <h1 className="font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-foreground md:text-6xl">
+          <h1 className="font-display text-2xl font-bold leading-tight tracking-tight text-foreground md:text-3xl">
             Что говорят{" "}
             <span className="bg-gradient-to-r from-primary to-indigo-400 bg-clip-text text-transparent">
               клиенты
@@ -181,7 +181,7 @@ function ReviewsPage() {
         <section className="group relative">
           <div className="pointer-events-none absolute inset-0 rounded-[2.5rem] bg-primary/20 opacity-0 blur-[80px] transition-opacity duration-700 group-hover:opacity-100" />
           <div className="relative space-y-6 rounded-[2.5rem] border border-white/10 bg-gradient-to-br from-white/10 to-white/[0.02] p-10 text-center md:p-14">
-            <h2 className="font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-foreground md:text-3xl">
               Хотите такой же результат?
             </h2>
             <p className="mx-auto max-w-xl leading-relaxed text-muted-foreground">

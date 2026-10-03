@@ -5,7 +5,6 @@ import { SITE } from "@/lib/site";
 const links = [
   ["/#directions", "Направления"],
   ["/#cases", "Кейсы"],
-  ["/#demo", "Демо"],
   ["/#about", "О Марии"],
   ["/roi", "Калькулятор ROI"],
   ["/apps", "Портфолио"],

@@ -85,7 +85,7 @@ function BlogIndex() {
       <main className="container-page flex-1 py-12">
         <header className="mb-10 max-w-3xl">
           <p className="text-sm uppercase tracking-widest text-primary">Блог</p>
-          <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight md:text-5xl">
+          <h1 className="mt-2 font-display text-2xl font-semibold tracking-tight md:text-3xl">
             ИИ-продавцы, кейсы, автоматизация, вайбкодинг
           </h1>
           <p className="mt-3 whitespace-pre-line text-muted-foreground">

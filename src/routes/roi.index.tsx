@@ -75,7 +75,7 @@ function RoiIndexPage() {
           <div className="text-xs uppercase tracking-widest text-primary">
             Калькулятор ROI
           </div>
-          <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight md:text-4xl">
+          <h1 className="mt-3 font-display text-2xl font-semibold tracking-tight md:text-3xl">
             Узнайте, за сколько окупится ИИ-сотрудник в ваших продажах
           </h1>
           <p className="mt-3 text-sm text-muted-foreground md:text-base">
