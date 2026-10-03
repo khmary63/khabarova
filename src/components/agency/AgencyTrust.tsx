@@ -19,8 +19,8 @@ type Card = {
 };
 const partners: Card[] = [
   {
-    name: "АО «АТОМ формула ИИ»",
-    note: "Информационно-технологическая компания, резидент Сколково",
+    name: "АО «Атом»",
+    note: "IT-компания, резидент Skolkovo",
     href: "https://getatom.ru/start?ref=XXS5GK6E",
     logo: atom,
     referral: true,
