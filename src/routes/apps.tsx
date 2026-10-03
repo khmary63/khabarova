@@ -125,7 +125,7 @@ const services: Service[] = [
 
 function ProjectCard({ project: p }: { project: PortfolioProject }) {
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-4 transition-all duration-500 hover:border-primary/50">
+    <article className="group relative flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-2.5 transition-all sm:p-4 duration-500 hover:border-primary/50">
       <PortfolioGallery
         images={p.images}
         layout={p.layout}

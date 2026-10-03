@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Play, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play, X, ZoomIn, ZoomOut } from "lucide-react";
 import {
   extractYoutubeId,
   getPortfolioMediaKind,
@@ -82,6 +82,7 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
   const list = images.length ? images : [];
   const [index, setIndex] = useState(0);
   const [open, setOpen] = useState(false);
+  const [zoom, setZoom] = useState(false);
   const touchX = useRef<number | null>(null);
 
   const count = list.length;
@@ -97,6 +98,12 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
     },
     [count],
   );
+
+  // On phones a desktop screenshot is unreadable at screen width: open it zoomed (pan with a finger).
+  useEffect(() => {
+    if (!open) return;
+    setZoom(window.innerWidth < 640 && !isMobile && getPortfolioMediaKind(list[index] || "") === "image");
+  }, [open, index, isMobile, list]);
 
   useEffect(() => {
     if (!open) return;
@@ -144,7 +151,7 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
   return (
     <>
       {/* Preview carousel */}
-      <div className="group/gal relative">
+      <div className="group/gal relative" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
         <button
           type="button"
           onClick={() => setOpen(true)}
@@ -167,6 +174,12 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
           <span className="absolute bottom-3 right-3 rounded-full bg-black/60 px-2.5 py-1 text-[10px] font-semibold text-white backdrop-blur">
             {index + 1} / {count}
           </span>
+          <span
+            aria-hidden
+            className="absolute right-3 top-3 rounded-full bg-black/60 p-1.5 text-white backdrop-blur md:hidden"
+          >
+            <ZoomIn className="h-4 w-4" />
+          </span>
         </button>
 
         {count > 1 && (
@@ -175,7 +188,7 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
               type="button"
               onClick={() => go(-1)}
               aria-label="Назад"
-              className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-1.5 text-white opacity-0 backdrop-blur transition-opacity hover:bg-black/70 group-hover/gal:opacity-100"
+              className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-1.5 text-white opacity-100 backdrop-blur transition-opacity hover:bg-black/70 md:opacity-0 md:group-hover/gal:opacity-100"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -183,7 +196,7 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
               type="button"
               onClick={() => go(1)}
               aria-label="Вперёд"
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-1.5 text-white opacity-0 backdrop-blur transition-opacity hover:bg-black/70 group-hover/gal:opacity-100"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-1.5 text-white opacity-100 backdrop-blur transition-opacity hover:bg-black/70 md:opacity-0 md:group-hover/gal:opacity-100"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -194,7 +207,7 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
                   type="button"
                   aria-label={`Экран ${i + 1}`}
                   onClick={() => setIndex(i)}
-                  className={`h-1.5 rounded-full transition-all ${i === index ? "w-5 bg-white" : "w-1.5 bg-white/50"}`}
+                  className={`relative h-1.5 rounded-full transition-all after:absolute after:-inset-2 after:content-[''] ${i === index ? "w-5 bg-white" : "w-1.5 bg-white/50"}`}
                 />
               ))}
             </div>
@@ -223,6 +236,20 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
             {index + 1} / {count}
           </span>
 
+          {!isMobile && currentKind === "image" && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setZoom((z) => !z);
+              }}
+              aria-label={zoom ? "Уменьшить" : "Увеличить"}
+              className="absolute left-4 top-4 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20 sm:hidden"
+            >
+              {zoom ? <ZoomOut className="h-6 w-6" /> : <ZoomIn className="h-6 w-6" />}
+            </button>
+          )}
+
           {count > 1 && (
             <button
               type="button"
@@ -240,10 +267,18 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
           <div
             className="flex max-h-full max-w-full items-center justify-center"
             onClick={(e) => e.stopPropagation()}
-            onTouchStart={onTouchStart}
-            onTouchEnd={onTouchEnd}
+            onTouchStart={zoom ? undefined : onTouchStart}
+            onTouchEnd={zoom ? undefined : onTouchEnd}
           >
-            {isMobile ? (
+            {!isMobile && zoom && currentKind === "image" ? (
+              <div className="max-h-[78vh] max-w-[96vw] overflow-auto rounded-xl bg-black shadow-2xl">
+                <img
+                  src={current}
+                  alt={`${title} — экран ${index + 1}`}
+                  className="h-auto w-[210vw] max-w-none"
+                />
+              </div>
+            ) : isMobile ? (
               <div className="relative overflow-hidden rounded-[2.2rem] border-[6px] border-neutral-800 bg-black shadow-2xl">
                 <MediaFrame
                   src={current}
