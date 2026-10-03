@@ -275,7 +275,8 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
                 <img
                   src={current}
                   alt={`${title} — экран ${index + 1}`}
-                  className="h-auto w-[210vw] max-w-none"
+                  className="h-auto"
+                  style={{ width: "210vw", maxWidth: "none" }}
                 />
               </div>
             ) : isMobile ? (
