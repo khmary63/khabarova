@@ -36,7 +36,9 @@ export function SiteHeader() {
               <span className="h-1.5 w-1.5 rounded-full bg-success" aria-hidden />
               <span>Менеджер на связи: пн–пт, 9:00–18:00 МСК</span>
             </div>
-            <SocialIcons size="sm" trackPrefix="header" />
+            <span className="hidden sm:inline-flex">
+              <SocialIcons size="sm" trackPrefix="header" />
+            </span>
           </div>
         </div>
       </div>

@@ -1393,7 +1393,7 @@
   .nm-quick-tg,
   .nm-thanks-more a,
   .nm-redesign footer a:not([aria-label]),
-  .nm-contacts-page a:not(.agency-button) {
+  .nm-contacts-page main a:not(.agency-button) {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
