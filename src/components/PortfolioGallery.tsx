@@ -271,7 +271,12 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
             onTouchEnd={zoom ? undefined : onTouchEnd}
           >
             {!isMobile && zoom && currentKind === "image" ? (
-              <div className="max-h-[78vh] max-w-[96vw] overflow-auto rounded-xl bg-black shadow-2xl">
+              <div
+                ref={(el) => {
+                  if (el) el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
+                }}
+                className="max-h-[78vh] max-w-[96vw] overflow-auto rounded-xl bg-black shadow-2xl"
+              >
                 <img
                   src={current}
                   alt={`${title} — экран ${index + 1}`}
