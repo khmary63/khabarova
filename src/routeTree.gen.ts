@@ -17,6 +17,7 @@ import { Route as MsbRouteImport } from './routes/msb'
 import { Route as LeadGenerationRouteImport } from './routes/lead-generation'
 import { Route as FactoryRouteImport } from './routes/factory'
 import { Route as ContactsRouteImport } from './routes/contacts'
+import { Route as ChecklistRouteImport } from './routes/checklist'
 import { Route as B2bRouteImport } from './routes/b2b'
 import { Route as AutomationRouteImport } from './routes/automation'
 import { Route as AppsRouteImport } from './routes/apps'
@@ -69,6 +70,11 @@ const FactoryRoute = FactoryRouteImport.update({
 const ContactsRoute = ContactsRouteImport.update({
   id: '/contacts',
   path: '/contacts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChecklistRoute = ChecklistRouteImport.update({
+  id: '/checklist',
+  path: '/checklist',
   getParentRoute: () => rootRouteImport,
 } as any)
 const B2bRoute = B2bRouteImport.update({
@@ -144,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/apps': typeof AppsRoute
   '/automation': typeof AutomationRoute
   '/b2b': typeof B2bRoute
+  '/checklist': typeof ChecklistRoute
   '/contacts': typeof ContactsRoute
   '/factory': typeof FactoryRoute
   '/lead-generation': typeof LeadGenerationRoute
@@ -167,6 +174,7 @@ export interface FileRoutesByTo {
   '/apps': typeof AppsRoute
   '/automation': typeof AutomationRoute
   '/b2b': typeof B2bRoute
+  '/checklist': typeof ChecklistRoute
   '/contacts': typeof ContactsRoute
   '/factory': typeof FactoryRoute
   '/lead-generation': typeof LeadGenerationRoute
@@ -191,6 +199,7 @@ export interface FileRoutesById {
   '/apps': typeof AppsRoute
   '/automation': typeof AutomationRoute
   '/b2b': typeof B2bRoute
+  '/checklist': typeof ChecklistRoute
   '/contacts': typeof ContactsRoute
   '/factory': typeof FactoryRoute
   '/lead-generation': typeof LeadGenerationRoute
@@ -216,6 +225,7 @@ export interface FileRouteTypes {
     | '/apps'
     | '/automation'
     | '/b2b'
+    | '/checklist'
     | '/contacts'
     | '/factory'
     | '/lead-generation'
@@ -239,6 +249,7 @@ export interface FileRouteTypes {
     | '/apps'
     | '/automation'
     | '/b2b'
+    | '/checklist'
     | '/contacts'
     | '/factory'
     | '/lead-generation'
@@ -262,6 +273,7 @@ export interface FileRouteTypes {
     | '/apps'
     | '/automation'
     | '/b2b'
+    | '/checklist'
     | '/contacts'
     | '/factory'
     | '/lead-generation'
@@ -286,6 +298,7 @@ export interface RootRouteChildren {
   AppsRoute: typeof AppsRoute
   AutomationRoute: typeof AutomationRoute
   B2bRoute: typeof B2bRoute
+  ChecklistRoute: typeof ChecklistRoute
   ContactsRoute: typeof ContactsRoute
   FactoryRoute: typeof FactoryRoute
   LeadGenerationRoute: typeof LeadGenerationRoute
@@ -359,6 +372,13 @@ declare module '@tanstack/react-router' {
       path: '/contacts'
       fullPath: '/contacts'
       preLoaderRoute: typeof ContactsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checklist': {
+      id: '/checklist'
+      path: '/checklist'
+      fullPath: '/checklist'
+      preLoaderRoute: typeof ChecklistRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/b2b': {
@@ -462,6 +482,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppsRoute: AppsRoute,
   AutomationRoute: AutomationRoute,
   B2bRoute: B2bRoute,
+  ChecklistRoute: ChecklistRoute,
   ContactsRoute: ContactsRoute,
   FactoryRoute: FactoryRoute,
   LeadGenerationRoute: LeadGenerationRoute,

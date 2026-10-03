@@ -15,16 +15,27 @@ const chips: { id: Direction; label: string }[] = [
 /** Two-field lead form: one step from interest to a conversation. */
 export function AgencyQuickForm({
   direction,
+  initialDirection,
+  task = "",
+  timeline = "",
+  magnet = false,
   id,
   title = "Бесплатный разбор за 30 минут",
   text = "Оставьте имя и телефон — Мария свяжется, чтобы обсудить вашу задачу и предложить первый шаг.",
 }: {
   direction?: Direction;
+  /** Preselected (not locked) direction, e.g. from the quiz. */
+  initialDirection?: Direction;
+  /** Quiz answers, passed to the CRM note. */
+  task?: string;
+  timeline?: string;
+  /** Lead-magnet mode: the visitor asked for the checklist. */
+  magnet?: boolean;
   id?: string;
   title?: string;
   text?: string;
 }) {
-  const [selected, setSelected] = useState<Direction | "">(direction ?? "");
+  const [selected, setSelected] = useState<Direction | "">(direction ?? initialDirection ?? "");
   const [consent, setConsent] = useState(false);
   const [state, setState] = useState<"idle" | "sending">("idle");
   const [error, setError] = useState("");
@@ -50,9 +61,14 @@ export function AgencyQuickForm({
         direction: selected,
         consent,
         website: String(form.get("website") || ""),
-        task: "Быстрая заявка с сайта",
+        task: magnet
+          ? "Запросил чек-лист «Что в бизнесе можно отдать ИИ»"
+          : task
+            ? `Результат диагностики: ${task}`
+            : "Быстрая заявка с сайта",
+        timeline,
       });
-      goToThanks(selected);
+      goToThanks(selected, magnet ? "checklist" : undefined);
     } catch (err) {
       setState("idle");
       setError(err instanceof Error ? err.message : "Отправка не подтверждена.");
@@ -165,7 +181,7 @@ export function AgencyQuickForm({
                 Отправляем…
               </>
             ) : (
-              "Получить бесплатный разбор"
+              magnet ? "Получить чек-лист" : "Получить бесплатный разбор"
             )}
           </button>
           <a

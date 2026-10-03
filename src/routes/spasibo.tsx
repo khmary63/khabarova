@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Check, MessageCircle, Phone, Send } from "lucide-react";
 import { AgencyHeader } from "@/components/agency/AgencyHeader";
@@ -18,7 +18,9 @@ export const Route = createFileRoute("/spasibo")({
 });
 
 function Thanks() {
+  const [magnet, setMagnet] = useState(false);
   useEffect(() => {
+    setMagnet(new URLSearchParams(window.location.search).get("m") === "checklist");
     trackAgency("agency_thanks_view", {
       direction: new URLSearchParams(window.location.search).get("d") || "",
     });
@@ -38,6 +40,15 @@ function Thanks() {
               <li>Мария свяжется с вами по указанному телефону.</li>
               <li>На бесплатной консультации (30 минут) вы определите первый шаг.</li>
             </ol>
+            {magnet && (
+              <a
+                className="agency-button nm-primary nm-thanks-magnet"
+                href="/checklist"
+                onClick={() => trackAgency("agency_checklist_open", { place: "thanks" })}
+              >
+                Открыть чек-лист «Что отдать ИИ»
+              </a>
+            )}
             <p className="agency-small">Хотите ускорить? Напишите — ответим там, где вам удобнее.</p>
             <div className="nm-thanks-actions">
               <a

@@ -6,6 +6,8 @@ import { AgencyHeader } from "./AgencyHeader";
 import { AgencyScene } from "./AgencyHero";
 import { AgencyCases, AgencyFaq, AgencyPortfolio } from "./AgencyPage";
 import { AgencyLeadForm } from "./AgencyLeadForm";
+import { AgencyMagnet } from "./AgencyMagnet";
+import { AgencyNudge } from "./AgencyNudge";
 import { AgencyProcess } from "./AgencyProcess";
 import { AgencyTrust } from "./AgencyTrust";
 import { AgencyQuickForm } from "./AgencyQuickForm";
@@ -226,6 +228,10 @@ export function MultiLanding({ direction }: { direction?: Direction }) {
   const navigate = useNavigate();
   const [paused, setPaused] = useState(false);
   const [motionOn, setMotionOn] = useState(false);
+  const [homeBrief, setHomeBrief] = useState<{ direction?: Direction; task: string; timeline: string }>({
+    task: "",
+    timeline: "",
+  });
   // System "reduce motion": start calm; the play button is an explicit opt-in.
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setPaused(true);
@@ -326,15 +332,32 @@ export function MultiLanding({ direction }: { direction?: Direction }) {
         </Tabs>
         {!direction && (
           <>
-            <AgencyQuickForm id="lead" />
+            <AgencyQuiz
+              onResult={(direction, task, timeline) => setHomeBrief({ direction, task, timeline })}
+            />
+            <AgencyQuickForm
+              key={`${homeBrief.direction}-${homeBrief.task}-${homeBrief.timeline}`}
+              id="lead"
+              initialDirection={homeBrief.direction}
+              task={homeBrief.task}
+              timeline={homeBrief.timeline}
+            />
             <AgencyCases />
             <AgencyTrust />
+            <AgencyMagnet />
             <AgencyProcess />
             <Founder />
           </>
         )}
       </main>
       <SiteFooter hideLocation focused={!!direction} />
+      <AgencyNudge
+        text={
+          direction
+            ? "Остались вопросы по этому направлению? Консультант ответит сразу."
+            : "Не знаете, с чего начать? Расскажите о задаче — консультант подскажет."
+        }
+      />
       <div className="agency-mobile-cta">
         <a
           href={SITE.telegramDm}

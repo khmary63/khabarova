@@ -49,6 +49,6 @@ export async function submitAgencyLead(draft: AgencyLeadDraft) {
   });
 }
 
-export function goToThanks(direction: Direction) {
-  window.location.assign(`/spasibo?d=${direction}`);
+export function goToThanks(direction: Direction, magnet?: "checklist") {
+  window.location.assign(`/spasibo?d=${direction}${magnet ? `&m=${magnet}` : ""}`);
 }
