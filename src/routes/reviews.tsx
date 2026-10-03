@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { SiteHeader } from "@/components/SiteHeader";
+import { AgencyHeader as SiteHeader } from "@/components/agency/AgencyHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
 import { SITE } from "@/lib/site";
@@ -123,7 +123,7 @@ const reviews: Review[] = [
 
 function ReviewsPage() {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background">
+    <div className="agency nm-redesign nm-internal nm-internal-content relative min-h-screen overflow-hidden bg-background">
       <div
         aria-hidden
         className="pointer-events-none absolute -top-[10%] -left-[10%] h-[40%] w-[40%] rounded-full bg-primary/10 blur-[120px]"

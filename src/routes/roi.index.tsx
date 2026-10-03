@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { SiteHeader } from "@/components/SiteHeader";
+import { AgencyHeader as SiteHeader } from "@/components/agency/AgencyHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { RoiQuiz } from "@/components/roi/RoiQuiz";
 import { SECTOR_SLUGS, SECTORS } from "@/lib/roi";
@@ -68,7 +68,7 @@ export const Route = createFileRoute("/roi/")({
 
 function RoiIndexPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="agency nm-redesign nm-internal nm-internal-content flex min-h-screen flex-col bg-background">
       <SiteHeader />
       <main className="flex-1">
         <section className="container-page max-w-3xl py-12 md:py-16">

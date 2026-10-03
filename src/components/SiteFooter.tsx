@@ -2,21 +2,29 @@ import { Link } from "@tanstack/react-router";
 import { SITE } from "@/lib/site";
 import { SocialIcons } from "@/components/SocialIcons";
 
-export function SiteFooter({ hideLocation }: { hideLocation?: boolean }) {
+export function SiteFooter({
+  hideLocation,
+}: {
+  hideLocation?: boolean;
+  focused?: boolean;
+}) {
   return (
     <footer className="border-t border-border bg-surface/40">
       <div
         className={`container-page grid gap-10 py-14 ${hideLocation ? "md:grid-cols-2" : "md:grid-cols-3"}`}
       >
         <div>
-          <div className="font-display text-lg font-semibold tracking-tight">{SITE.brand}</div>
+          <div className="font-display text-lg font-semibold tracking-tight">
+            {SITE.brand}
+          </div>
           <p className="mt-2 text-sm text-muted-foreground">
-            Агентство ИИ-решений: контент, автоматизация бизнеса и лидогенерация. Работаем
-            дистанционно с русскоязычным бизнесом.
+            Работаем дистанционно по всей России и СНГ.
           </p>
         </div>
         <div>
-          <div className="text-xs uppercase tracking-widest text-muted-foreground">Контакты</div>
+          <div className="text-xs uppercase tracking-widest text-muted-foreground">
+            Контакты
+          </div>
           <ul className="mt-3 space-y-2 text-sm">
             <li>
               <a href={SITE.phoneHref} className="hover:text-primary">
@@ -36,7 +44,9 @@ export function SiteFooter({ hideLocation }: { hideLocation?: boolean }) {
         </div>
         {!hideLocation && (
           <div>
-            <div className="text-xs uppercase tracking-widest text-muted-foreground">Где мы</div>
+            <div className="text-xs uppercase tracking-widest text-muted-foreground">
+              Где мы
+            </div>
             <ul className="mt-3 space-y-2 text-sm">
               <li>Дистанционно — вся Россия</li>
             </ul>

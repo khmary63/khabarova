@@ -1,0 +1,19 @@
+# Dedicated main-domain application; Factory and CRM are separate services.
+# Set NM_MAIN_BASE, NM_MAIN_ENV_FILE, NM_MAIN_PORT before docker compose.
+services:
+  neyromarket-main:
+    image: node:22-alpine
+    restart: unless-stopped
+    working_dir: /app/current
+    command: ["node", "server/index.mjs"]
+    env_file: ${NM_MAIN_ENV_FILE:?Set absolute runtime env path}
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOST: 0.0.0.0
+    volumes:
+      - ${NM_MAIN_BASE:?Set dedicated main release directory}:/app:ro
+    ports:
+      - "127.0.0.1:${NM_MAIN_PORT:?Choose unused local port}:3000"
+# If Caddy runs in Docker, attach this service to its observed external network
+# using a local override; proxy to neyromarket-main:3000, not container localhost.

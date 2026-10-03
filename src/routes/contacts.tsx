@@ -1,3 +1,5 @@
+import { AgencyHeader } from "@/components/agency/AgencyHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SITE } from "@/lib/site";
 import { SocialIcons } from "@/components/SocialIcons";
@@ -78,7 +80,7 @@ export const Route = createFileRoute("/contacts")({
 
 function ContactsPage() {
   return (
-    <main className="bg-background">
+    <div className="agency nm-redesign nm-internal nm-internal-content"><AgencyHeader /><main className="bg-background">
       <article className="container-page max-w-3xl py-16">
         <div className="text-xs uppercase tracking-widest text-muted-foreground">
           Контакты
@@ -188,6 +190,6 @@ function ContactsPage() {
           </Link>
         </div>
       </article>
-    </main>
+    </main><SiteFooter /></div>
   );
 }

@@ -2,6 +2,8 @@
 @source "../src";
 @import "tw-animate-css";
 @import "./agency.css";
+@import "./agency-redesign.css";
+@import "./agency-redesign.css";
 
 @custom-variant dark (&:is(.dark *));
 

@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { SiteHeader } from "@/components/SiteHeader";
+import { AgencyHeader as SiteHeader } from "@/components/agency/AgencyHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
 import { SITE } from "@/lib/site";
@@ -78,7 +78,7 @@ const services: Service[] = [
     title: "Сайт за выходные",
     description:
       "Соберу полностью готовый к работе сайт, (мульти)лендинг, интернет-магазин.\nНа выходе — не просто сайт, \nа современный конверсионный маркетинговый инструмент для привлечения трафика.",
-    price: "от 20 000 ₽",
+    price: "от 15 000 ₽",
     bullets: [
       "Дизайн в едином стиле",
       "База данных + авторизация",
@@ -150,7 +150,7 @@ function AppsPage() {
   const mobileProjects = portfolio.filter((p) => p.layout === "mobile");
   return (
 
-    <div className="relative min-h-screen overflow-hidden bg-background">
+    <div className="agency nm-redesign nm-internal nm-internal-content relative min-h-screen overflow-hidden bg-background">
       {/* Ambient glows */}
       <div
         aria-hidden

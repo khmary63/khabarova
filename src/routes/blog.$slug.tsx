@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { SiteHeader } from "@/components/SiteHeader";
+import { AgencyHeader as SiteHeader } from "@/components/agency/AgencyHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
 import { getPostBySlug } from "@/lib/blog.functions";
@@ -87,7 +87,7 @@ export const Route = createFileRoute("/blog/$slug")({
   },
 
   notFoundComponent: () => (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
+    <div className="agency nm-redesign nm-internal nm-internal-content flex min-h-screen flex-col bg-background text-foreground">
       <SiteHeader />
       <main className="container-page flex flex-1 items-center justify-center py-20 text-center">
         <div>
@@ -111,7 +111,7 @@ function PostPage() {
   const { post, html } = Route.useLoaderData();
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
+    <div className="agency nm-redesign nm-internal nm-internal-content flex min-h-screen flex-col bg-background text-foreground">
       <SiteHeader />
       <main className="flex-1">
         <article className="container-page max-w-3xl py-12">

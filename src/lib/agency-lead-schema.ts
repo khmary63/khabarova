@@ -7,7 +7,7 @@ export const agencyLeadSchema = z.object({
     .trim()
     .min(6, "Укажите телефон с кодом страны")
     .max(40)
-    .regex(/^[+\d\s()\-]+$/, "Проверьте номер телефона")
+    .regex(/^[+\d\s()-]+$/, "Проверьте номер телефона")
     .refine((v) => {
       const digits = v.replace(/\D/g, "");
       return digits.length >= 8 && digits.length <= 15;

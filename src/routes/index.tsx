@@ -1,4 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AgencyPage } from "@/components/agency/AgencyPage";
+import { MultiLanding } from "@/components/agency/MultiLanding";
 import { agencyHead } from "@/lib/agency-seo";
-export const Route = createFileRoute("/")({ head: () => agencyHead(), component: AgencyPage });
+export const Route = createFileRoute("/")({ head: () => agencyHead(), component: MultiLanding });

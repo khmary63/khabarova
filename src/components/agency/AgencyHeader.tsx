@@ -1,3 +1,4 @@
+import { useLocation } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { SITE } from "@/lib/site";
@@ -12,7 +13,25 @@ const links = [
   ["/reviews", "Отзывы"],
   ["/contacts", "Контакты"],
 ];
-export function AgencyHeader() {
+export function AgencyHeader({ focused = false }: { focused?: boolean }) {
+  const pathname = useLocation().pathname;
+  const interior = !["/", "/ai-creator", "/automation", "/lead-generation"].includes(pathname);
+  const menuLinks = links.map(([href, label]) => [
+    interior && href.startsWith("/#")
+      ? href === "/#cases"
+        ? "/automation#cases"
+        : href === "/#demo"
+          ? "/automation#demo"
+          : href
+      : href.startsWith("/#")
+        ? focused
+          ? href.slice(1)
+          : href === "/#about"
+            ? "#about"
+            : "#directions"
+        : href,
+    label,
+  ]);
   const [open, setOpen] = useState(false);
   return (
     <header className="agency-header">
@@ -33,7 +52,7 @@ export function AgencyHeader() {
           </span>
         </a>
         <nav className="agency-desktop-nav" aria-label="Основная навигация">
-          {links.map(([href, label]) => (
+          {menuLinks.map(([href, label]) => (
             <a key={href} href={href}>
               {label}
             </a>
@@ -55,7 +74,7 @@ export function AgencyHeader() {
           className="agency-mobile-nav agency-container"
           aria-label="Мобильная навигация"
         >
-          {links.map(([href, label]) => (
+          {menuLinks.map(([href, label]) => (
             <a key={href} href={href} onClick={() => setOpen(false)}>
               {label}
             </a>

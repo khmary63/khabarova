@@ -18,8 +18,10 @@ export function AgencyLeadForm({
   direction = "creative",
   task = "",
   timeline = "",
+  lockedDirection = false,
 }: {
   direction?: Direction;
+  lockedDirection?: boolean;
   task?: string;
   timeline?: string;
 }) {
@@ -63,12 +65,10 @@ export function AgencyLeadForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(parsed.data),
       });
-      const result = await response
-        .json()
-        .catch(() => ({
-          ok: false,
-          message: "Не удалось подтвердить отправку. Напишите нам в чат.",
-        }));
+      const result = await response.json().catch(() => ({
+        ok: false,
+        message: "Не удалось подтвердить отправку. Напишите нам в чат.",
+      }));
       if (!response.ok || !result.ok)
         throw new Error(result.message || "Не удалось подтвердить отправку. Напишите нам в чат.");
       setState("done");
@@ -152,19 +152,27 @@ export function AgencyLeadForm({
                   </label>
                 </RadioGroup>
               </fieldset>
-              <label htmlFor="agency-direction">Направление</label>
-              <Select value={selected} onValueChange={(v) => setSelected(v as Direction)}>
-                <SelectTrigger id="agency-direction" className="agency-select">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {DIRECTIONS.map((d) => (
-                    <SelectItem key={d.id} value={d.id}>
-                      {d.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {lockedDirection ? (
+                <p id="agency-direction" className="nm-form-direction">
+                  {DIRECTIONS.find((d) => d.id === direction)?.label}
+                </p>
+              ) : (
+                <>
+                  <label htmlFor="agency-direction">Направление</label>
+                  <Select value={selected} onValueChange={(v) => setSelected(v as Direction)}>
+                    <SelectTrigger id="agency-direction" className="agency-select">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DIRECTIONS.map((d) => (
+                        <SelectItem key={d.id} value={d.id}>
+                          {d.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </>
+              )}
               <div className="agency-form-row">
                 <div>
                   <label htmlFor="agency-name">Ваше имя</label>

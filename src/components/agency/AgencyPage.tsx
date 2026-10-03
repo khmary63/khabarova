@@ -1,3 +1,6 @@
+import smm from "@/assets/portfolio/smm.webp";
+import outdoor from "@/assets/portfolio/outdoor.webp";
+import aiVideo from "@/assets/portfolio/ai-video.webp";
 import { useState } from "react";
 import { AudioLines, Bot, Check, Code2, Layers3, MessageCircle, Sparkles } from "lucide-react";
 import {
@@ -6,6 +9,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { AgencyHero } from "./AgencyHero";
 import { AgencyHeader } from "./AgencyHeader";
 import { AgencyLeadForm } from "./AgencyLeadForm";
 import { AgencyQuiz } from "./AgencyQuiz";
@@ -16,9 +20,11 @@ import { openEurekaChat } from "@/lib/eureka";
 import { trackAgency } from "@/lib/agency-tracking";
 import maria from "@/assets/maria-about.jpg";
 import agent from "@/assets/portfolio/agent-neyromarket.png";
-import crosspost from "@/assets/portfolio/crosspost.png";
-import webproject from "@/assets/portfolio/rde163.png";
-export const directionIcons = { creative: Sparkles, automation: Bot, leads: AudioLines };
+export const directionIcons = {
+  creative: Sparkles,
+  automation: Bot,
+  leads: AudioLines,
+};
 export function AgencyFaq({ items = AGENCY_FAQ }: { items?: { q: string; a: string }[] }) {
   return (
     <section className="agency-section agency-faq">
@@ -80,7 +86,7 @@ export function AgencyCases() {
     </section>
   );
 }
-export function AgencyPortfolio() {
+export function AgencyPortfolio({ creativeOnly = false }: { creativeOnly?: boolean }) {
   return (
     <section className="agency-section">
       <div className="agency-container">
@@ -99,9 +105,10 @@ export function AgencyPortfolio() {
         </div>
         <div className="agency-portfolio-grid">
           {[
-            [agent, "ИИ-агент НейроМаркет", "Нейросотрудники"],
-            [crosspost, "Кросспостинг", "Контент и автоматизация"],
-            [webproject, "Веб-проект RDE163", "Сайты и приложения"],
+            ...(creativeOnly ? [] : [[agent, "ИИ-агент НейроМаркет", "Нейросотрудники"]]),
+            [smm, "SMM-ведение социальных сетей", "Соцсети и мессенджеры"],
+            [outdoor, "Наружная реклама", "Креативы для бренда"],
+            [aiVideo, "ИИ-видео под ключ", "Видео и анимация"],
           ].map(([src, title, type]) => (
             <a key={title} href="/apps" className="agency-work" data-track="agency_portfolio_open">
               <div>
@@ -172,86 +179,20 @@ export function AgencyDemo() {
   );
 }
 export function AgencyPage() {
-  const [brief, setBrief] = useState<{ direction: Direction; task: string; timeline: string }>({
+  const [brief, setBrief] = useState<{
+    direction: Direction;
+    task: string;
+    timeline: string;
+  }>({
     direction: "creative",
     task: "",
     timeline: "",
   });
   return (
-    <div className="agency">
+    <div className="agency nm-redesign">
       <AgencyHeader />
       <main id="main-content">
-        <section className="agency-hero">
-          <div className="agency-hero-grid" aria-hidden="true" />
-          <div className="agency-container">
-            <div className="agency-hero-top">
-              <p className="agency-eyebrow">НейроМаркет / Агентство ИИ-решений</p>
-              <span className="agency-hero-index">КОНТЕНТ · ПРОЦЕССЫ · КЛИЕНТЫ</span>
-            </div>
-            <div className="agency-hero-layout">
-              <div>
-                <h1>
-                  Больше идей.
-                  <br />
-                  Меньше рутины.
-                  <br />
-                  <span>Ближе к клиентам.</span>
-                </h1>
-                <p className="agency-hero-description">
-                  Создаём контент и сайты, автоматизируем бизнес,
-                  <br className="agency-desktop-break" /> привлекаем новых клиентов с помощью ИИ.
-                </p>
-                <div className="agency-actions">
-                  <a
-                    className="agency-button"
-                    href="#directions"
-                    data-track="agency_choose_direction"
-                  >
-                    Выбрать своё решение
-                  </a>
-                  <a
-                    className="agency-button agency-button-secondary"
-                    href="#lead"
-                    data-track="agency_consultation"
-                  >
-                    Консультация 30 минут
-                  </a>
-                </div>
-              </div>
-              <div className="agency-hero-aside">
-                <div className="agency-system-label">ВАША СЛЕДУЮЩАЯ ТОЧКА РОСТА</div>
-                <div className="agency-system-stack">
-                  {DIRECTIONS.map((d) => {
-                    const Icon = directionIcons[d.id];
-                    return (
-                      <a
-                        key={d.id}
-                        href={d.path}
-                        className={`agency-system-node agency-${d.id}`}
-                        onClick={() => trackAgency("agency_direction_select", { direction: d.id })}
-                      >
-                        <span className="agency-node-number">/{d.number}</span>
-                        <Icon size={25} />
-                        <strong>{d.short}</strong>
-                        <span className="agency-node-line" aria-hidden="true" />
-                      </a>
-                    );
-                  })}
-                </div>
-                <p>
-                  Одна задача или целая система.
-                  <br />
-                  Начнём с того, что нужно сейчас.
-                </p>
-              </div>
-            </div>
-            <div className="agency-hero-foot">
-              <span>Для малого и среднего бизнеса</span>
-              <span>Работаем дистанционно</span>
-              <a href="#about">Руководитель — Мария Хабарова</a>
-            </div>
-          </div>
-        </section>
+        <AgencyHero />
         <section id="directions" className="agency-section">
           <div className="agency-container">
             <div className="agency-section-heading">
@@ -291,7 +232,11 @@ export function AgencyPage() {
                       <a
                         href={d.path}
                         className="agency-button agency-button-secondary"
-                        onClick={() => trackAgency("agency_direction_select", { direction: d.id })}
+                        onClick={() =>
+                          trackAgency("agency_direction_select", {
+                            direction: d.id,
+                          })
+                        }
                       >
                         Изучить направление
                       </a>

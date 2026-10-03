@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { SiteHeader } from "@/components/SiteHeader";
+import { AgencyHeader as SiteHeader } from "@/components/agency/AgencyHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
 import { listPosts, CATEGORY_LABELS, type PostCategory } from "@/lib/blog.functions";
@@ -80,7 +80,7 @@ function BlogIndex() {
   const { tag, category } = Route.useSearch();
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
+    <div className="agency nm-redesign nm-internal nm-internal-content flex min-h-screen flex-col bg-background text-foreground">
       <SiteHeader />
       <main className="container-page flex-1 py-12">
         <header className="mb-10 max-w-3xl">

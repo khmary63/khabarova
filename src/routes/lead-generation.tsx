@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { DirectionPage } from "@/components/agency/DirectionPage";
+import { MultiLanding } from "@/components/agency/MultiLanding";
 import { agencyHead } from "@/lib/agency-seo";
 export const Route = createFileRoute("/lead-generation")({
   head: () => agencyHead("leads"),
-  component: () => <DirectionPage direction="leads" />,
+  component: () => <MultiLanding direction="leads" />,
 });

@@ -3,26 +3,16 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Progress } from "@/components/ui/progress";
 import { DIRECTIONS, directionById, type Direction } from "@/lib/agency";
 import { trackAgency } from "@/lib/agency-tracking";
-const TASKS: Record<Direction, string[]> = {
-  creative: ["Нужен сайт или лендинг", "Нужно вести соцсети", "Нужно больше контента и креативов"],
-  automation: [
-    "Не успеваем отвечать клиентам",
-    "Много ручной работы в CRM",
-    "Нужен бот или связка сервисов",
-  ],
-  leads: [
-    "Нужен новый канал привлечения",
-    "Хочу проверить нишу и регион",
-    "Нужен поток обращений в отдел продаж",
-  ],
-};
+import { QUIZ_TASKS as TASKS, quizRecommendation } from "@/lib/agency-recommendations";
 export function AgencyQuiz({
   onResult,
+  lockedDirection,
 }: {
+  lockedDirection?: Direction;
   onResult: (d: Direction, task: string, timeline: string) => void;
 }) {
-  const [step, setStep] = useState(0);
-  const [direction, setDirection] = useState<Direction>("creative");
+  const [step, setStep] = useState(lockedDirection ? 1 : 0);
+  const [direction, setDirection] = useState<Direction>(lockedDirection || "creative");
   const [task, setTask] = useState("");
   const [timeline, setTimeline] = useState("");
   const heading = useRef<HTMLHeadingElement>(null);
@@ -36,6 +26,7 @@ export function AgencyQuiz({
     requestAnimationFrame(() => heading.current?.focus());
   }
   const d = directionById(direction);
+  const recommendation = quizRecommendation(direction, task, timeline);
   return (
     <section className="agency-section" id="diagnostic">
       <div className="agency-container agency-quiz-grid">
@@ -47,17 +38,21 @@ export function AgencyQuiz({
             <span>Потом технология.</span>
           </h2>
           <p className="agency-copy">
-            Три вопроса — и предварительный маршрут. Рекомендации появятся сразу, без телефона и
-            регистрации.
+            {lockedDirection ? "Два вопроса" : "Три вопроса"} — и предварительный маршрут.
+            Рекомендации появятся сразу, без телефона и регистрации.
           </p>
         </div>
         <div className="agency-quiz-card">
           <div className="agency-quiz-meta">
-            <span>{step === 3 ? "Ваш первый шаг" : `Вопрос ${step + 1} из 3`}</span>
+            <span>
+              {step === 3
+                ? "Ваш первый шаг"
+                : `Вопрос ${lockedDirection ? step : step + 1} из ${lockedDirection ? 2 : 3}`}
+            </span>
             <span>≈ 1 минута</span>
           </div>
           <Progress
-            value={step === 3 ? 100 : ((step + 1) * 100) / 3}
+            value={step === 3 ? 100 : lockedDirection ? (step * 100) / 2 : ((step + 1) * 100) / 3}
             aria-label="Прогресс диагностики"
             className="agency-progress"
           />
@@ -67,7 +62,7 @@ export function AgencyQuiz({
                 "Что сейчас важнее?",
                 "Какая задача ближе?",
                 "Когда планируете начать?",
-                "Предлагаем начать с этого",
+                "Ваш маршрут по выбранной задаче",
               ][step]
             }
           </h3>
@@ -110,7 +105,7 @@ export function AgencyQuiz({
           )}
           {step < 3 ? (
             <div className="agency-quiz-actions">
-              {step > 0 && (
+              {step > (lockedDirection ? 1 : 0) && (
                 <button className="agency-text-button" onClick={() => setStep(step - 1)}>
                   Назад
                 </button>
@@ -128,27 +123,41 @@ export function AgencyQuiz({
               <p className="agency-quiz-choice">
                 {task} · {timeline}
               </p>
-              <p className="agency-copy">
-                {direction === "creative" && task === "Нужно вести соцсети"
-                  ? "Начните с контент-плана и согласования регулярности публикаций. SMM-ведение — от 30 000 ₽ в месяц."
-                  : direction === "creative" && task === "Нужен сайт или лендинг"
-                    ? "Начните с одного предложения, структуры страницы и целевого действия. Сайт или лендинг — от 15 000 ₽."
-                    : direction === "automation"
-                      ? "Выберите один повторяющийся процесс, опишите входные данные и результат. На консультации проверим интеграции и границы автоматизации."
-                      : direction === "leads"
-                        ? "До теста определите регион, предложение и критерий заинтересованного лида. Проверим применимость канала на бесплатной консультации."
-                        : "Начните с трёх форматов для одного продукта и процесса согласования. Для регулярного производства контента рассмотрим контент-завод."}
-              </p>
+              <div className="agency-quiz-recommendation">
+                <h4>{recommendation.title}</h4>
+                <p>{recommendation.solution}</p>
+                <h4>Первые три шага</h4>
+                <ol>
+                  {recommendation.steps.map((text, i) => (
+                    <li key={text}>
+                      <span>{i + 1}</span>
+                      {text}
+                    </li>
+                  ))}
+                </ol>
+                <h4>С учётом вашего срока</h4>
+                <p>{recommendation.pace}</p>
+                <h4>Подготовьте</h4>
+                <p>{recommendation.prepare}</p>
+                <h4>Бюджет</h4>
+                <p>{recommendation.budget}</p>
+                <h4>Как оценить результат</h4>
+                <p>{recommendation.metric}</p>
+                <p className="agency-quiz-note">
+                  Это предварительный маршрут по выбранной задаче и сроку. Точный состав решения
+                  определим после изучения ваших процессов.
+                </p>
+              </div>
               <a className="agency-button" href="#lead" data-track="agency_quiz_to_lead">
                 Разобрать мой случай бесплатно
               </a>
-              <a href={d.path} className="agency-inline-link">
+              <a href={lockedDirection ? "#services" : d.path} className="agency-inline-link">
                 Подробнее о направлении
               </a>
               <button
                 className="agency-text-button"
                 onClick={() => {
-                  setStep(0);
+                  setStep(lockedDirection ? 1 : 0);
                   setTask("");
                   setTimeline("");
                 }}
