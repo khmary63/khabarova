@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Pause, Play } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -212,8 +212,17 @@ function Journey({ direction }: { direction: Direction }) {
 export function MultiLanding({ direction }: { direction?: Direction }) {
   const navigate = useNavigate();
   const [paused, setPaused] = useState(false);
+  const [motionOn, setMotionOn] = useState(false);
+  // System "reduce motion": start calm; the play button is an explicit opt-in.
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setPaused(true);
+  }, []);
+  const toggleMotion = () => {
+    if (paused) setMotionOn(true);
+    setPaused(!paused);
+  };
   return (
-    <div className={`agency nm-redesign nm-multilanding ${paused ? "nm-paused" : ""}`}>
+    <div className={`agency nm-redesign nm-multilanding ${paused ? "nm-paused" : ""} ${motionOn ? "nm-motion-on" : ""}`}>
       <AgencyHeader focused={!!direction} />
       <main id="main-content">
         <Tabs
@@ -270,7 +279,7 @@ export function MultiLanding({ direction }: { direction?: Direction }) {
             </div>
             <div className="nm-art-caption">
               <button
-                onClick={() => setPaused(!paused)}
+                onClick={toggleMotion}
                 aria-label={paused ? "Включить анимацию" : "Остановить анимацию"}
               >
                 {paused ? <Play size={18} /> : <Pause size={18} />}
