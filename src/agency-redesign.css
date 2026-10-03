@@ -1185,3 +1185,10 @@
     flex: 1 1 100%;
   }
 }
+.nm-thanks-card > svg {
+  display: block;
+  margin: 0 auto 14px;
+}
+.nm-thanks-steps {
+  list-style: decimal;
+}
