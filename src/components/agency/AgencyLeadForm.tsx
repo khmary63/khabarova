@@ -10,8 +10,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DIRECTIONS, type Direction, type Intent } from "@/lib/agency";
-import { agencyLeadSchema } from "@/lib/agency-lead-schema";
-import { campaignContext, trackAgency } from "@/lib/agency-tracking";
+import { goToThanks, submitAgencyLead } from "@/lib/agency-submit";
+import { trackAgency } from "@/lib/agency-tracking";
 import { openEurekaChat } from "@/lib/eureka";
 import { SITE } from "@/lib/site";
 export function AgencyLeadForm({
@@ -36,44 +36,22 @@ export function AgencyLeadForm({
     if (state === "sending") return;
     const form = new FormData(event.currentTarget);
     requestId.current ||= crypto.randomUUID();
-    const data = {
-      requestId: requestId.current,
-      name: String(form.get("name") || ""),
-      phone: String(form.get("phone") || ""),
-      company: String(form.get("company") || ""),
-      task: String(form.get("task") || ""),
-      timeline,
-      direction: selected,
-      intent,
-      consent,
-      page: window.location.pathname,
-      campaign: campaignContext(),
-      website: String(form.get("website") || ""),
-    };
-    const parsed = agencyLeadSchema.safeParse(data);
-    if (!parsed.success) {
-      setError(
-        consent ? parsed.error.issues[0].message : "Подтвердите согласие на обработку данных.",
-      );
-      return;
-    }
     setError("");
     setState("sending");
     try {
-      const response = await fetch("/api/agency-lead", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(parsed.data),
+      await submitAgencyLead({
+        requestId: requestId.current,
+        name: String(form.get("name") || ""),
+        phone: String(form.get("phone") || ""),
+        company: String(form.get("company") || ""),
+        task: String(form.get("task") || ""),
+        timeline,
+        direction: selected,
+        intent,
+        consent,
+        website: String(form.get("website") || ""),
       });
-      const result = await response.json().catch(() => ({
-        ok: false,
-        message: "Не удалось подтвердить отправку. Напишите нам в чат.",
-      }));
-      if (!response.ok || !result.ok)
-        throw new Error(result.message || "Не удалось подтвердить отправку. Напишите нам в чат.");
-      setState("done");
-      trackAgency("agency_lead_success", { direction: selected, intent });
-      if (intent === "launch") openEurekaChat();
+      goToThanks(selected);
     } catch (err) {
       setState("idle");
       setError(

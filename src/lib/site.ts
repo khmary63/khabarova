@@ -9,6 +9,8 @@ export const SITE = {
   emailHref: "mailto:neyromarket@yandex.ru",
   vk: "https://vk.com/neyromarket",
   telegram: "https://t.me/neOptimization",
+  // Личные сообщения Марии — главный канал для заявок и быстрых вопросов.
+  telegramDm: "https://t.me/m_khabarova",
   max: "https://max.ru/id631212609521_biz",
   whatsapp: "https://wa.me/79171114030",
   youtube: "https://www.youtube.com/@Maria_Khabarova",

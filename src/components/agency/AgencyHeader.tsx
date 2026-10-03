@@ -2,6 +2,7 @@ import { useLocation } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { SITE } from "@/lib/site";
+import { trackAgency } from "@/lib/agency-tracking";
 const links = [
   ["/roi", "Калькулятор ROI"],
   ["/apps", "Портфолио"],
@@ -54,6 +55,13 @@ export function AgencyHeader({ focused = false }: { focused?: boolean }) {
             </a>
           ))}
         </nav>
+        <a
+          className="agency-header-cta"
+          href={interior ? "/#lead" : "#lead"}
+          onClick={() => trackAgency("agency_cta_click", { place: "header" })}
+        >
+          Бесплатный разбор
+        </a>
         <button
           className="agency-menu-button"
           aria-controls="agency-mobile-menu"

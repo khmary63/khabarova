@@ -993,3 +993,195 @@
   .nm-internal-content h1 {font-size:23px;}
   .nm-internal-content h2 {font-size:19px;}
 }
+
+/* ---- Conversion layer: header CTA, quick form, process, thank-you page ---- */
+.agency-header-cta {
+  margin-left: 18px;
+  white-space: nowrap;
+  background: #ff8b47;
+  color: #07141b;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 11px 18px;
+  border-radius: 8px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.agency-header-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 28px #ff8b4733;
+}
+.nm-hero-contacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+}
+.nm-hero-contacts .agency-button {
+  padding: 13px 20px;
+}
+.nm-quick {
+  background: #0a1522;
+  border-top: 1px solid #1d3140;
+  border-bottom: 1px solid #1d3140;
+}
+.nm-quick-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 56px;
+  align-items: center;
+}
+.nm-quick h2 {
+  font-size: clamp(26px, 2.8vw, 38px);
+}
+.nm-quick-form fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0 0 14px;
+}
+.nm-quick-form legend {
+  font-size: 13px;
+  color: #a9bbc6;
+  margin-bottom: 8px;
+}
+.nm-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.nm-chips button {
+  border: 1px solid #37505d;
+  background: #0f1c2b;
+  color: #edf7fa;
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.nm-chips button:hover {
+  border-color: #6ff5ed;
+}
+.nm-chips button.is-on {
+  border-color: #6ff5ed;
+  background: #6ff5ed1f;
+  color: #6ff5ed;
+}
+.nm-quick-tg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 14px;
+  color: #6ff5ed;
+}
+.nm-quick-tg:hover {
+  text-decoration: underline;
+}
+.nm-process .agency-steps p {
+  color: #a9bbc6;
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 8px 0 0;
+}
+.nm-promise {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 40px;
+}
+.nm-promise > div {
+  background: #0f1c2b;
+  border: 1px solid #37505d;
+  border-radius: 14px;
+  padding: 24px 26px;
+}
+.nm-promise h3 {
+  margin: 0 0 14px;
+}
+.nm-promise ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.nm-promise li {
+  display: flex;
+  gap: 10px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #d8e5eb;
+}
+.nm-promise li svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.nm-promise > div:first-child li svg {
+  color: #6ff5ed;
+}
+.nm-promise > div:last-child li svg {
+  color: #ff8b47;
+}
+.nm-thanks {
+  padding: 70px 0 90px;
+}
+.nm-thanks-card {
+  max-width: 680px;
+  margin: 0 auto;
+  background: #0f1c2b;
+  border: 1px solid #37505d;
+  border-radius: 18px;
+  padding: 40px;
+  text-align: center;
+}
+.nm-thanks-card > svg {
+  color: #6ff5ed;
+}
+.nm-thanks-steps {
+  text-align: left;
+  display: grid;
+  gap: 10px;
+  margin: 22px auto;
+  max-width: 460px;
+  padding-left: 20px;
+  color: #d8e5eb;
+}
+.nm-thanks-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin: 18px 0 24px;
+}
+.nm-thanks-more {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  font-size: 14px;
+}
+@media (max-width: 1100px) {
+  .agency-header-cta {
+    margin-left: 8px;
+    padding: 10px 14px;
+  }
+}
+@media (max-width: 900px) {
+  .nm-quick-grid,
+  .nm-promise {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}
+@media (max-width: 700px) {
+  .agency-header-cta {
+    display: none;
+  }
+  .nm-thanks-card {
+    padding: 26px 20px;
+  }
+  .nm-hero-contacts .agency-button {
+    flex: 1 1 100%;
+  }
+}

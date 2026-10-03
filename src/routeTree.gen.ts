@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SpasiboRouteImport } from './routes/spasibo'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -30,6 +31,11 @@ import { Route as BlogAdminRouteImport } from './routes/blog.admin'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ApiAgencyLeadRouteImport } from './routes/api.agency-lead'
 
+const SpasiboRoute = SpasiboRouteImport.update({
+  id: '/spasibo',
+  path: '/spasibo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -145,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/reviews': typeof ReviewsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/spasibo': typeof SpasiboRoute
   '/api/agency-lead': typeof ApiAgencyLeadRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/admin': typeof BlogAdminRoute
@@ -167,6 +174,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/reviews': typeof ReviewsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/spasibo': typeof SpasiboRoute
   '/api/agency-lead': typeof ApiAgencyLeadRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/admin': typeof BlogAdminRoute
@@ -190,6 +198,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/reviews': typeof ReviewsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/spasibo': typeof SpasiboRoute
   '/api/agency-lead': typeof ApiAgencyLeadRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/admin': typeof BlogAdminRoute
@@ -214,6 +223,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reviews'
     | '/sitemap.xml'
+    | '/spasibo'
     | '/api/agency-lead'
     | '/blog/$slug'
     | '/blog/admin'
@@ -236,6 +246,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reviews'
     | '/sitemap.xml'
+    | '/spasibo'
     | '/api/agency-lead'
     | '/blog/$slug'
     | '/blog/admin'
@@ -258,6 +269,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reviews'
     | '/sitemap.xml'
+    | '/spasibo'
     | '/api/agency-lead'
     | '/blog/$slug'
     | '/blog/admin'
@@ -281,6 +293,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ReviewsRoute: typeof ReviewsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SpasiboRoute: typeof SpasiboRoute
   ApiAgencyLeadRoute: typeof ApiAgencyLeadRoute
   BlogSlugRoute: typeof BlogSlugRoute
   BlogAdminRoute: typeof BlogAdminRoute
@@ -292,6 +305,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/spasibo': {
+      id: '/spasibo'
+      path: '/spasibo'
+      fullPath: '/spasibo'
+      preLoaderRoute: typeof SpasiboRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -449,6 +469,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ReviewsRoute: ReviewsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SpasiboRoute: SpasiboRoute,
   ApiAgencyLeadRoute: ApiAgencyLeadRoute,
   BlogSlugRoute: BlogSlugRoute,
   BlogAdminRoute: BlogAdminRoute,

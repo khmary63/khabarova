@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Pause, Play } from "lucide-react";
+import { Pause, Play, Send } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AgencyHeader } from "./AgencyHeader";
 import { AgencyScene } from "./AgencyHero";
 import { AgencyCases, AgencyFaq, AgencyPortfolio } from "./AgencyPage";
 import { AgencyLeadForm } from "./AgencyLeadForm";
+import { AgencyProcess } from "./AgencyProcess";
+import { AgencyQuickForm } from "./AgencyQuickForm";
 import { AgencyQuiz } from "./AgencyQuiz";
 import { SiteFooter } from "@/components/SiteFooter";
 import { directionById, type Direction } from "@/lib/agency";
 import { trackAgency } from "@/lib/agency-tracking";
+import { SITE } from "@/lib/site";
 import maria from "@/assets/maria-about.jpg";
 const entries = [
   {
@@ -36,6 +39,7 @@ const copy = {
     headline: "Ваш бренд заслуживает внимания.",
     description:
       "Создадим сайт, упакуем соцсети и наладим выпуск контента. От первой идеи до материалов, с которыми можно выходить к аудитории.",
+    h1: "Сайт, SMM и контент для вашего бренда",
     cta: "Разобрать продвижение бренда",
     about:
       "Разберём вашу аудиторию, предложение и каналы продвижения. Определим, какие материалы нужны бизнесу сейчас, и соберём план работ.",
@@ -44,6 +48,7 @@ const copy = {
     headline: "Пусть ИИ работает, а вы - управляйте",
     description:
       "ИИ отвечает на вопросы и передаёт заявки команде. Разрабатываем собственные системы для работы с клиентами, задачами и данными.",
+    h1: "ИИ-сотрудники и боты для вашего бизнеса",
     cta: "Найти, что автоматизировать",
     about:
       "Посмотрим, где команда тратит время и теряет обращения. Выберем процесс для первого внедрения и определим, как оценить результат.",
@@ -52,6 +57,7 @@ const copy = {
     headline: "Найдем для вас потенциальных клиентов",
     description:
       "AtomLead — новая российская рекламная площадка. Стоимость лида в 3–10 раз ниже, чем в Яндекс Директе или VK Рекламе.",
+    h1: "Потенциальные клиенты для вашего бизнеса",
     cta: "Хочу такую систему",
     about:
       "Обсудим вашу нишу, регион, предложение и критерии заинтересованного обращения. До старта согласуем тестовый бюджет и показатели оценки.",
@@ -156,6 +162,11 @@ function Journey({ direction }: { direction: Direction }) {
           </p>
         </div>
       </section>
+      <AgencyQuickForm
+        direction={direction}
+        title="Обсудим вашу задачу бесплатно"
+        text={`Оставьте имя и телефон — разберём задачу и предложим первый шаг. Стартовая цена направления: ${d.price}.`}
+      />
       {direction === "creative" && (
         <div id="cases">
           <AgencyPortfolio creativeOnly />
@@ -243,21 +254,22 @@ export function MultiLanding({ direction }: { direction?: Direction }) {
                 <span>НЕЙРОМАРКЕТ</span> АГЕНТСТВО ИИ-РЕШЕНИЙ
               </div>
               <h1>
-                Бизнес третьего
-                <br />
-                тысячелетия
+                {direction ? (
+                  copy[direction].h1
+                ) : (
+                  <>
+                    Бизнес третьего
+                    <br />
+                    тысячелетия
+                  </>
+                )}
               </h1>
               <p className="nm-main-subtitle">
                 ИИ на службе
                 <br className="nm-mobile-break" /> вашего дела
               </p>
               <div id="directions" className="nm-entry">
-                {!direction && (
-                  <>
-                    <span id="cases" />
-                    <span id="demo" />
-                  </>
-                )}
+                {!direction && <span id="demo" />}
                 <h2>Что вам нужно?</h2>
                 <TabsList className="nm-entry-tabs" aria-label="Выберите задачу бизнеса">
                   {entries.map((e, i) => (
@@ -275,6 +287,24 @@ export function MultiLanding({ direction }: { direction?: Direction }) {
                     ? `Выбрано: ${entries.find((e) => e.id === direction)?.title}. Ваше решение — ниже.`
                     : "Выберите задачу — расскажем подробнее"}
                 </p>
+                <div className="nm-hero-contacts">
+                  <a
+                    className="agency-button nm-primary"
+                    href="#lead"
+                    onClick={() => trackAgency("agency_cta_click", { place: "hero" })}
+                  >
+                    Бесплатный разбор за 30 минут
+                  </a>
+                  <a
+                    className="agency-button agency-button-secondary"
+                    href={SITE.telegramDm}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() => trackAgency("agency_telegram_click", { place: "hero" })}
+                  >
+                    <Send size={16} /> Написать в Telegram
+                  </a>
+                </div>
               </div>
             </div>
             <div className="nm-art-caption">
@@ -292,15 +322,29 @@ export function MultiLanding({ direction }: { direction?: Direction }) {
             </TabsContent>
           ))}
         </Tabs>
-        {!direction && <Founder />}
+        {!direction && (
+          <>
+            <AgencyQuickForm id="lead" />
+            <AgencyCases />
+            <AgencyProcess />
+            <Founder />
+          </>
+        )}
       </main>
       <SiteFooter hideLocation focused={!!direction} />
-      {direction && (
-        <div className="agency-mobile-cta">
-          <a href="#directions">Сменить задачу</a>
-          <a href="#lead">Консультация</a>
-        </div>
-      )}
+      <div className="agency-mobile-cta">
+        <a
+          href={SITE.telegramDm}
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => trackAgency("agency_telegram_click", { place: "sticky" })}
+        >
+          Написать в Telegram
+        </a>
+        <a href="#lead" onClick={() => trackAgency("agency_cta_click", { place: "sticky" })}>
+          Бесплатный разбор
+        </a>
+      </div>
     </div>
   );
 }
