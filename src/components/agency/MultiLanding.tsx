@@ -7,6 +7,7 @@ import { AgencyScene } from "./AgencyHero";
 import { AgencyCases, AgencyFaq, AgencyPortfolio } from "./AgencyPage";
 import { AgencyLeadForm } from "./AgencyLeadForm";
 import { AgencyProcess } from "./AgencyProcess";
+import { AgencyTrust } from "./AgencyTrust";
 import { AgencyQuickForm } from "./AgencyQuickForm";
 import { AgencyQuiz } from "./AgencyQuiz";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -210,6 +211,7 @@ function Journey({ direction }: { direction: Direction }) {
         onResult={(_, task, timeline) => setBrief({ task, timeline })}
       />
       <Founder direction={direction} />
+      <AgencyTrust />
       <AgencyFaq items={d.faq} />
       <AgencyLeadForm
         key={`${direction}-${brief.task}-${brief.timeline}`}
@@ -326,6 +328,7 @@ export function MultiLanding({ direction }: { direction?: Direction }) {
           <>
             <AgencyQuickForm id="lead" />
             <AgencyCases />
+            <AgencyTrust />
             <AgencyProcess />
             <Founder />
           </>
