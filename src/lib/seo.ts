@@ -23,6 +23,7 @@ export const organizationSchema = () => ({
   "@type": "Organization",
   "@id": ORG_ID,
   name: SITE.brand,
+  legalName: "ИП Хабарова Мария Павловна",
   alternateName: ["НейроМаркет | ИИ для бизнеса", "Neyromarket"],
   url: SITE_URL,
   email: SITE.email,
@@ -30,6 +31,14 @@ export const organizationSchema = () => ({
   logo: absUrl("/agency-brand.webp"),
   image: absUrl("/favicon.png"),
   founder: { "@id": PERSON_ID },
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: SITE.phone,
+    email: SITE.email,
+    contactType: "sales",
+    areaServed: "RU",
+    availableLanguage: "Russian",
+  },
   areaServed: [
     { "@type": "Country", name: "Россия" },
     { "@type": "AdministrativeArea", name: "СНГ" },
@@ -92,6 +101,29 @@ export const websiteSchema = () => ({
   url: SITE_URL,
   inLanguage: "ru-RU",
   publisher: { "@id": ORG_ID },
+});
+
+export const webPageSchema = (opts: {
+  name: string;
+  description: string;
+  path: string;
+}) => ({
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${absUrl(opts.path)}#webpage`,
+  url: absUrl(opts.path),
+  name: opts.name,
+  description: opts.description,
+  inLanguage: "ru-RU",
+  isPartOf: { "@id": WEBSITE_ID },
+  about: { "@id": ORG_ID },
+  primaryImageOfPage: {
+    "@type": "ImageObject",
+    url: absUrl("/og-main.png"),
+    width: 1730,
+    height: 909,
+  },
+  dateModified: "2026-07-27",
 });
 
 export const breadcrumbSchema = (items: Array<{ name: string; path: string }>) => ({

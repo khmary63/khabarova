@@ -19,7 +19,7 @@ import type { VariantConfig } from "@/lib/site";
 
 export function LandingPage({ config }: { config: VariantConfig }) {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="landing-motion min-h-screen bg-background">
       <SiteHeader />
       <main>
         <Hero config={config} onOpenChat={openEurekaChat} />

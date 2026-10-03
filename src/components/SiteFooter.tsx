@@ -59,6 +59,12 @@ export function SiteFooter({
             © {new Date().getFullYear()} {SITE.brand}. {SITE.expert}.
           </div>
           <div className="flex flex-wrap items-center gap-3">
+            <a
+              href="https://noya.neyromarket.com/"
+              className="hover:text-primary"
+            >
+              Создать ИИ-сотрудника в Noya
+            </a>
             <Link to="/privacy" className="hover:text-primary">
               Политика конфиденциальности
             </Link>

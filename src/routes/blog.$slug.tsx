@@ -25,7 +25,7 @@ export const Route = createFileRoute("/blog/$slug")({
     if (!loaderData) return { meta: [{ title: "Статья" }] };
     const { post, faqs, words } = loaderData;
     const desc = post.excerpt || post.title;
-    const url = `https://neyromarket.com/blog/${params.slug}`;
+    const url = `https://neyromarket.com/blog/${encodeURIComponent(params.slug)}`;
     const articleSchema: Record<string, unknown> = {
       "@context": "https://schema.org",
       "@type": "BlogPosting",
@@ -109,6 +109,11 @@ export const Route = createFileRoute("/blog/$slug")({
 
 function PostPage() {
   const { post, html } = Route.useLoaderData();
+  // У страницы уже есть основной заголовок. Понижаем H1 из старого
+  // импортированного контента до H2, чтобы на странице оставался один H1.
+  const articleHtml = html
+    .replace(/<h1(\s[^>]*)?>/gi, "<h2$1>")
+    .replace(/<\/h1>/gi, "</h2>");
 
   return (
     <div className="agency nm-redesign nm-internal nm-internal-content flex min-h-screen flex-col bg-background text-foreground">
@@ -157,7 +162,7 @@ function PostPage() {
           )}
           <div
             className="prose-blog mt-10"
-            dangerouslySetInnerHTML={{ __html: html }}
+            dangerouslySetInnerHTML={{ __html: articleHtml }}
           />
           {post.lead_magnet_enabled && post.lead_magnet_title && (
             <LeadMagnetForm

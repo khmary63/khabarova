@@ -3,7 +3,7 @@
 @import "tw-animate-css";
 @import "./agency.css";
 @import "./agency-redesign.css";
-@import "./agency-redesign.css";
+@import "./animations.css";
 
 @custom-variant dark (&:is(.dark *));
 

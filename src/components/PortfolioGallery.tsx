@@ -1,25 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Play, X } from "lucide-react";
-
-function getYouTubeVideoId(url: string) {
-  try {
-    const parsed = new URL(url);
-    const host = parsed.hostname.replace(/^www\./, "");
-    if (host === "youtu.be") return parsed.pathname.split("/").filter(Boolean)[0] || null;
-    if (host === "youtube.com" || host === "m.youtube.com") {
-      if (parsed.pathname === "/watch") return parsed.searchParams.get("v");
-      const match = parsed.pathname.match(/^\/(?:shorts|embed)\/([^/?#]+)/);
-      return match?.[1] || null;
-    }
-  } catch {
-    return null;
-  }
-  return null;
-}
-
-function isDirectVideo(url: string) {
-  return /\.(mp4|webm|mov|m4v)(\?|$)/i.test(url);
-}
+import {
+  extractYoutubeId,
+  getPortfolioMediaKind,
+  youtubeEmbedUrl,
+  youtubeThumbnailUrl,
+} from "@/lib/portfolio-media";
 
 type Props = {
   images: string[];
@@ -27,6 +13,70 @@ type Props = {
   title: string;
   tag?: string;
 };
+
+function MediaFrame({
+  src,
+  title,
+  alt,
+  className,
+  mode,
+}: {
+  src: string;
+  title: string;
+  alt: string;
+  className: string;
+  mode: "preview" | "lightbox";
+}) {
+  const kind = getPortfolioMediaKind(src);
+  const ytId = extractYoutubeId(src);
+
+  if (kind === "youtube" && ytId) {
+    if (mode === "preview") {
+      return (
+        <div className={`relative ${className}`}>
+          <img
+            src={youtubeThumbnailUrl(ytId)}
+            alt={alt}
+            className="h-full w-full object-cover"
+            loading="lazy"
+          />
+          <span className="absolute inset-0 flex items-center justify-center bg-black/35">
+            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-black/70 text-white shadow-lg">
+              <Play className="h-7 w-7 fill-current pl-0.5" />
+            </span>
+          </span>
+        </div>
+      );
+    }
+    return (
+      <iframe
+        src={youtubeEmbedUrl(ytId, { autoplay: true })}
+        title={title}
+        className={className}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowFullScreen
+        referrerPolicy="strict-origin-when-cross-origin"
+      />
+    );
+  }
+
+  if (kind === "file-video") {
+    return (
+      <video
+        src={src}
+        className={className}
+        muted={mode === "preview"}
+        loop={mode === "preview"}
+        autoPlay
+        controls={mode === "lightbox"}
+        playsInline
+        preload="auto"
+      />
+    );
+  }
+
+  return <img src={src} alt={alt} className={className} loading={mode === "preview" ? "lazy" : undefined} />;
+}
 
 export function PortfolioGallery({ images, layout = "web", title, tag }: Props) {
   const list = images.length ? images : [];
@@ -37,6 +87,8 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
   const count = list.length;
   const isMobile = layout === "mobile";
   const aspect = isMobile ? "aspect-[9/16]" : "aspect-[16/10]";
+  const current = list[index] || "";
+  const currentKind = getPortfolioMediaKind(current);
 
   const go = useCallback(
     (dir: number) => {
@@ -64,8 +116,10 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
 
   if (count === 0) {
     return (
-      <div className={`flex ${aspect} w-full items-center justify-center rounded-2xl bg-neutral-900 text-xs text-muted-foreground`}>
-        Нет изображений
+      <div
+        className={`flex ${aspect} w-full items-center justify-center rounded-2xl bg-neutral-900 text-xs text-muted-foreground`}
+      >
+        Нет медиа
       </div>
     );
   }
@@ -80,6 +134,13 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
     touchX.current = null;
   };
 
+  const mediaClass = `h-full w-full ${isMobile ? "object-contain" : "object-cover object-top"}`;
+  const lightboxMediaClass = isMobile
+    ? "max-h-[82vh] w-auto min-w-[min(70vw,320px)] rounded-[1.7rem] object-contain"
+    : currentKind === "youtube"
+      ? "aspect-video h-auto max-h-[85vh] w-[min(92vw,960px)] rounded-xl bg-black shadow-2xl"
+      : "max-h-[85vh] max-w-[92vw] rounded-xl object-contain shadow-2xl";
+
   return (
     <>
       {/* Preview carousel */}
@@ -90,36 +151,13 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
           className={`relative block ${aspect} w-full overflow-hidden rounded-2xl bg-neutral-900`}
           aria-label={`Открыть галерею: ${title}`}
         >
-          {getYouTubeVideoId(list[index]) ? (
-            <>
-              <img
-                src={`https://i.ytimg.com/vi/${getYouTubeVideoId(list[index])}/hqdefault.jpg`}
-                alt={`${title} — видео`}
-                className="h-full w-full object-cover"
-                loading="lazy"
-              />
-              <span className="pointer-events-none absolute left-1/2 top-1/2 z-10 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/70 text-white backdrop-blur">
-                <Play className="ml-1 h-7 w-7 fill-current" />
-              </span>
-            </>
-          ) : isDirectVideo(list[index]) ? (
-            <video
-              src={list[index]}
-              className={`h-full w-full ${isMobile ? "object-contain" : "object-cover object-top"}`}
-              muted
-              loop
-              autoPlay
-              playsInline
-              preload="metadata"
-            />
-          ) : (
-            <img
-              src={list[index]}
-              alt={`${title} — экран ${index + 1}`}
-              className={`h-full w-full ${isMobile ? "object-contain" : "object-cover object-top"} transition-transform duration-500 group-hover/gal:scale-[1.02]`}
-              loading="lazy"
-            />
-          )}
+          <MediaFrame
+            src={current}
+            title={`${title} — видео`}
+            alt={`${title} — экран ${index + 1}`}
+            className={`${mediaClass}${currentKind === "image" ? " transition-transform duration-500 group-hover/gal:scale-[1.02]" : ""}`}
+            mode="preview"
+          />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
           {tag && (
             <span className="absolute left-3 top-3 rounded-full bg-black/60 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur">
@@ -205,51 +243,23 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
           >
-            {getYouTubeVideoId(list[index]) ? (
-              <div
-                className={`w-[min(92vw,900px)] overflow-hidden rounded-xl bg-black shadow-2xl ${
-                  isMobile ? "aspect-[9/16] max-h-[85vh] max-w-[48vh]" : "aspect-video"
-                }`}
-              >
-                <iframe
-                  src={`https://www.youtube-nocookie.com/embed/${getYouTubeVideoId(list[index])}?autoplay=1&rel=0`}
+            {isMobile ? (
+              <div className="relative overflow-hidden rounded-[2.2rem] border-[6px] border-neutral-800 bg-black shadow-2xl">
+                <MediaFrame
+                  src={current}
                   title={`${title} — видео`}
-                  className="h-full w-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
+                  alt={`${title} — экран ${index + 1}`}
+                  className={lightboxMediaClass}
+                  mode="lightbox"
                 />
               </div>
-            ) : isMobile ? (
-              <div className="relative rounded-[2.2rem] border-[6px] border-neutral-800 bg-black shadow-2xl">
-                {isDirectVideo(list[index]) ? (
-                  <video
-                    src={list[index]}
-                    className="max-h-[82vh] w-auto rounded-[1.7rem] object-contain"
-                    controls
-                    autoPlay
-                    playsInline
-                  />
-                ) : (
-                  <img
-                    src={list[index]}
-                    alt={`${title} — экран ${index + 1}`}
-                    className="max-h-[82vh] w-auto rounded-[1.7rem] object-contain"
-                  />
-                )}
-              </div>
-            ) : isDirectVideo(list[index]) ? (
-              <video
-                src={list[index]}
-                className="max-h-[85vh] max-w-[92vw] rounded-xl object-contain shadow-2xl"
-                controls
-                autoPlay
-                playsInline
-              />
             ) : (
-              <img
-                src={list[index]}
+              <MediaFrame
+                src={current}
+                title={`${title} — видео`}
                 alt={`${title} — экран ${index + 1}`}
-                className="max-h-[85vh] max-w-[92vw] rounded-xl object-contain shadow-2xl"
+                className={lightboxMediaClass}
+                mode="lightbox"
               />
             )}
           </div>

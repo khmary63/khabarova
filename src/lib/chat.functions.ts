@@ -1,5 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { getAiChatCompletionsUrl, getAiConfig } from "@/lib/ai.server";
+import { notifyLeadToTelegram } from "@/lib/telegram.server";
 import { getUpcomingSlots } from "./yclients.server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { createBookRecord, resolveServiceAndStaff } from "./yclients.server";
@@ -83,6 +85,12 @@ async function callTool(name: string, args: Record<string, unknown>): Promise<un
         name: clientName, phone, datetime, yclients_record_id: rec.id,
         status: "confirmed", source: "ai_chat", ai_summary: summary ?? null,
       });
+      await notifyLeadToTelegram({
+        name: clientName,
+        phone,
+        source: "ai_chat",
+        extra: `Запись: ${datetime}${summary ? `\nИИ: ${summary}` : ""}`,
+      });
       return { ok: true, recordId: rec.id, service: service.title };
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
@@ -90,6 +98,12 @@ async function callTool(name: string, args: Record<string, unknown>): Promise<un
       await supabaseAdmin.from("bookings").insert({
         name: clientName, phone, datetime, status: "failed",
         source: "ai_chat", ai_summary: summary ?? null, error_message: msg.slice(0, 1000),
+      });
+      await notifyLeadToTelegram({
+        name: clientName,
+        phone,
+        source: "ai_chat",
+        extra: `⚠️ Запись не создана: ${msg.slice(0, 500)}`,
       });
       return { ok: false, error: msg, fallback: "saved_as_lead" };
     }
@@ -100,8 +114,8 @@ async function callTool(name: string, args: Record<string, unknown>): Promise<un
 export const aiChat = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => inputSchema.parse(d))
   .handler(async ({ data }) => {
-    const apiKey = process.env.LOVABLE_API_KEY;
-    if (!apiKey) return { reply: "ИИ временно недоступен. Оставьте заявку формой ниже — Мария свяжется в течение 30 минут.", error: "no_key" };
+    const ai = getAiConfig();
+    if (!ai) return { reply: "ИИ временно недоступен. Оставьте заявку формой ниже — Мария свяжется в течение 30 минут.", error: "no_key" };
 
     const conv: AnyMsg[] = [
       { role: "system", content: SYSTEM_PROMPT },
@@ -110,10 +124,10 @@ export const aiChat = createServerFn({ method: "POST" })
 
     // tool loop, max 4 итерации
     for (let i = 0; i < 4; i++) {
-      const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      const res = await fetch(getAiChatCompletionsUrl(), {
         method: "POST",
-        headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "google/gemini-2.5-flash", messages: conv, tools, tool_choice: "auto" }),
+        headers: { Authorization: `Bearer ${ai.apiKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ model: ai.model, messages: conv, tools, tool_choice: "auto" }),
       });
 
       if (res.status === 429) return { reply: "Слишком много запросов — попробуйте через минуту.", error: "rate_limit" };
