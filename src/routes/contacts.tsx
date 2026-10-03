@@ -80,7 +80,7 @@ export const Route = createFileRoute("/contacts")({
 
 function ContactsPage() {
   return (
-    <div className="agency nm-redesign nm-internal nm-internal-content"><AgencyHeader /><main className="bg-background">
+    <div className="agency nm-redesign nm-internal nm-internal-content nm-contacts-page"><AgencyHeader /><main className="bg-background">
       <article className="container-page max-w-3xl py-16">
         <div className="text-xs uppercase tracking-widest text-muted-foreground">
           Контакты

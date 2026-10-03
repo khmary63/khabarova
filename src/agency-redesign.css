@@ -1372,3 +1372,48 @@
   height: 100%;
   object-fit: cover;
 }
+
+/* Phone usability: no iOS focus-zoom, comfortable tap targets, readable labels */
+@media (max-width: 700px) {
+  .agency input:not([type="checkbox"]):not([type="radio"]),
+  .agency textarea,
+  .agency select,
+  .agency [role="combobox"] {
+    font-size: 16px;
+  }
+  .agency-consent [role="checkbox"] {
+    position: relative;
+  }
+  .agency-consent [role="checkbox"]::after {
+    content: "";
+    position: absolute;
+    inset: -14px;
+  }
+  .agency-inline-link,
+  .nm-quick-tg,
+  .nm-thanks-more a,
+  .nm-redesign footer a:not([aria-label]),
+  .nm-contacts-page a:not(.agency-button) {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .agency-eyebrow,
+  .nm-kicker,
+  .nm-kicker span,
+  .agency-brand small {
+    font-size: 12px;
+  }
+  .nm-internal-content [class*="bg-primary/10"] {
+    font-size: 12px;
+  }
+  .agency-mobile-nav a:last-child {
+    grid-column: 1 / -1;
+    background: #ff8b47;
+    color: #07141b;
+    font-weight: 700;
+    border-radius: 8px;
+    text-align: center;
+    justify-content: center;
+  }
+}
