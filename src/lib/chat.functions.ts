@@ -81,10 +81,6 @@ async function callTool(name: string, args: Record<string, unknown>): Promise<un
     try {
       const { service, staff } = await resolveServiceAndStaff();
       const rec = await createBookRecord({ phone, fullname: clientName, comment: summary, serviceId: service.id, staffId: staff.id, datetime });
-      await supabaseAdmin.from("bookings").insert({
-        name: clientName, phone, datetime, yclients_record_id: rec.id,
-        status: "confirmed", source: "ai_chat", ai_summary: summary ?? null,
-      });
       await notifyLeadToMax({
         name: clientName,
         phone,
@@ -95,10 +91,6 @@ async function callTool(name: string, args: Record<string, unknown>): Promise<un
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       // Fallback: всё равно сохраняем заявку, чтобы Мария связалась вручную
-      await supabaseAdmin.from("bookings").insert({
-        name: clientName, phone, datetime, status: "failed",
-        source: "ai_chat", ai_summary: summary ?? null, error_message: msg.slice(0, 1000),
-      });
       await notifyLeadToMax({
         name: clientName,
         phone,

@@ -16,6 +16,7 @@ export function LeadMagnetForm({ slug, title, description, buttonLabel }: Props)
   const submit = useServerFn(submitLeadMagnet);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [consent, setConsent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [filename, setFilename] = useState<string>("lead-magnet.pdf");
@@ -30,9 +31,13 @@ export function LeadMagnetForm({ slug, title, description, buttonLabel }: Props)
       toast.error("Введите телефон");
       return;
     }
+    if (!consent) {
+      toast.error("Подтвердите согласие на обработку данных");
+      return;
+    }
     setLoading(true);
     try {
-      const res = await submit({ data: { slug, name: name.trim(), phone: phone.trim() } });
+      const res = await submit({ data: { slug, name: name.trim(), phone: phone.trim(), consent: true } });
       if (!res.ok) {
         toast.error(res.error || "Не удалось отправить");
         return;
@@ -106,6 +111,25 @@ export function LeadMagnetForm({ slug, title, description, buttonLabel }: Props)
             placeholder="+7 ___ ___ __ __"
             className="rounded-lg border border-border bg-background px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30"
           />
+          <label className="sm:col-span-2 flex items-start gap-3 text-xs text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={consent}
+              onChange={(e) => setConsent(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+            />
+            <span>
+              Даю{" "}
+              <a href="/consent" target="_blank" rel="noreferrer" className="underline hover:text-primary">
+                согласие на обработку персональных данных
+              </a>{" "}
+              и ознакомлен(а) с{" "}
+              <a href="/privacy" target="_blank" rel="noreferrer" className="underline hover:text-primary">
+                политикой конфиденциальности
+              </a>
+              .
+            </span>
+          </label>
           <button
             type="submit"
             disabled={loading}
@@ -120,13 +144,6 @@ export function LeadMagnetForm({ slug, title, description, buttonLabel }: Props)
               </>
             )}
           </button>
-          <p className="sm:col-span-2 text-[11px] text-muted-foreground">
-            Нажимая кнопку, вы соглашаетесь на{" "}
-            <Link to="/privacy" className="underline hover:text-primary">
-              обработку персональных данных
-            </Link>
-            .
-          </p>
         </form>
       )}
     </aside>

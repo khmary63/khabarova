@@ -14,25 +14,7 @@ export const submitLeadFn = createServerFn({ method: "POST" })
       })
       .parse(d),
   )
-  .handler(async ({ data }) => {
-    const { error } = await supabaseAdmin.from("leads").insert({
-      name: data.name,
-      phone: data.phone,
-      source: data.source,
-    });
-    if (error) {
-      console.error("[submitLeadFn]", error);
-      return { ok: false as const, error: error.message };
-    }
-
-    const max = await notifyLeadToMax({
-      name: data.name,
-      phone: data.phone,
-      source: data.source,
-    });
-    if (!max.ok) {
-      console.error("[submitLeadFn] max notify failed:", max.error);
-    }
-
-    return { ok: true as const, notified: max.ok, notifyError: max.ok ? undefined : max.error };
+  .handler(async () => {
+    // The old landing forms are retired; nothing is stored in Supabase any more.
+    return { ok: false as const, error: "Эта форма больше не принимает заявки. Напишите нам: neyromarket.com" };
   });

@@ -66,6 +66,20 @@ function notifyMax(data: AgencyLeadInput) {
     })
     .catch(() => console.warn("[agency-lead] max notification threw"));
 }
+/** Posts any lead to the owner's CRM. Resolves only when the CRM confirms (ok:true). */
+export async function postLeadToCrm(body: Record<string, unknown>) {
+  const token = process.env.CRM_WEBHOOK_TOKEN;
+  if (!token) throw new Error("crm_not_configured");
+  const response = await fetch(CRM_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(12000),
+    redirect: "error",
+  });
+  const result = await response.json().catch(() => null);
+  if (!response.ok || result?.ok !== true) throw new Error("crm_delivery_failed");
+}
 export async function deliverAgencyLead(data: AgencyLeadInput) {
   if (data.website) throw new Error("invalid_request");
   const token = process.env.CRM_WEBHOOK_TOKEN;

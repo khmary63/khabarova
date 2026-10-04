@@ -162,9 +162,13 @@ export function AgencyQuickForm({
               onCheckedChange={(v) => setConsent(v === true)}
             />
             <label htmlFor={`${id ?? "q"}-consent`}>
-              Согласен на обработку данных для ответа на заявку согласно{" "}
+              Даю{" "}
+              <a href="/consent" target="_blank" rel="noreferrer">
+                согласие на обработку персональных данных
+              </a>{" "}
+              и ознакомлен(а) с{" "}
               <a href="/privacy" target="_blank" rel="noreferrer">
-                политике конфиденциальности
+                политикой конфиденциальности
               </a>
               .
             </label>

@@ -5,6 +5,8 @@ import { createAiProvider, getAiConfig } from "@/lib/ai.server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { adminRequiresServiceRole } from "@/lib/supabase-admin.guard";
 import { postBlogToTelegram } from "@/lib/telegram.server";
+import { postLeadToCrm } from "@/lib/agency-crm.server";
+import { notifyLeadToMax } from "@/lib/max.server";
 
 
 export type PostCategory = "ai" | "marketing" | "education";
@@ -503,6 +505,7 @@ const submitMagnetSchema = z.object({
     .min(3)
     .max(50)
     .regex(/^[+\d\s()\-]+$/, "Только цифры, пробелы и + ( ) -"),
+  consent: z.literal(true, { errorMap: () => ({ message: "Нужно согласие на обработку данных" }) }),
 });
 
 export const submitLeadMagnet = createServerFn({ method: "POST" })
@@ -521,19 +524,31 @@ export const submitLeadMagnet = createServerFn({ method: "POST" })
       return { ok: false as const, error: "Лид-магнит недоступен" };
     }
 
-    const { error: insErr } = await supabaseAdmin
-      .from("lead_magnet_submissions")
-      .insert({
-        post_id: post.id,
-        post_slug: post.slug,
-        magnet_title: post.lead_magnet_title,
-        name: data.name,
+    // Personal data goes to the owner's CRM only; nothing is stored in Supabase.
+    try {
+      await postLeadToCrm({
+        title: `Материал из блога · ${post.lead_magnet_title || post.slug}`,
+        contactName: data.name,
         phone: data.phone,
+        source: "neyromarket.com",
+        amount: 0,
+        tags: ["Сайт", "Блог", "Лид-магнит"],
+        note: [
+          `Статья: /blog/${post.slug}`,
+          `Материал: ${post.lead_magnet_title || post.lead_magnet_file_name || "—"}`,
+          `Согласие на обработку данных: получено ${new Date().toISOString()}; политика /privacy, согласие /consent`,
+        ].join("\n"),
       });
-    if (insErr) {
-      console.error("[submitLeadMagnet] insert", insErr);
-      return { ok: false as const, error: "Не удалось сохранить заявку" };
+    } catch (e) {
+      console.error("[submitLeadMagnet] crm", e instanceof Error ? e.message : "error");
+      return { ok: false as const, error: "Не удалось отправить заявку. Попробуйте ещё раз или напишите нам." };
     }
+    void notifyLeadToMax({
+      name: data.name,
+      phone: data.phone,
+      source: "lead_magnet",
+      extra: `Материал: ${post.lead_magnet_title || post.slug}\nСтатья: /blog/${post.slug}`,
+    }).catch(() => undefined);
 
     const { data: signed, error: signErr } = await supabaseAdmin.storage
       .from("lead-magnets")

@@ -68,6 +68,9 @@ export function SiteFooter({
             <Link to="/privacy" className="hover:text-primary">
               Политика конфиденциальности
             </Link>
+            <Link to="/consent" className="hover:text-primary">
+              Согласие на обработку данных
+            </Link>
           </div>
         </div>
       </div>
