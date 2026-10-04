@@ -22,8 +22,6 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/ai-creator", lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.9" },
           { path: "/automation", lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.9" },
           { path: "/lead-generation", lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.9" },
-          { path: "/msb", lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.8" },
-          { path: "/b2b", lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.8" },
           { path: "/contacts", lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.6" },
           { path: "/privacy", lastmod: STATIC_LASTMOD, changefreq: "yearly", priority: "0.3" },
           { path: "/roi", lastmod: STATIC_LASTMOD, changefreq: "monthly", priority: "0.8" },

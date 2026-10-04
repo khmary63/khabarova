@@ -20,8 +20,6 @@
 - [AI-креаторство](https://neyromarket.com/ai-creator): сайты, SMM, контент-заводы, SEO-порталы и креативы.
 - [Автоматизация](https://neyromarket.com/automation): ИИ-сотрудники, боты и процессы.
 - [Лидогенерация](https://neyromarket.com/lead-generation): аудитории, скоринг, голосовые сценарии и передача откликов.
-- [Для малого бизнеса](https://neyromarket.com/msb): существующая страница ИИ-продавца для МСБ.
-- [Для B2B](https://neyromarket.com/b2b): автоматизация отделов продаж.
 - [Калькулятор ROI](https://neyromarket.com/roi): оценка экономического эффекта.
 - [Портфолио](https://neyromarket.com/apps): проекты и приложения.
 - [Блог](https://neyromarket.com/blog): материалы об ИИ и автоматизации.
