@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState, useEffect, type FormEvent } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { marked } from "marked";
@@ -99,6 +99,7 @@ function AdminPage() {
   const listSubmissionsFn = useServerFn(adminListLeadMagnetSubmissions);
   const settingsFn = useServerFn(getSiteSettings);
   const updateSettingFn = useServerFn(updateSiteSetting);
+  const router = useRouter();
 
   const [seoLoading, setSeoLoading] = useState<"seo" | "seo_geo" | null>(null);
   const [seoOptimized, setSeoOptimized] = useState(false);
@@ -203,6 +204,7 @@ function AdminPage() {
       return;
     }
     toast.success(enabled ? "Страница показывается" : "Страница скрыта");
+    void router.invalidate(); // обновить меню сайта сразу, без перезагрузки
   }
 
   async function refresh() {

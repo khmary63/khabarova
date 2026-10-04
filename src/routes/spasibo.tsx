@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { trackAgency } from "@/lib/agency-tracking";
 import { openEurekaChat } from "@/lib/eureka";
 import { SITE } from "@/lib/site";
+import { useSiteSettings } from "@/lib/use-site-settings";
 
 export const Route = createFileRoute("/spasibo")({
   head: () => ({
@@ -18,6 +19,7 @@ export const Route = createFileRoute("/spasibo")({
 });
 
 function Thanks() {
+  const { apps } = useSiteSettings();
   const [magnet, setMagnet] = useState(false);
   useEffect(() => {
     setMagnet(new URLSearchParams(window.location.search).get("m") === "checklist");
@@ -89,9 +91,11 @@ function Thanks() {
               <a className="agency-inline-link" href="/roi">
                 Рассчитать окупаемость ИИ-сотрудника
               </a>
-              <a className="agency-inline-link" href="/apps">
-                Посмотреть портфолио
-              </a>
+              {apps && (
+                <a className="agency-inline-link" href="/apps">
+                  Посмотреть портфолио
+                </a>
+              )}
             </div>
           </div>
         </div>

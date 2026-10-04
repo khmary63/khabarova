@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { SITE } from "@/lib/site";
 import { trackAgency } from "@/lib/agency-tracking";
+import { useSiteSettings } from "@/lib/use-site-settings";
 const links = [
   ["/roi", "Калькулятор ROI"],
   ["/apps", "Портфолио"],
@@ -13,7 +14,13 @@ const links = [
 export function AgencyHeader({ focused = false }: { focused?: boolean }) {
   const pathname = useLocation().pathname;
   const interior = !["/", "/ai-creator", "/automation", "/lead-generation"].includes(pathname);
-  const menuLinks = links.map(([href, label]) => [
+  const settings = useSiteSettings();
+  const hidden: Record<string, boolean> = {
+    "/apps": !settings.apps,
+    "/blog": !settings.blog,
+    "/reviews": !settings.reviews,
+  };
+  const menuLinks = links.filter(([href]) => !hidden[href]).map(([href, label]) => [
     interior && href.startsWith("/#")
       ? href === "/#cases"
         ? "/automation#cases"

@@ -18,6 +18,7 @@ import { AGENCY_FAQ, DIRECTIONS, type Direction } from "@/lib/agency";
 import { CASES, SITE } from "@/lib/site";
 import { openEurekaChat } from "@/lib/eureka";
 import { trackAgency } from "@/lib/agency-tracking";
+import { useSiteSettings } from "@/lib/use-site-settings";
 import maria from "@/assets/maria-about.jpg";
 import agent from "@/assets/portfolio/agent-neyromarket.png";
 export const directionIcons = {
@@ -50,6 +51,7 @@ export function AgencyFaq({ items = AGENCY_FAQ }: { items?: { q: string; a: stri
   );
 }
 export function AgencyCases() {
+  const { apps } = useSiteSettings();
   return (
     <section id="cases" className="agency-section">
       <div className="agency-container">
@@ -61,9 +63,11 @@ export function AgencyCases() {
               задача бизнеса.
             </h2>
           </div>
-          <a className="agency-inline-link" href="/apps">
-            Все проекты в портфолио
-          </a>
+          {apps && (
+            <a className="agency-inline-link" href="/apps">
+              Все проекты в портфолио
+            </a>
+          )}
         </div>
         <div className="agency-case-grid">
           {CASES.map((c) => (
@@ -87,6 +91,7 @@ export function AgencyCases() {
   );
 }
 export function AgencyPortfolio({ creativeOnly = false }: { creativeOnly?: boolean }) {
+  const { apps } = useSiteSettings();
   return (
     <section className="agency-section">
       <div className="agency-container">
@@ -99,9 +104,11 @@ export function AgencyPortfolio({ creativeOnly = false }: { creativeOnly?: boole
               <span>рабочими проектами.</span>
             </h2>
           </div>
-          <a className="agency-inline-link" href="/apps">
-            Открыть портфолио
-          </a>
+          {apps && (
+            <a className="agency-inline-link" href="/apps">
+              Открыть портфолио
+            </a>
+          )}
         </div>
         <div className="agency-portfolio-grid">
           {[
@@ -109,15 +116,26 @@ export function AgencyPortfolio({ creativeOnly = false }: { creativeOnly?: boole
             [smm, "SMM-ведение социальных сетей", "Соцсети и мессенджеры"],
             [outdoor, "Наружная реклама", "Креативы для бренда"],
             [aiVideo, "ИИ-видео под ключ", "Видео и анимация"],
-          ].map(([src, title, type]) => (
-            <a key={title} href="/apps" className="agency-work" data-track="agency_portfolio_open">
-              <div>
-                <img src={src} alt={title} loading="lazy" width="640" height="400" />
+          ].map(([src, title, type]) => {
+            const body = (
+              <>
+                <div>
+                  <img src={src} alt={title} loading="lazy" width="640" height="400" />
+                </div>
+                <span>{type}</span>
+                <h3>{title}</h3>
+              </>
+            );
+            return apps ? (
+              <a key={title} href="/apps" className="agency-work" data-track="agency_portfolio_open">
+                {body}
+              </a>
+            ) : (
+              <div key={title} className="agency-work">
+                {body}
               </div>
-              <span>{type}</span>
-              <h3>{title}</h3>
-            </a>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
