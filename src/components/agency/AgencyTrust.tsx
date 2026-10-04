@@ -86,6 +86,7 @@ function Item({ c }: { c: Card }) {
       <span>
         <b>{c.name}</b>
         <small>{c.note}</small>
+        {c.referral && <em className="nm-trust-ref">партнёрская ссылка</em>}
       </span>
     </a>
   );
