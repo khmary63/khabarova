@@ -1,12 +1,12 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useEffect, useMemo, type FormEvent } from "react";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { useState, useEffect, type FormEvent } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import TurndownService from "turndown";
 import { marked } from "marked";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { RichEditor } from "@/components/RichEditor";
 import { PortfolioAdmin } from "@/components/PortfolioAdmin";
+import { htmlToMarkdown } from "@/lib/html-to-markdown";
 
 import {
   adminListPosts,
@@ -27,6 +27,7 @@ import { getSiteSettings, updateSiteSetting } from "@/lib/site-settings.function
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/blog/admin")({
+  ssr: false,
   head: () => ({
     meta: [
       { title: "Админка блога" },
@@ -98,22 +99,10 @@ function AdminPage() {
   const listSubmissionsFn = useServerFn(adminListLeadMagnetSubmissions);
   const settingsFn = useServerFn(getSiteSettings);
   const updateSettingFn = useServerFn(updateSiteSetting);
+  const router = useRouter();
 
   const [seoLoading, setSeoLoading] = useState<"seo" | "seo_geo" | null>(null);
   const [seoOptimized, setSeoOptimized] = useState(false);
-
-  const turndown = useMemo(() => {
-    const td = new TurndownService({ headingStyle: "atx", bulletListMarker: "-", codeBlockStyle: "fenced" });
-    td.keep(["u", "sup", "sub"]);
-    // Блок-галерея хранится как raw HTML, чтобы сетка изображений пережила
-    // конвертацию в markdown и обратно (marked пропускает HTML как есть).
-    td.addRule("imageGrid", {
-      filter: (node) =>
-        node.nodeName === "DIV" && (node as HTMLElement).hasAttribute("data-img-grid"),
-      replacement: (_content, node) => `\n\n${(node as HTMLElement).outerHTML}\n\n`,
-    });
-    return td;
-  }, []);
 
   async function uploadImage(file: File): Promise<string> {
     const base64 = await new Promise<string>((resolve, reject) => {
@@ -215,6 +204,7 @@ function AdminPage() {
       return;
     }
     toast.success(enabled ? "Страница показывается" : "Страница скрыта");
+    void router.invalidate(); // обновить меню сайта сразу, без перезагрузки
   }
 
   async function refresh() {
@@ -257,7 +247,13 @@ function AdminPage() {
   async function handleSeoOptimize(mode: "seo" | "seo_geo") {
     if (!editing) return;
     const html = editing.contentHtml || "";
-    const markdown = html.trim() ? turndown.turndown(html) : "";
+    let markdown = "";
+    try {
+      markdown = html.trim() ? await htmlToMarkdown(html) : "";
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Не удалось обработать текст");
+      return;
+    }
     if (!markdown.trim()) {
       toast.error("Сначала напишите текст статьи");
       return;
@@ -306,7 +302,13 @@ function AdminPage() {
     e.preventDefault();
     if (!editing) return;
     const html = editing.contentHtml || "";
-    const markdown = html.trim() ? turndown.turndown(html) : "";
+    let markdown = "";
+    try {
+      markdown = html.trim() ? await htmlToMarkdown(html) : "";
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Не удалось обработать текст");
+      return;
+    }
     if (!markdown.trim()) {
       toast.error("Текст статьи не может быть пустым");
       return;
@@ -323,40 +325,45 @@ function AdminPage() {
       }
     }
     setLoading(true);
-    const res = await saveFn({
-      data: {
-        token,
-        id: editing.id,
-        slug: editing.slug || undefined,
-        title: editing.title || "",
-        excerpt: editing.excerpt || "",
-        content: markdown,
-        cover_image_url: editing.cover_image_url || "",
-        tags: editing.tags || [],
-        category: (editing.category as PostCategory) || "ai",
+    try {
+      const res = await saveFn({
+        data: {
+          token,
+          id: editing.id,
+          slug: editing.slug || undefined,
+          title: editing.title || "",
+          excerpt: editing.excerpt || "",
+          content: markdown,
+          cover_image_url: editing.cover_image_url || "",
+          tags: editing.tags || [],
+          category: (editing.category as PostCategory) || "ai",
 
-        published: editing.published ?? true,
-        lead_magnet_enabled: magnetOn,
-        lead_magnet_title: editing.lead_magnet_title || "",
-        lead_magnet_description: editing.lead_magnet_description || "",
-        lead_magnet_button_label: editing.lead_magnet_button_label || "",
-        lead_magnet_file_path: editing.lead_magnet_file_path || "",
-        lead_magnet_file_name: editing.lead_magnet_file_name || "",
-      },
-    });
-    setLoading(false);
-    if (!res.ok) {
-      toast.error(res.error || "Ошибка сохранения");
-      return;
+          published: editing.published ?? true,
+          lead_magnet_enabled: magnetOn,
+          lead_magnet_title: editing.lead_magnet_title || "",
+          lead_magnet_description: editing.lead_magnet_description || "",
+          lead_magnet_button_label: editing.lead_magnet_button_label || "",
+          lead_magnet_file_path: editing.lead_magnet_file_path || "",
+          lead_magnet_file_name: editing.lead_magnet_file_name || "",
+        },
+      });
+      if (!res.ok) {
+        toast.error(res.error || "Ошибка сохранения");
+        return;
+      }
+      toast.success("Сохранено");
+      if (res.telegram?.posted) {
+        toast.success("Опубликовано в Telegram → автоматически уйдёт в Дзен");
+      } else if (res.telegram?.error) {
+        toast.error(`Telegram: ${res.telegram.error}`);
+      }
+      setEditing(null);
+      void refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Ошибка сохранения");
+    } finally {
+      setLoading(false);
     }
-    toast.success("Сохранено");
-    if (res.telegram?.posted) {
-      toast.success("Опубликовано в Telegram → автоматически уйдёт в Дзен");
-    } else if (res.telegram?.error) {
-      toast.error(`Telegram: ${res.telegram.error}`);
-    }
-    setEditing(null);
-    void refresh();
   }
 
   async function sendToTelegram(id: string) {

@@ -1,25 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Play, X } from "lucide-react";
-
-function getYouTubeVideoId(url: string) {
-  try {
-    const parsed = new URL(url);
-    const host = parsed.hostname.replace(/^www\./, "");
-    if (host === "youtu.be") return parsed.pathname.split("/").filter(Boolean)[0] || null;
-    if (host === "youtube.com" || host === "m.youtube.com") {
-      if (parsed.pathname === "/watch") return parsed.searchParams.get("v");
-      const match = parsed.pathname.match(/^\/(?:shorts|embed)\/([^/?#]+)/);
-      return match?.[1] || null;
-    }
-  } catch {
-    return null;
-  }
-  return null;
-}
-
-function isDirectVideo(url: string) {
-  return /\.(mp4|webm|mov|m4v)(\?|$)/i.test(url);
-}
+import { ChevronLeft, ChevronRight, Play, X, ZoomIn, ZoomOut } from "lucide-react";
+import {
+  extractYoutubeId,
+  getPortfolioMediaKind,
+  youtubeEmbedUrl,
+  youtubeThumbnailUrl,
+} from "@/lib/portfolio-media";
 
 type Props = {
   images: string[];
@@ -28,15 +14,82 @@ type Props = {
   tag?: string;
 };
 
+function MediaFrame({
+  src,
+  title,
+  alt,
+  className,
+  mode,
+}: {
+  src: string;
+  title: string;
+  alt: string;
+  className: string;
+  mode: "preview" | "lightbox";
+}) {
+  const kind = getPortfolioMediaKind(src);
+  const ytId = extractYoutubeId(src);
+
+  if (kind === "youtube" && ytId) {
+    if (mode === "preview") {
+      return (
+        <div className={`relative ${className}`}>
+          <img
+            src={youtubeThumbnailUrl(ytId)}
+            alt={alt}
+            className="h-full w-full object-cover"
+            loading="lazy"
+          />
+          <span className="absolute inset-0 flex items-center justify-center bg-black/35">
+            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-black/70 text-white shadow-lg">
+              <Play className="h-7 w-7 fill-current pl-0.5" />
+            </span>
+          </span>
+        </div>
+      );
+    }
+    return (
+      <iframe
+        src={youtubeEmbedUrl(ytId, { autoplay: true })}
+        title={title}
+        className={className}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowFullScreen
+        referrerPolicy="strict-origin-when-cross-origin"
+      />
+    );
+  }
+
+  if (kind === "file-video") {
+    return (
+      <video
+        src={src}
+        className={className}
+        muted={mode === "preview"}
+        loop={mode === "preview"}
+        autoPlay
+        controls={mode === "lightbox"}
+        playsInline
+        preload="auto"
+      />
+    );
+  }
+
+  return <img src={src} alt={alt} className={className} loading={mode === "preview" ? "lazy" : undefined} />;
+}
+
 export function PortfolioGallery({ images, layout = "web", title, tag }: Props) {
   const list = images.length ? images : [];
   const [index, setIndex] = useState(0);
   const [open, setOpen] = useState(false);
+  const [zoom, setZoom] = useState(false);
   const touchX = useRef<number | null>(null);
 
   const count = list.length;
   const isMobile = layout === "mobile";
   const aspect = isMobile ? "aspect-[9/16]" : "aspect-[16/10]";
+  const current = list[index] || "";
+  const currentKind = getPortfolioMediaKind(current);
 
   const go = useCallback(
     (dir: number) => {
@@ -45,6 +98,12 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
     },
     [count],
   );
+
+  // On phones a desktop screenshot is unreadable at screen width: open it zoomed (pan with a finger).
+  useEffect(() => {
+    if (!open) return;
+    setZoom(window.innerWidth < 640 && !isMobile && getPortfolioMediaKind(list[index] || "") === "image");
+  }, [open, index, isMobile, list]);
 
   useEffect(() => {
     if (!open) return;
@@ -64,8 +123,10 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
 
   if (count === 0) {
     return (
-      <div className={`flex ${aspect} w-full items-center justify-center rounded-2xl bg-neutral-900 text-xs text-muted-foreground`}>
-        Нет изображений
+      <div
+        className={`flex ${aspect} w-full items-center justify-center rounded-2xl bg-neutral-900 text-xs text-muted-foreground`}
+      >
+        Нет медиа
       </div>
     );
   }
@@ -80,46 +141,30 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
     touchX.current = null;
   };
 
+  const mediaClass = `h-full w-full ${isMobile ? "object-contain" : "object-cover object-top"}`;
+  const lightboxMediaClass = isMobile
+    ? "max-h-[82vh] w-auto min-w-[min(70vw,320px)] rounded-[1.7rem] object-contain"
+    : currentKind === "youtube"
+      ? "aspect-video h-auto max-h-[85vh] w-[min(92vw,960px)] rounded-xl bg-black shadow-2xl"
+      : "max-h-[85vh] max-w-[92vw] rounded-xl object-contain shadow-2xl";
+
   return (
     <>
       {/* Preview carousel */}
-      <div className="group/gal relative">
+      <div className="group/gal relative" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
         <button
           type="button"
           onClick={() => setOpen(true)}
           className={`relative block ${aspect} w-full overflow-hidden rounded-2xl bg-neutral-900`}
           aria-label={`Открыть галерею: ${title}`}
         >
-          {getYouTubeVideoId(list[index]) ? (
-            <>
-              <img
-                src={`https://i.ytimg.com/vi/${getYouTubeVideoId(list[index])}/hqdefault.jpg`}
-                alt={`${title} — видео`}
-                className="h-full w-full object-cover"
-                loading="lazy"
-              />
-              <span className="pointer-events-none absolute left-1/2 top-1/2 z-10 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/70 text-white backdrop-blur">
-                <Play className="ml-1 h-7 w-7 fill-current" />
-              </span>
-            </>
-          ) : isDirectVideo(list[index]) ? (
-            <video
-              src={list[index]}
-              className={`h-full w-full ${isMobile ? "object-contain" : "object-cover object-top"}`}
-              muted
-              loop
-              autoPlay
-              playsInline
-              preload="metadata"
-            />
-          ) : (
-            <img
-              src={list[index]}
-              alt={`${title} — экран ${index + 1}`}
-              className={`h-full w-full ${isMobile ? "object-contain" : "object-cover object-top"} transition-transform duration-500 group-hover/gal:scale-[1.02]`}
-              loading="lazy"
-            />
-          )}
+          <MediaFrame
+            src={current}
+            title={`${title} — видео`}
+            alt={`${title} — экран ${index + 1}`}
+            className={`${mediaClass}${currentKind === "image" ? " transition-transform duration-500 group-hover/gal:scale-[1.02]" : ""}`}
+            mode="preview"
+          />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
           {tag && (
             <span className="absolute left-3 top-3 rounded-full bg-black/60 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur">
@@ -129,6 +174,12 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
           <span className="absolute bottom-3 right-3 rounded-full bg-black/60 px-2.5 py-1 text-[10px] font-semibold text-white backdrop-blur">
             {index + 1} / {count}
           </span>
+          <span
+            aria-hidden
+            className="absolute right-3 top-3 rounded-full bg-black/60 p-1.5 text-white backdrop-blur md:hidden"
+          >
+            <ZoomIn className="h-4 w-4" />
+          </span>
         </button>
 
         {count > 1 && (
@@ -137,7 +188,7 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
               type="button"
               onClick={() => go(-1)}
               aria-label="Назад"
-              className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-1.5 text-white opacity-0 backdrop-blur transition-opacity hover:bg-black/70 group-hover/gal:opacity-100"
+              className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-1.5 text-white opacity-100 backdrop-blur transition-opacity hover:bg-black/70 md:opacity-0 md:group-hover/gal:opacity-100"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -145,7 +196,7 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
               type="button"
               onClick={() => go(1)}
               aria-label="Вперёд"
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-1.5 text-white opacity-0 backdrop-blur transition-opacity hover:bg-black/70 group-hover/gal:opacity-100"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-1.5 text-white opacity-100 backdrop-blur transition-opacity hover:bg-black/70 md:opacity-0 md:group-hover/gal:opacity-100"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -156,7 +207,7 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
                   type="button"
                   aria-label={`Экран ${i + 1}`}
                   onClick={() => setIndex(i)}
-                  className={`h-1.5 rounded-full transition-all ${i === index ? "w-5 bg-white" : "w-1.5 bg-white/50"}`}
+                  className={`relative h-1.5 rounded-full transition-all after:absolute after:-inset-2 after:content-[''] ${i === index ? "w-5 bg-white" : "w-1.5 bg-white/50"}`}
                 />
               ))}
             </div>
@@ -185,6 +236,20 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
             {index + 1} / {count}
           </span>
 
+          {!isMobile && currentKind === "image" && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setZoom((z) => !z);
+              }}
+              aria-label={zoom ? "Уменьшить" : "Увеличить"}
+              className="absolute left-4 top-4 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20 sm:hidden"
+            >
+              {zoom ? <ZoomOut className="h-6 w-6" /> : <ZoomIn className="h-6 w-6" />}
+            </button>
+          )}
+
           {count > 1 && (
             <button
               type="button"
@@ -202,54 +267,40 @@ export function PortfolioGallery({ images, layout = "web", title, tag }: Props) 
           <div
             className="flex max-h-full max-w-full items-center justify-center"
             onClick={(e) => e.stopPropagation()}
-            onTouchStart={onTouchStart}
-            onTouchEnd={onTouchEnd}
+            onTouchStart={zoom ? undefined : onTouchStart}
+            onTouchEnd={zoom ? undefined : onTouchEnd}
           >
-            {getYouTubeVideoId(list[index]) ? (
+            {!isMobile && zoom && currentKind === "image" ? (
               <div
-                className={`w-[min(92vw,900px)] overflow-hidden rounded-xl bg-black shadow-2xl ${
-                  isMobile ? "aspect-[9/16] max-h-[85vh] max-w-[48vh]" : "aspect-video"
-                }`}
+                ref={(el) => {
+                  if (el) el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
+                }}
+                className="max-h-[78vh] max-w-[96vw] overflow-auto rounded-xl bg-black shadow-2xl"
               >
-                <iframe
-                  src={`https://www.youtube-nocookie.com/embed/${getYouTubeVideoId(list[index])}?autoplay=1&rel=0`}
-                  title={`${title} — видео`}
-                  className="h-full w-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
+                <img
+                  src={current}
+                  alt={`${title} — экран ${index + 1}`}
+                  className="h-auto"
+                  style={{ width: "210vw", maxWidth: "none" }}
                 />
               </div>
             ) : isMobile ? (
-              <div className="relative rounded-[2.2rem] border-[6px] border-neutral-800 bg-black shadow-2xl">
-                {isDirectVideo(list[index]) ? (
-                  <video
-                    src={list[index]}
-                    className="max-h-[82vh] w-auto rounded-[1.7rem] object-contain"
-                    controls
-                    autoPlay
-                    playsInline
-                  />
-                ) : (
-                  <img
-                    src={list[index]}
-                    alt={`${title} — экран ${index + 1}`}
-                    className="max-h-[82vh] w-auto rounded-[1.7rem] object-contain"
-                  />
-                )}
+              <div className="relative overflow-hidden rounded-[2.2rem] border-[6px] border-neutral-800 bg-black shadow-2xl">
+                <MediaFrame
+                  src={current}
+                  title={`${title} — видео`}
+                  alt={`${title} — экран ${index + 1}`}
+                  className={lightboxMediaClass}
+                  mode="lightbox"
+                />
               </div>
-            ) : isDirectVideo(list[index]) ? (
-              <video
-                src={list[index]}
-                className="max-h-[85vh] max-w-[92vw] rounded-xl object-contain shadow-2xl"
-                controls
-                autoPlay
-                playsInline
-              />
             ) : (
-              <img
-                src={list[index]}
+              <MediaFrame
+                src={current}
+                title={`${title} — видео`}
                 alt={`${title} — экран ${index + 1}`}
-                className="max-h-[85vh] max-w-[92vw] rounded-xl object-contain shadow-2xl"
+                className={lightboxMediaClass}
+                mode="lightbox"
               />
             )}
           </div>

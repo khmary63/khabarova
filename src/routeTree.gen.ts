@@ -9,15 +9,21 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SpasiboRouteImport } from './routes/spasibo'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as MsbRouteImport } from './routes/msb'
+import { Route as LeadGenerationRouteImport } from './routes/lead-generation'
 import { Route as FactoryRouteImport } from './routes/factory'
 import { Route as ContactsRouteImport } from './routes/contacts'
+import { Route as ConsentRouteImport } from './routes/consent'
+import { Route as ChecklistRouteImport } from './routes/checklist'
 import { Route as B2bRouteImport } from './routes/b2b'
+import { Route as AutomationRouteImport } from './routes/automation'
 import { Route as AppsRouteImport } from './routes/apps'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as AiCreatorRouteImport } from './routes/ai-creator'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RoiIndexRouteImport } from './routes/roi.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
@@ -25,7 +31,13 @@ import { Route as RoiResultRouteImport } from './routes/roi.result'
 import { Route as RoiSectorRouteImport } from './routes/roi.$sector'
 import { Route as BlogAdminRouteImport } from './routes/blog.admin'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as ApiAgencyLeadRouteImport } from './routes/api.agency-lead'
 
+const SpasiboRoute = SpasiboRouteImport.update({
+  id: '/spasibo',
+  path: '/spasibo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -46,6 +58,11 @@ const MsbRoute = MsbRouteImport.update({
   path: '/msb',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LeadGenerationRoute = LeadGenerationRouteImport.update({
+  id: '/lead-generation',
+  path: '/lead-generation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FactoryRoute = FactoryRouteImport.update({
   id: '/factory',
   path: '/factory',
@@ -56,9 +73,24 @@ const ContactsRoute = ContactsRouteImport.update({
   path: '/contacts',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConsentRoute = ConsentRouteImport.update({
+  id: '/consent',
+  path: '/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChecklistRoute = ChecklistRouteImport.update({
+  id: '/checklist',
+  path: '/checklist',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const B2bRoute = B2bRouteImport.update({
   id: '/b2b',
   path: '/b2b',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AutomationRoute = AutomationRouteImport.update({
+  id: '/automation',
+  path: '/automation',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppsRoute = AppsRouteImport.update({
@@ -69,6 +101,11 @@ const AppsRoute = AppsRouteImport.update({
 const AnalyticsRoute = AnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiCreatorRoute = AiCreatorRouteImport.update({
+  id: '/ai-creator',
+  path: '/ai-creator',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -106,18 +143,30 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/blog/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAgencyLeadRoute = ApiAgencyLeadRouteImport.update({
+  id: '/api/agency-lead',
+  path: '/api/agency-lead',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ai-creator': typeof AiCreatorRoute
   '/analytics': typeof AnalyticsRoute
   '/apps': typeof AppsRoute
+  '/automation': typeof AutomationRoute
   '/b2b': typeof B2bRoute
+  '/checklist': typeof ChecklistRoute
+  '/consent': typeof ConsentRoute
   '/contacts': typeof ContactsRoute
   '/factory': typeof FactoryRoute
+  '/lead-generation': typeof LeadGenerationRoute
   '/msb': typeof MsbRoute
   '/privacy': typeof PrivacyRoute
   '/reviews': typeof ReviewsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/spasibo': typeof SpasiboRoute
+  '/api/agency-lead': typeof ApiAgencyLeadRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/admin': typeof BlogAdminRoute
   '/roi/$sector': typeof RoiSectorRoute
@@ -127,15 +176,22 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ai-creator': typeof AiCreatorRoute
   '/analytics': typeof AnalyticsRoute
   '/apps': typeof AppsRoute
+  '/automation': typeof AutomationRoute
   '/b2b': typeof B2bRoute
+  '/checklist': typeof ChecklistRoute
+  '/consent': typeof ConsentRoute
   '/contacts': typeof ContactsRoute
   '/factory': typeof FactoryRoute
+  '/lead-generation': typeof LeadGenerationRoute
   '/msb': typeof MsbRoute
   '/privacy': typeof PrivacyRoute
   '/reviews': typeof ReviewsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/spasibo': typeof SpasiboRoute
+  '/api/agency-lead': typeof ApiAgencyLeadRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/admin': typeof BlogAdminRoute
   '/roi/$sector': typeof RoiSectorRoute
@@ -146,15 +202,22 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ai-creator': typeof AiCreatorRoute
   '/analytics': typeof AnalyticsRoute
   '/apps': typeof AppsRoute
+  '/automation': typeof AutomationRoute
   '/b2b': typeof B2bRoute
+  '/checklist': typeof ChecklistRoute
+  '/consent': typeof ConsentRoute
   '/contacts': typeof ContactsRoute
   '/factory': typeof FactoryRoute
+  '/lead-generation': typeof LeadGenerationRoute
   '/msb': typeof MsbRoute
   '/privacy': typeof PrivacyRoute
   '/reviews': typeof ReviewsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/spasibo': typeof SpasiboRoute
+  '/api/agency-lead': typeof ApiAgencyLeadRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/admin': typeof BlogAdminRoute
   '/roi/$sector': typeof RoiSectorRoute
@@ -166,15 +229,22 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/ai-creator'
     | '/analytics'
     | '/apps'
+    | '/automation'
     | '/b2b'
+    | '/checklist'
+    | '/consent'
     | '/contacts'
     | '/factory'
+    | '/lead-generation'
     | '/msb'
     | '/privacy'
     | '/reviews'
     | '/sitemap.xml'
+    | '/spasibo'
+    | '/api/agency-lead'
     | '/blog/$slug'
     | '/blog/admin'
     | '/roi/$sector'
@@ -184,15 +254,22 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/ai-creator'
     | '/analytics'
     | '/apps'
+    | '/automation'
     | '/b2b'
+    | '/checklist'
+    | '/consent'
     | '/contacts'
     | '/factory'
+    | '/lead-generation'
     | '/msb'
     | '/privacy'
     | '/reviews'
     | '/sitemap.xml'
+    | '/spasibo'
+    | '/api/agency-lead'
     | '/blog/$slug'
     | '/blog/admin'
     | '/roi/$sector'
@@ -202,15 +279,22 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/ai-creator'
     | '/analytics'
     | '/apps'
+    | '/automation'
     | '/b2b'
+    | '/checklist'
+    | '/consent'
     | '/contacts'
     | '/factory'
+    | '/lead-generation'
     | '/msb'
     | '/privacy'
     | '/reviews'
     | '/sitemap.xml'
+    | '/spasibo'
+    | '/api/agency-lead'
     | '/blog/$slug'
     | '/blog/admin'
     | '/roi/$sector'
@@ -221,15 +305,22 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AiCreatorRoute: typeof AiCreatorRoute
   AnalyticsRoute: typeof AnalyticsRoute
   AppsRoute: typeof AppsRoute
+  AutomationRoute: typeof AutomationRoute
   B2bRoute: typeof B2bRoute
+  ChecklistRoute: typeof ChecklistRoute
+  ConsentRoute: typeof ConsentRoute
   ContactsRoute: typeof ContactsRoute
   FactoryRoute: typeof FactoryRoute
+  LeadGenerationRoute: typeof LeadGenerationRoute
   MsbRoute: typeof MsbRoute
   PrivacyRoute: typeof PrivacyRoute
   ReviewsRoute: typeof ReviewsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SpasiboRoute: typeof SpasiboRoute
+  ApiAgencyLeadRoute: typeof ApiAgencyLeadRoute
   BlogSlugRoute: typeof BlogSlugRoute
   BlogAdminRoute: typeof BlogAdminRoute
   RoiSectorRoute: typeof RoiSectorRoute
@@ -240,6 +331,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/spasibo': {
+      id: '/spasibo'
+      path: '/spasibo'
+      fullPath: '/spasibo'
+      preLoaderRoute: typeof SpasiboRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -268,6 +366,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MsbRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lead-generation': {
+      id: '/lead-generation'
+      path: '/lead-generation'
+      fullPath: '/lead-generation'
+      preLoaderRoute: typeof LeadGenerationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/factory': {
       id: '/factory'
       path: '/factory'
@@ -282,11 +387,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/consent': {
+      id: '/consent'
+      path: '/consent'
+      fullPath: '/consent'
+      preLoaderRoute: typeof ConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checklist': {
+      id: '/checklist'
+      path: '/checklist'
+      fullPath: '/checklist'
+      preLoaderRoute: typeof ChecklistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/b2b': {
       id: '/b2b'
       path: '/b2b'
       fullPath: '/b2b'
       preLoaderRoute: typeof B2bRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/automation': {
+      id: '/automation'
+      path: '/automation'
+      fullPath: '/automation'
+      preLoaderRoute: typeof AutomationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/apps': {
@@ -301,6 +427,13 @@ declare module '@tanstack/react-router' {
       path: '/analytics'
       fullPath: '/analytics'
       preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-creator': {
+      id: '/ai-creator'
+      path: '/ai-creator'
+      fullPath: '/ai-creator'
+      preLoaderRoute: typeof AiCreatorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -352,20 +485,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/agency-lead': {
+      id: '/api/agency-lead'
+      path: '/api/agency-lead'
+      fullPath: '/api/agency-lead'
+      preLoaderRoute: typeof ApiAgencyLeadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AiCreatorRoute: AiCreatorRoute,
   AnalyticsRoute: AnalyticsRoute,
   AppsRoute: AppsRoute,
+  AutomationRoute: AutomationRoute,
   B2bRoute: B2bRoute,
+  ChecklistRoute: ChecklistRoute,
+  ConsentRoute: ConsentRoute,
   ContactsRoute: ContactsRoute,
   FactoryRoute: FactoryRoute,
+  LeadGenerationRoute: LeadGenerationRoute,
   MsbRoute: MsbRoute,
   PrivacyRoute: PrivacyRoute,
   ReviewsRoute: ReviewsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SpasiboRoute: SpasiboRoute,
+  ApiAgencyLeadRoute: ApiAgencyLeadRoute,
   BlogSlugRoute: BlogSlugRoute,
   BlogAdminRoute: BlogAdminRoute,
   RoiSectorRoute: RoiSectorRoute,

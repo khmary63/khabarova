@@ -1,6 +1,9 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
+@import "./agency.css";
+@import "./agency-redesign.css";
+@import "./animations.css";
 
 @custom-variant dark (&:is(.dark *));
 

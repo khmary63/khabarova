@@ -36,7 +36,9 @@ export function SiteHeader() {
               <span className="h-1.5 w-1.5 rounded-full bg-success" aria-hidden />
               <span>Менеджер на связи: пн–пт, 9:00–18:00 МСК</span>
             </div>
-            <SocialIcons size="sm" trackPrefix="header" />
+            <span className="hidden sm:inline-flex">
+              <SocialIcons size="sm" trackPrefix="header" />
+            </span>
           </div>
         </div>
       </div>
@@ -49,7 +51,6 @@ export function SiteHeader() {
         </Link>
         <nav className="hidden items-center gap-7 text-sm text-muted-foreground md:flex">
           <a href="/#cases" className="transition hover:text-foreground">Кейсы</a>
-          <a href="/#demo" className="transition hover:text-foreground">Демо</a>
           <a href="/#about" className="transition hover:text-foreground">О Марии</a>
           <Link to="/roi" className="transition hover:text-foreground" activeProps={{ className: "text-foreground" }}>Калькулятор ROI</Link>
           {settings.apps && (
@@ -83,7 +84,6 @@ export function SiteHeader() {
       {mobileOpen && (
         <nav className="container-page flex flex-col gap-1 border-t border-border/40 py-3 text-sm md:hidden">
           <a href="/#cases" onClick={closeMobile} className="rounded-lg px-2 py-2 text-muted-foreground transition hover:bg-surface/60 hover:text-foreground">Кейсы</a>
-          <a href="/#demo" onClick={closeMobile} className="rounded-lg px-2 py-2 text-muted-foreground transition hover:bg-surface/60 hover:text-foreground">Демо</a>
           <a href="/#about" onClick={closeMobile} className="rounded-lg px-2 py-2 text-muted-foreground transition hover:bg-surface/60 hover:text-foreground">О Марии</a>
           <Link to="/roi" onClick={closeMobile} className="rounded-lg px-2 py-2 text-muted-foreground transition hover:bg-surface/60 hover:text-foreground" activeProps={{ className: "text-foreground" }}>Калькулятор ROI</Link>
           {settings.apps && (

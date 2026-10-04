@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { adminRequiresServiceRole } from "@/lib/supabase-admin.guard";
+import { getPortfolioMediaKind, isSupportedVideoUrl, pickCoverUrl } from "@/lib/portfolio-media";
 
 export type PortfolioLayout = "web" | "mobile";
 
@@ -16,6 +18,44 @@ export type PortfolioProject = {
   sort_order: number;
   published: boolean;
 };
+
+const SITE_ORIGIN = (process.env.SITE_URL || "https://neyromarket.com").replace(/\/$/, "");
+
+function isMediaUrl(value: string) {
+  return value.startsWith("/") || /^https?:\/\//i.test(value);
+}
+
+function absolutizeMediaUrl(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return trimmed;
+  if (trimmed.startsWith("/")) return `${SITE_ORIGIN}${trimmed}`;
+  return trimmed;
+}
+
+const mediaUrlSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(500)
+  .refine(isMediaUrl, { message: "Некорректная ссылка на медиа" });
+
+const optionalLinkSchema = z
+  .string()
+  .trim()
+  .max(500)
+  .refine((value) => !value || isMediaUrl(value) || z.string().url().safeParse(value).success, {
+    message: "Некорректная ссылка на проект",
+  })
+  .default("");
+
+function parseUpsertInput(d: unknown) {
+  const parsed = upsertSchema.safeParse(d);
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0];
+    throw new Error(issue?.message || "Некорректные данные формы");
+  }
+  return parsed.data;
+}
 
 function normalizeProject(row: Record<string, unknown>): PortfolioProject {
   const rawImages = Array.isArray(row.images) ? (row.images as unknown[]) : [];
@@ -77,29 +117,33 @@ const upsertSchema = z.object({
   id: z.string().uuid().optional(),
   title: z.string().trim().min(1).max(200),
   description: z.string().trim().max(2000).default(""),
-  url: z.string().trim().url().max(500).optional().or(z.literal("")).default(""),
-  tag: z.string().trim().max(60).default(""),
-  image_url: z.string().trim().url().max(500),
-  images: z.array(z.string().trim().url().max(500)).max(40).default([]),
+  url: optionalLinkSchema,
+  tag: z.string().trim().max(150).default(""),
+  image_url: mediaUrlSchema,
+  images: z.array(mediaUrlSchema).max(40).default([]),
   layout: z.enum(["web", "mobile"]).default("web"),
   sort_order: z.number().int().min(0).max(10000).default(0),
   published: z.boolean().default(true),
 });
 
 export const upsertPortfolio = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => upsertSchema.parse(d))
+  .inputValidator(parseUpsertInput)
   .handler(async ({ data }) => {
     const expected = process.env.BLOG_ADMIN_TOKEN;
     if (!expected || data.token !== expected) {
       return { ok: false as const, error: "Неверный пароль" };
     }
+    const blocked = adminRequiresServiceRole();
+    if (blocked) return blocked;
+    const images = (data.images.length > 0 ? data.images : [data.image_url]).map(absolutizeMediaUrl);
+    const cover = pickCoverUrl(images) || absolutizeMediaUrl(data.image_url);
     const payload = {
       title: data.title,
       description: data.description,
-      url: data.url ? data.url : null,
+      url: data.url ? absolutizeMediaUrl(data.url) : null,
       tag: data.tag,
-      image_url: data.image_url,
-      images: data.images,
+      image_url: cover,
+      images,
       layout: data.layout,
       sort_order: data.sort_order,
       published: data.published,
@@ -141,6 +185,8 @@ export const uploadPortfolioImage = createServerFn({ method: "POST" })
     if (!expected || data.token !== expected) {
       return { ok: false as const, error: "Неверный пароль" };
     }
+    const blocked = adminRequiresServiceRole();
+    if (blocked) return blocked;
     if (!data.contentType.startsWith("image/")) {
       return { ok: false as const, error: "Можно загружать только изображения" };
     }

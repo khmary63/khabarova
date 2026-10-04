@@ -1,0 +1,16 @@
+{
+  "name": "НейроМаркет — ИИ-сотрудники для бизнеса",
+  "short_name": "НейроМаркет",
+  "description": "Внедрение ИИ-сотрудников в продажи и автоматизация бизнеса",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050611",
+  "theme_color": "#050611",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

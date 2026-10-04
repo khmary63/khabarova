@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { SiteHeader } from "@/components/SiteHeader";
+import { AgencyHeader as SiteHeader } from "@/components/agency/AgencyHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
 import { SITE } from "@/lib/site";
@@ -78,7 +78,7 @@ const services: Service[] = [
     title: "Сайт за выходные",
     description:
       "Соберу полностью готовый к работе сайт, (мульти)лендинг, интернет-магазин.\nНа выходе — не просто сайт, \nа современный конверсионный маркетинговый инструмент для привлечения трафика.",
-    price: "от 20 000 ₽",
+    price: "от 15 000 ₽",
     bullets: [
       "Дизайн в едином стиле",
       "База данных + авторизация",
@@ -125,7 +125,7 @@ const services: Service[] = [
 
 function ProjectCard({ project: p }: { project: PortfolioProject }) {
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-4 transition-all duration-500 hover:border-primary/50">
+    <article className="group relative flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-2.5 transition-all sm:p-4 duration-500 hover:border-primary/50">
       <PortfolioGallery
         images={p.images}
         layout={p.layout}
@@ -150,7 +150,7 @@ function AppsPage() {
   const mobileProjects = portfolio.filter((p) => p.layout === "mobile");
   return (
 
-    <div className="relative min-h-screen overflow-hidden bg-background">
+    <div className="agency nm-redesign nm-internal nm-internal-content relative min-h-screen overflow-hidden bg-background">
       {/* Ambient glows */}
       <div
         aria-hidden
@@ -165,93 +165,12 @@ function AppsPage() {
 
       <main className="container-page relative space-y-32 py-20 md:py-24">
         {/* Hero */}
-        <header className="mx-auto max-w-3xl space-y-7 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-primary">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary/70 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
-            </span>
-            Вайбкодинг · Приложения и услуги
-          </div>
-
-          <h1 className="font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-foreground md:text-6xl">
-            Магия{" "}
-            <span className="bg-gradient-to-r from-primary to-indigo-400 bg-clip-text text-transparent">
-              вайбкодинга
-            </span>
-          </h1>
-
-          <p className="whitespace-pre-line text-base leading-relaxed text-muted-foreground md:text-lg">
-            Здесь — мои продукты и услуги по быстрой разработке с ИИ.{"\n"}
-            Собираю веб- и мобильные приложения, настраиваю ИИ-ассистентов и ИИ-агентов со сложной логикой работы, внутренние инструменты для бизнеса.{"\n"}
-            Разрабатываю сайты, (мульти)лендинги, интернет-магазины за считанные часы вместо месяцев и по ценам в разы меньше, чем при стандартной разработке.{"\n"}
-            Разрабатываю SEO-порталы, провожу SEO и GEO оптимизацию.{"\n"}
-            Забудьте про платную рекламу — появились новые эффективные инструменты по привлечению органического трафика.
-          </p>
-        </header>
-
-        {/* Services */}
-        <section className="space-y-10">
-          <div className="space-y-2">
-            <h2 className="font-display text-2xl font-bold tracking-tight text-foreground md:text-3xl">
-              Услуги вайбкодинга
-            </h2>
-            <p className="text-muted-foreground">
-              Беру в работу проекты, где важна скорость и качество исполнения.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {services.map((s) => (
-              <article
-                key={s.title}
-                className={
-                  s.featured
-                    ? "space-y-6 rounded-3xl border border-primary/20 bg-gradient-to-b from-primary/10 to-transparent p-8 ring-1 ring-primary/20"
-                    : "space-y-6 rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-transparent p-8"
-                }
-              >
-                <div className="space-y-2">
-                  <h3 className="font-display text-lg font-bold text-foreground">
-                    {s.title}
-                  </h3>
-                  <div className="text-sm font-bold tracking-tight text-primary">
-                    {s.price}
-                  </div>
-                </div>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  {s.description}
-                </p>
-                <ul className="space-y-3">
-                  {s.bullets.map((b) => (
-                    <li
-                      key={b}
-                      className="flex items-center gap-3 text-sm text-muted-foreground"
-                    >
-                      <span
-                        className={`h-1.5 w-1.5 flex-none rounded-full ${
-                          s.featured ? "bg-primary" : "bg-primary/50"
-                        }`}
-                      />
-                      <span>{b}</span>
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
-        </section>
 
         {/* Portfolio */}
         <section className="space-y-10">
-          <div className="space-y-2">
-            <h2 className="font-display text-2xl font-bold tracking-tight text-foreground md:text-3xl">
-              Портфолио проектов
-            </h2>
-            <p className="text-muted-foreground">
-              Сайты, интернет-магазины и приложения, которые я уже запустила.
-            </p>
-          </div>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+            Портфолио наших проектов
+          </h1>
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {webProjects.map((p) => (
@@ -260,7 +179,7 @@ function AppsPage() {
           </div>
 
           {mobileProjects.length > 0 && (
-            <div className="grid grid-cols-1 gap-6 pt-6 sm:grid-cols-2 lg:mx-auto lg:max-w-4xl">
+            <div className="grid grid-cols-1 gap-6 pt-6 sm:grid-cols-2 lg:grid-cols-3">
               {mobileProjects.map((p) => (
                 <ProjectCard key={p.id} project={p} />
               ))}
@@ -274,7 +193,7 @@ function AppsPage() {
         <section className="group relative">
           <div className="pointer-events-none absolute inset-0 rounded-[2.5rem] bg-primary/20 opacity-0 blur-[80px] transition-opacity duration-700 group-hover:opacity-100" />
           <div className="relative space-y-8 rounded-[2.5rem] border border-white/10 bg-gradient-to-br from-white/10 to-white/[0.02] p-10 text-center md:p-14">
-            <h2 className="font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-foreground md:text-3xl">
               Нужно собрать продукт быстро?
             </h2>
             <p className="mx-auto max-w-xl leading-relaxed text-muted-foreground">

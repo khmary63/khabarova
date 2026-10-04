@@ -18,12 +18,7 @@ export const leadSchema = z.object({
 
 export type LeadInput = z.infer<typeof leadSchema>;
 
-export async function submitLead(input: LeadInput, source: Variant) {
-  const parsed = leadSchema.parse(input);
-  const { error } = await supabase.from("leads").insert({
-    name: parsed.name,
-    phone: parsed.phone,
-    source,
-  });
-  if (error) throw new Error(error.message);
+export async function submitLead(_input: LeadInput, _source: Variant): Promise<void> {
+  // Retired: personal data is no longer written to Supabase from the browser.
+  throw new Error("Эта форма больше не принимает заявки");
 }

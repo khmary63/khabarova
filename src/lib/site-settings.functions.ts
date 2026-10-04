@@ -1,26 +1,33 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { adminRequiresServiceRole } from "@/lib/supabase-admin.guard";
 
 export type SiteSettings = { apps: boolean; blog: boolean; reviews: boolean };
 
 const DEFAULTS: SiteSettings = { apps: true, blog: true, reviews: true };
 
 export const getSiteSettings = createServerFn({ method: "GET" }).handler(async () => {
-  const { data, error } = await supabaseAdmin
-    .from("site_settings")
-    .select("key, enabled");
-  if (error) {
-    console.error("[getSiteSettings]", error);
+  try {
+    const { data, error } = await supabaseAdmin
+      .from("site_settings")
+      .select("key, enabled")
+      .abortSignal(AbortSignal.timeout(3000));
+    if (error) {
+      console.error("[getSiteSettings]", error);
+      return DEFAULTS;
+    }
+    const settings: SiteSettings = { ...DEFAULTS };
+    for (const row of data ?? []) {
+      if (row.key === "apps" || row.key === "blog" || row.key === "reviews") {
+        settings[row.key] = row.enabled;
+      }
+    }
+    return settings;
+  } catch {
+    console.error("[getSiteSettings] unavailable; using public navigation defaults");
     return DEFAULTS;
   }
-  const settings: SiteSettings = { ...DEFAULTS };
-  for (const row of data ?? []) {
-    if (row.key === "apps" || row.key === "blog" || row.key === "reviews") {
-      settings[row.key] = row.enabled;
-    }
-  }
-  return settings;
 });
 
 export const updateSiteSetting = createServerFn({ method: "POST" })
@@ -38,6 +45,8 @@ export const updateSiteSetting = createServerFn({ method: "POST" })
     if (!expected || data.token !== expected) {
       return { ok: false as const, error: "Неверный пароль" };
     }
+    const blocked = adminRequiresServiceRole();
+    if (blocked) return blocked;
     const { error } = await supabaseAdmin
       .from("site_settings")
       .upsert({ key: data.key, enabled: data.enabled }, { onConflict: "key" });

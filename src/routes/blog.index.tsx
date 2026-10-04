@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { SiteHeader } from "@/components/SiteHeader";
+import { AgencyHeader as SiteHeader } from "@/components/agency/AgencyHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
 import { listPosts, CATEGORY_LABELS, type PostCategory } from "@/lib/blog.functions";
@@ -52,7 +52,7 @@ export const Route = createFileRoute("/blog/")({
                 "@type": "BlogPosting",
                 headline: p.title,
                 description: p.excerpt,
-                url: `https://neyromarket.com/blog/${p.slug}`,
+                url: `https://neyromarket.com/blog/${encodeURIComponent(p.slug)}`,
                 datePublished: p.published_at,
                 author: { "@type": "Person", name: "Мария Хабарова" },
               })),
@@ -80,12 +80,12 @@ function BlogIndex() {
   const { tag, category } = Route.useSearch();
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
+    <div className="agency nm-redesign nm-internal nm-internal-content flex min-h-screen flex-col bg-background text-foreground">
       <SiteHeader />
       <main className="container-page flex-1 py-12">
         <header className="mb-10 max-w-3xl">
           <p className="text-sm uppercase tracking-widest text-primary">Блог</p>
-          <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight md:text-5xl">
+          <h1 className="mt-2 font-display text-2xl font-semibold tracking-tight md:text-3xl">
             ИИ-продавцы, кейсы, автоматизация, вайбкодинг
           </h1>
           <p className="mt-3 whitespace-pre-line text-muted-foreground">

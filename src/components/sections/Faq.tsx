@@ -16,7 +16,7 @@ export const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: "С какими CRM и мессенджерами вы работаете?",
-    a: "WhatsApp, Telegram, Instagram*, ВКонтакте, Avito, виджеты на сайте. Из CRM — amoCRM, Bitrix24, YCLIENTS и кастомные системы по API. Если нужной интеграции нет — подключим через webhook или собственный коннектор.",
+    a: "WhatsApp, Telegram, Instagram*, ВКонтакте, Avito, виджеты на сайте. Из CRM — Bitrix24, YCLIENTS и кастомные системы по API. Если нужной интеграции нет — подключим через webhook или собственный коннектор.",
   },
   {
     q: "А если ИИ ответит клиенту неправильно?",

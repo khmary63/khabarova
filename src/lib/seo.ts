@@ -4,6 +4,7 @@
 // услугах, ценах и кейсах — чтобы попадать в цитаты.
 
 import { SITE, CASES } from "./site";
+import mariaPhoto from "@/assets/maria-about.jpg";
 
 export const SITE_URL = "https://neyromarket.com";
 
@@ -22,25 +23,36 @@ export const organizationSchema = () => ({
   "@type": "Organization",
   "@id": ORG_ID,
   name: SITE.brand,
+  legalName: "ИП Хабарова Мария Павловна",
   alternateName: ["НейроМаркет | ИИ для бизнеса", "Neyromarket"],
   url: SITE_URL,
   email: SITE.email,
   telephone: SITE.phone,
-  logo: absUrl("/favicon.png"),
+  logo: absUrl("/agency-brand.webp"),
   image: absUrl("/favicon.png"),
   founder: { "@id": PERSON_ID },
-  founderName: SITE.expert,
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: SITE.phone,
+    email: SITE.email,
+    contactType: "sales",
+    areaServed: "RU",
+    availableLanguage: "Russian",
+  },
   areaServed: [
     { "@type": "Country", name: "Россия" },
     { "@type": "AdministrativeArea", name: "СНГ" },
   ],
   knowsAbout: [
+    "AI-креаторство и SMM",
+    "Создание сайтов и контент-заводов",
+    "Лидогенерация",
     "Внедрение ИИ-сотрудников в продажи",
     "ИИ-продавцы 24/7",
     "Нейроворонки",
     "Автоматизация продаж",
     "Чат-боты на LLM",
-    "Интеграция с amoCRM и Bitrix24",
+    "Интеграция с Bitrix24",
     "YCLIENTS онлайн-запись",
     "Вайбкодинг и MVP-разработка",
   ],
@@ -61,11 +73,11 @@ export const personSchema = () => ({
   name: SITE.expert,
   givenName: "Мария",
   familyName: "Хабарова",
-  jobTitle: "Эксперт по внедрению ИИ-сотрудников в продажи",
+  jobTitle: "Основатель и руководитель агентства ИИ-решений НейроМаркет",
   description:
-    "Эксперт и основатель агентства НейроМаркет. Внедряет ИИ-продавцов, нейроворонки и автоматизацию отделов продаж в B2B и малом бизнесе. Самара, работает по всей России и СНГ.",
+    "Мария Хабарова — основатель и руководитель агентства ИИ-решений НейроМаркет. AI-креаторство, автоматизация бизнеса и лидогенерация для русскоязычных клиентов.",
   url: SITE_URL,
-  image: absUrl("/favicon.png"),
+  image: absUrl(mariaPhoto),
   worksFor: { "@id": ORG_ID },
   knowsAbout: [
     "ИИ-продавцы",
@@ -73,7 +85,6 @@ export const personSchema = () => ({
     "Автоматизация отдела продаж",
     "Промпт-инжиниринг",
     "Вайбкодинг",
-    "amoCRM",
     "Bitrix24",
     "YCLIENTS",
   ],
@@ -89,6 +100,29 @@ export const websiteSchema = () => ({
   url: SITE_URL,
   inLanguage: "ru-RU",
   publisher: { "@id": ORG_ID },
+});
+
+export const webPageSchema = (opts: {
+  name: string;
+  description: string;
+  path: string;
+}) => ({
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${absUrl(opts.path)}#webpage`,
+  url: absUrl(opts.path),
+  name: opts.name,
+  description: opts.description,
+  inLanguage: "ru-RU",
+  isPartOf: { "@id": WEBSITE_ID },
+  about: { "@id": ORG_ID },
+  primaryImageOfPage: {
+    "@type": "ImageObject",
+    url: absUrl("/og-agency.jpg"),
+    width: 1200,
+    height: 630,
+  },
+  dateModified: "2026-07-27",
 });
 
 export const breadcrumbSchema = (items: Array<{ name: string; path: string }>) => ({
