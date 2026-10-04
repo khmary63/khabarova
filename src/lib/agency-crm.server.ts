@@ -1,6 +1,7 @@
 import { directionById } from "./agency";
 import type { AgencyLeadInput } from "./agency-lead-schema";
 import { notifyLeadToMax } from "./max.server";
+import { firstMessage, whatsappLink } from "./agency-first-message";
 // Fixed destination: never accept a webhook URL or token from public input.
 const CRM_ENDPOINT = "https://crm.neyromarket.com/api/webhook/leads";
 const completed = new Map<string, { time: number; promise: Promise<void> }>();
@@ -34,7 +35,9 @@ export function toCrmPayload(data: AgencyLeadInput) {
 /** Instant heads-up for Maria. Best effort: the lead is already safe in the CRM. */
 function notifyMax(data: AgencyLeadInput) {
   const d = directionById(data.direction);
-  const extra = [
+  const message = firstMessage({ name: data.name, direction: data.direction, task: data.task });
+  const wa = whatsappLink(data.phone, message);
+  const facts = [
     `Направление: ${d.label}`,
     data.intent === "launch" ? "Хочет обсудить запуск" : "Нужна консультация",
     data.company && `Бизнес: ${data.company}`,
@@ -44,9 +47,14 @@ function notifyMax(data: AgencyLeadInput) {
     ...Object.entries(data.campaign)
       .filter(([, v]) => v)
       .map(([k, v]) => `${k}: ${v}`),
-  ]
-    .filter(Boolean)
-    .join("\n");
+  ].filter(Boolean);
+  const extra = [
+    ...facts,
+    "",
+    "Готовое первое сообщение (скопируйте или отправьте по ссылке):",
+    message,
+    ...(wa ? ["", `WhatsApp с этим текстом: ${wa}`] : []),
+  ].join("\n");
   void notifyLeadToMax({
     name: data.name,
     phone: data.phone,

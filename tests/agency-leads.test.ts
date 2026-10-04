@@ -63,3 +63,16 @@ test("CRM rejection is surfaced instead of a false acknowledgement", async () =>
     "crm_delivery_failed",
   );
 });
+test("first message uses the first name, the direction and never invents prices", async () => {
+  const { firstMessage, whatsappLink } = await import("../src/lib/agency-first-message");
+  const m = firstMessage({ name: "Анна Петрова", direction: "automation" });
+  expect(m.startsWith("Здравствуйте, Анна!")).toBe(true);
+  expect(m).toContain("автоматизацию");
+  expect(m).not.toMatch(/₽|руб/);
+  expect(firstMessage({ name: "", direction: "leads" }).startsWith("Здравствуйте!")).toBe(true);
+  expect(firstMessage({ name: "Иван", direction: "creative", task: "Запросил чек-лист «Что в бизнесе можно отдать ИИ»" })).toContain("чек-лист");
+  expect(firstMessage({ name: "Иван", direction: "creative", task: "Результат диагностики: Нужен сайт" })).toContain("«Нужен сайт»");
+  const link = whatsappLink("8 (917) 111-40-30", "Привет");
+  expect(link).toBe("https://wa.me/79171114030?text=%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82");
+  expect(whatsappLink("12", "x")).toBe("");
+});
